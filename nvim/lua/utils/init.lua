@@ -63,15 +63,15 @@ M.handle_job_data = function(data)
 end
 
 M.log = function(message, title)
-  require('notify')(message, "info", { title = title or "Info" })
+  vim.notify(message, "info", { title = title or "Info" })
 end
 
 M.warnlog = function(message, title)
-  require('notify')(message, "warn", { title = title or "Warning" })
+  vim.notify(message, "warn", { title = title or "Warning" })
 end
 
 M.errorlog = function(message, title)
-  require('notify')(message, "error", { title = title or "Error" })
+  vim.notify(message, "error", { title = title or "Error" })
 end
 
 M.jobstart = function(cmd, on_finish)
@@ -124,20 +124,6 @@ M.add_whitespaces = function(number)
   return string.rep(" ", number)
 end
 
-M.closeOtherBuffers = function()
-  for _, e in ipairs(require("bufferline").get_elements().elements) do
-    vim.schedule(function()
-      if e.id == vim.api.nvim_get_current_buf() then
-        return
-      elseif pcall(require, 'mini.bufremove') then
-        require('mini.bufremove').delete(e.id, false)
-      else
-        vim.cmd("bd " .. e.id)
-      end
-    end)
-  end
-end
-
 M.is_plugin_loaded = function(plugin_name)
   local lazy_status_ok, lazy = pcall(require, "lazy")
   if not lazy_status_ok then
@@ -147,5 +133,12 @@ M.is_plugin_loaded = function(plugin_name)
   local plugin = lazy.plugins[plugin_name]
   return plugin and plugin.loaded
 end
+
+M.adjust_font_size = function (amount)
+  local current_size = vim.o.guifont:match("%d+")
+  local new_size = current_size + amount
+  vim.o.guifont = vim.o.guifont:gsub("%d+", new_size)
+end
+
 
 return M

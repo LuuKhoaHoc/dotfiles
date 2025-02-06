@@ -64,6 +64,8 @@ vim.opt.fillchars:append('fold: ');
 vim.opt.fillchars:append('foldopen: ');
 vim.opt.fillchars:append('foldsep: ');
 vim.opt.fillchars:append('foldclose:');
+vim.opt.fillchars:append('vert:▕');
+vim.opt.fillchars:append('vertleft:▕');
 
 for k, v in pairs(options) do
   vim.opt[k] = v
@@ -84,11 +86,9 @@ if vim.g.neovide then
   vim.g.neovide_window_blurred = true
   vim.g.neovide_floating_blur_amount_x = 2.0
   vim.g.neovide_floating_blur_amount_y = 2.0
-  vim.g.neovide_transparency = 0.9
+  vim.g.neovide_transparency = 0.95
 
   vim.keymap.set({ 'n', 'v' }, '<D-c>', '"+y')  -- Copy
   vim.keymap.set({ 'n', 'v' }, '<D-v>', '"*p')  -- Paste normal/visual mode
   vim.keymap.set({ 'c', 'i' }, '<D-v>', '<C-R>+') -- Paste command/insert mode
-
-  vim.opt.fillchars:append('vert: ');
 end
