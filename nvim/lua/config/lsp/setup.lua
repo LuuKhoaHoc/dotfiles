@@ -24,6 +24,7 @@ mason_lsp.setup({
     "lua_ls",
     "prismals",
     "tailwindcss",
+    "ts_ls",
   },
   -- Whether servers that are set up (via lspconfig) should be automatically installed if they're not already installed.
   -- This setting has no relation with the `ensure_installed` setting.

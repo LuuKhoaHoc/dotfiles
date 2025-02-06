@@ -47,7 +47,7 @@ EcoVim = {
   icons = icons,
   -- Statusline configuration
   statusline = {
-    path_enabled = true,
+    path_enabled = false,
     path = "relative", -- absolute/relative
   },
 }
