@@ -1,0 +1,3 @@
+[submodule "my-nvim-ide"]
+	path = my-nvim-ide
+	url = git@github.com:jellydn/my-nvim-ide.git
