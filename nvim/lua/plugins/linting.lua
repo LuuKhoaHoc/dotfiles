@@ -1,25 +1,12 @@
 return {
-  {
-    "mfussenegger/nvim-lint",
-    event = {
-      "BufReadPre",
-      "BufNewFile",
-    },
-    config = function()
-      local lint = require("lint")
-
-      lint.linters_by_ft = {
-        javascript = { "eslint_d" },
-        typescript = { "eslint_d" },
-        javascriptreact = { "eslint_d" },
-        typescriptreact = { "eslint_d" },
-        svelte = { "eslint_d" },
-        python = { "pylint" },
-      }
-
-      vim.keymap.set("n", "<leader>l", function()
-        lint.try_lint()
-      end, { desc = "lint file" })
-    end,
-  },
+  "jose-elias-alvarez/null-ls.nvim",
+  config = function()
+    local null_ls = require("null-ls")
+    null_ls.setup({
+      sources = {
+        null_ls.builtins.diagnostics.eslint,
+        null_ls.builtins.code_actions.eslint,
+      },
+    })
+  end,
 }

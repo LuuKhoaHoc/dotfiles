@@ -4,14 +4,13 @@
 eval $(ssh-agent)
 eval "$(zoxide init zsh)"
 eval "$(fnm env --use-on-cd --shell zsh)"
-# -----------------------------------------------------
-# Pywal
-# -----------------------------------------------------
-cat ~/.cache/wal/sequences
+
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # -----------------------------------------------------
 # Fastfetch
 # -----------------------------------------------------
+
 if [[ $(tty) == *"pts"* ]]; then
     fastfetch --config examples/13
 else

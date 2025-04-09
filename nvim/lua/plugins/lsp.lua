@@ -1,35 +1,50 @@
 return {
+  -- Thêm pyright vào lspconfig
   {
     "neovim/nvim-lspconfig",
-    lazy = false,
+    opts = {
+      servers = {
+        pyright = {},
+      },
+    },
+  },
+  -- Thêm tsserver và thiết lập với typescript.nvim thay vì lspconfig
+  {
+    "neovim/nvim-lspconfig",
     dependencies = {
-      "mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      {
+        "jose-elias-alvarez/typescript.nvim",
+        config = function()
+          require("typescript").setup({
+            server = {
+              on_attach = function(client, bufnr)
+                -- Thiết lập phím tắt cho TypeScript
+                vim.keymap.set(
+                  "n",
+                  "<leader>co",
+                  ":TypescriptOrganizeImports<CR>",
+                  { buffer = bufnr, desc = "Organize Imports" }
+                )
+                vim.keymap.set("n", "<leader>cR", ":TypescriptRenameFile<CR>", { buffer = bufnr, desc = "Rename File" })
+              end,
+            },
+          })
+        end,
+      },
     },
     config = function()
-      require('config.lsp.setup')
-      require('config.lsp.config')
-      require('config.lsp.functions')
-    end
-  },
+      local lspconfig = require("lspconfig")
 
-  {
-    "williamboman/mason.nvim",
-    cmd = "Mason",
-    keys = {
-      { "<leader>cm", "<cmd>Mason<CR>", desc = "Mason" },
-    },
+      -- Cấu hình cho cssls
+      lspconfig.cssls.setup({
+        settings = {
+          css = { validate = true },
+          scss = { validate = true },
+          less = { validate = true },
+        },
+      })
+    end,
   },
-
-  {
-    "antosha417/nvim-lsp-file-operations",
-    event = "LspAttach",
-    dependencies = {
-      { "nvim-lua/plenary.nvim" },
-      { "nvim-tree/nvim-tree.lua" },
-    },
-    config = function()
-      require("lsp-file-operations").setup()
-    end
-  },
+  -- Thêm jsonls và schemastore packages, và thiết lập treesitter cho json, json5 và jsonc
+  { import = "lazyvim.plugins.extras.lang.json" },
 }
