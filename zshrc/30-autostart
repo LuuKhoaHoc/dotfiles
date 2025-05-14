@@ -3,7 +3,15 @@
 # -----------------------------------------------------
 eval $(ssh-agent)
 eval "$(zoxide init zsh)"
-eval "$(fnm env --use-on-cd --shell zsh)"
+# fnm
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+  eval "`fnm env`"
+fi
+eval "$(mise activate)"
+# eval $(gnome-keyring-daemon --start)
+
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -12,7 +20,7 @@ eval "$(fnm env --use-on-cd --shell zsh)"
 # -----------------------------------------------------
 
 if [[ $(tty) == *"pts"* ]]; then
-    fastfetch --config examples/13
+    fastfetch --config examples/18
 else
     echo
     if [ -f /bin/qtile ]; then

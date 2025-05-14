@@ -17,8 +17,10 @@ alias v='$EDITOR'
 alias vim='$EDITOR'
 alias wifi='nmtui'
 alias ncode='nvim'
-alias zshrc='nvim ~/.config/zshrc'
+alias zshrc='nvim ~/Dev-Work/dotfiles/zshrc'
 alias szshrc='source ~/.zshrc'
+alias cdwm='nvim ~/.config/chadwm/chadwm/config.def.h'
+alias mdwm='cd ~/.config/chadwm/chadwm/; sudo make clean install; cd -'
 
 # -----------------------------------------------------
 # Yarn
