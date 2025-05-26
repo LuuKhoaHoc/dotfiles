@@ -21,7 +21,15 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 # PROMPT AND THEME CONFIGURATION
 # =============================================================================
 # Initialize Oh My Posh with custom theme
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\jandedobbeleer.omp.json" | Invoke-Expression
+$themePath = "C:/Users/$env:USERNAME/dotfiles/ohmyposh/EDM115-newline.omp.json"
+if (Test-Path $themePath) {
+    oh-my-posh init pwsh --config $themePath | Invoke-Expression
+} elseif ($env:POSH_THEMES_PATH) {
+    $fallbackTheme = "$env:POSH_THEMES_PATH\catppuccin.omp.json"
+    if (Test-Path $fallbackTheme) {
+        oh-my-posh init pwsh --config $fallbackTheme | Invoke-Expression
+    }
+}
 
 # Enable command history-based predictions
 Set-PSReadLineOption -PredictionSource History
@@ -102,6 +110,20 @@ function git_stash_save { git stash save $args }
 
 Set-Alias -Name gsu -Value git_stash_untracked
 function git_stash_untracked { git stash -u $args }
+
+# Yarn operations
+Set-Alias -Name yd -Value yarn_dev
+function yarn_dev { yarn dev }
+
+Set-Alias -Name yb -Value yarn_build
+function yarn_build { yarn build }
+
+Set-Alias -Name ya -Value yarn_add
+function yarn_add { yarn add }
+
+Set-Alias -Name yrm -Value yarn_remove
+function yarn_remove { yarn remove }
+
 
 # =============================================================================
 # ENVIRONMENT PATH CONFIGURATION
