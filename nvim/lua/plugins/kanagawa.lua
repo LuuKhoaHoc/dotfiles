@@ -17,10 +17,17 @@ return {
       local theme = colors.theme
       return {
         -- Transparent background
+        Normal = { bg = "none" },
+        NormalNC = { bg = "none" },
+        NormalSB = { bg = "none" },
         NormalFloat = { bg = "none" },
         FloatBorder = { bg = "none" },
         FloatTitle = { bg = "none" },
-
+        SignColumn = { bg = "none" },
+        MsgArea = { bg = "none" },
+        TelescopeNormal = { bg = "none" },
+        TelescopeBorder = { bg = "none" },
+        
         NormalDark = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m3 },
         LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
         MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },

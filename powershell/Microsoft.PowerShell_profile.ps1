@@ -2,6 +2,19 @@
 # This file customizes the PowerShell environment with tools, aliases, and path configurations
 
 # =============================================================================
+# ENVIRONMENT PATH CONFIGURATION
+# =============================================================================
+# Add custom tools and applications to PATH
+$env:Path += ";C:\msys64\mingw64\bin"                         # MSYS2 MinGW tools
+$env:Path += ";C:\Program Files\ImageMagick-7.1.1-Q16-HDRI"  # ImageMagick image processing
+$env:Path += ";C:\Users\$env:USERNAME\AppData\Roaming\npm"          # Node.js global packages
+$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\lazygit"  # LazyGit TUI
+$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\ripgrep"  # ripgrep search tool
+$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\fd"       # fd file finder
+$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\bun"      # Bun JavaScript runtime
+
+
+# =============================================================================
 # ZOXIDE SETUP
 # =============================================================================
 # Add zoxide to PATH if installed via winget
@@ -113,27 +126,16 @@ function git_stash_untracked { git stash -u $args }
 
 # Yarn operations
 Set-Alias -Name yd -Value yarn_dev
-function yarn_dev { yarn dev }
+function yarn_dev { yarn dev $args }
 
 Set-Alias -Name yb -Value yarn_build
-function yarn_build { yarn build }
+function yarn_build { yarn build $args }
 
 Set-Alias -Name ya -Value yarn_add
-function yarn_add { yarn add }
+function yarn_add { yarn add $args }
 
 Set-Alias -Name yrm -Value yarn_remove
-function yarn_remove { yarn remove }
+function yarn_remove { yarn remove $args }
 
-
-# =============================================================================
-# ENVIRONMENT PATH CONFIGURATION
-# =============================================================================
-# Add custom tools and applications to PATH
-$env:Path += ";C:\Users\khoahoc\AppData\Roaming\npm"          # Node.js global packages
-$env:Path += ";C:\msys64\mingw64\bin"                         # MSYS2 MinGW tools
-$env:Path += ";C:\Program Files\ImageMagick-7.1.1-Q16-HDRI"  # ImageMagick image processing
-$env:Path += ";C:\Users\khoahoc\AppData\Local\Programs\lazygit"  # LazyGit TUI
-$env:Path += ";C:\Users\khoahoc\AppData\Local\Programs\ripgrep"  # ripgrep search tool
-$env:Path += ";C:\Users\khoahoc\AppData\Local\Programs\fd"       # fd file finder
-$env:Path += ";C:\Users\khoahoc\AppData\Local\Programs\bun"      # Bun JavaScript runtime
-
+Set-Alias -Name yf -Value yarn_format
+function yarn_format { yarn format $args }
