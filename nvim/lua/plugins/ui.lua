@@ -13,6 +13,25 @@ end
 return {
   "nvim-lua/plenary.nvim",
   {
+    'norcalli/nvim-colorizer.lua',
+    config = function()
+      require("colorizer").setup({
+        "*", -- Highlight all file types
+      }, {
+        RGB = true, -- Enable RGB color codes
+        RRGGBB = true, -- Enable RRGGBB color codes
+        names = true, -- Enable color names
+        mode = "background", -- Set the mode to background
+      })
+    end,
+  },
+  {
+    "themaxmarchuk/tailwindcss-colors.nvim",
+    config = function()
+      require("tailwindcss-colors").setup()
+    end,
+  },
+  {
     "max397574/better-escape.nvim",
     event = "InsertEnter",
     opts = {
