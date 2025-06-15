@@ -1,3 +1,6 @@
 [submodule "my-nvim-ide"]
 	path = my-nvim-ide
 	url = git@github.com:jellydn/my-nvim-ide.git
+[submodule "smart-branch"]
+	path = smart-branch
+	url = https://github.com/LuuKhoaHoc/smart-branch.git
