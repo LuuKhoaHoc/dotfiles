@@ -60,7 +60,7 @@ function ls { Get-ChildItem -Force | Format-Table -AutoSize }
 
 # Status and basic operations
 Set-Alias -Name gst -Value git_status
-function git_status { git status -s }
+function git_status { git status }
 
 Set-Alias -Name ga -Value git_add
 function git_add { git add $args }
@@ -86,11 +86,14 @@ Set-Alias -Name gd -Value git_diff
 function git_diff { git diff --word-diff $args }
 
 Set-Alias -Name glog -Value git_log
-function git_log { git log $args }
+function git_log { git log --oneline $args }
 
 # Remote operations
 Set-Alias -Name gitp -Value git_push
 function git_push { git push $args }
+
+Set-Alias -Name gpsup -Value git_push_origin
+function git_push_origin { git push --set-upstream origin $args }
 
 Set-Alias -Name gitl -Value git_pull
 function git_pull { git pull $args }
@@ -112,16 +115,19 @@ Set-Alias -Name grh -Value git_reset
 function git_reset { git reset $args }
 
 # Stash operations
-Set-Alias -Name gsl -Value git_stash_list
+Set-Alias -Name gstl -Value git_stash_list
 function git_stash_list { git stash list $args }
 
-Set-Alias -Name gsa -Value git_stash_apply
+Set-Alias -Name gsta -Value git_stash_apply
 function git_stash_apply { git stash apply $args }
 
-Set-Alias -Name gss -Value git_stash_save
+Set-Alias -Name gstp -Value git_stash_pop
+function git_stash_pop { git stash pop $args }
+
+Set-Alias -Name gsts -Value git_stash_save
 function git_stash_save { git stash save $args }
 
-Set-Alias -Name gsu -Value git_stash_untracked
+Set-Alias -Name gstu -Value git_stash_untracked
 function git_stash_untracked { git stash -u $args }
 
 # Yarn operations
@@ -139,3 +145,20 @@ function yarn_remove { yarn remove $args }
 
 Set-Alias -Name yf -Value yarn_format
 function yarn_format { yarn format $args }
+
+Set-Alias -Name yln -Value yarn_lint
+function yarn_lint { yarn lint $args }
+
+# =============================================================================
+# SMART BRANCH SCRIPT ALIAS
+# =============================================================================
+# Unified Smart Branch Creator
+
+Set-Alias -Name sb -Value smart_branch
+function smart_branch { & "C:/Users/$env:USERNAME/dotfiles/smart-branch/src/smart-branch.ps1" $args }
+
+Set-Alias -Name qb -Value quick_branch
+function quick_branch { & "C:/Users/$env:USERNAME/dotfiles/smart-branch/src/quick-branch.bat" $args }
+
+Set-Alias -Name sbdemo -Value smart_branch_demo
+function smart_branch_demo { & "C:/Users/$env:USERNAME/dotfiles/smart-branch/examples/demo.sh" $args }
