@@ -2,8 +2,9 @@
 
 xrdb merge ~/.Xresources
 xbacklight -set 10 &
-feh --bg-fill /home/khoahoc/wallpaper/birdandcat.jpg &
+feh --bg-fill /home/khoahoc/Pictures/images/personal-image.jpg &
 xset r rate 200 50 &
+greenclip daemon &
 picom &
 fcitx5 &
 vesktop &

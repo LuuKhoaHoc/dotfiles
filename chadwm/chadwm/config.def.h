@@ -155,7 +155,7 @@ static const Key keys[] = {
     {MODKEY|ControlMask,                XK_w,       spawn,          SHCMD("firefox-developer-edition")},
 
     // Clipboard manager - Super + V
-    {MODKEY,                            XK_v,       spawn,          SHCMD("rofi -modi \"clipboard:greenclip print\" -show clipboard -run-command '{cmd}'")},
+    {MODKEY,                            XK_v,       spawn,          SHCMD("rofi -modi 'clipboard:greenclip print' -show clipboard")},
 
     // Lock screen
     {MODKEY|ShiftMask,                  XK_l,       spawn,          SHCMD("slock")},
