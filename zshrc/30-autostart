@@ -13,20 +13,20 @@ eval "$(mise activate)"
 # eval $(gnome-keyring-daemon --start)
 
 
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # -----------------------------------------------------
 # Fastfetch
 # -----------------------------------------------------
 
-if [[ $(tty) == *"pts"* ]]; then
-    fastfetch --config examples/18
-else
-    echo
-    if [ -f /bin/qtile ]; then
-        echo "Start Qtile X11 with command Qtile"
-    fi
-    if [ -f /bin/hyprctl ]; then
-        echo "Start Hyprland with command Hyprland"
-    fi
-fi
+# if [[ $(tty) == *"pts"* ]]; then
+#     fastfetch --config examples/18
+# else
+#     echo
+#     if [ -f /bin/qtile ]; then
+#         echo "Start Qtile X11 with command Qtile"
+#     fi
+#     if [ -f /bin/hyprctl ]; then
+#         echo "Start Hyprland with command Hyprland"
+#     fi
+# fi
