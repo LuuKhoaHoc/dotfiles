@@ -19,7 +19,7 @@ export BUN_INSTALL="$HOME/.bun"
 # -----------------------------------------------------
 
 # ZSH_THEME="powerlevel10k/powerlevel10k"
-ZSH_THEME="agnosterzak"
+# ZSH_THEME="agnosterzak"
 
 autoload -Uz compinit
 compinit

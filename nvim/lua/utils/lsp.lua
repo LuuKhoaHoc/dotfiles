@@ -6,13 +6,17 @@ local M = {}
 function M.get_default_keymaps()
   return {
     -- { keys = "<leader>ca", func = vim.lsp.buf.code_action, desc = "Code Actions" },
-    { keys = "<leader>.", func = vim.lsp.buf.code_action, desc = "Code Actions" },
-    { keys = "<leader>ca", func = M.action.source, desc = "Source Actions" },
-    { keys = "<leader>cr", func = vim.lsp.buf.rename, desc = "Code Rename" },
-    { keys = "<leader>cf", func = vim.lsp.buf.format, desc = "Code Format" },
-    { keys = "<leader>k", func = vim.lsp.buf.hover, desc = "Documentation", has = "hoverProvider" },
-    { keys = "K", func = vim.lsp.buf.hover, desc = "Documentation", has = "hoverProvider" },
-    { keys = "gd", func = vim.lsp.buf.definition, desc = "Goto Definition", has = "definitionProvider" },
+    { keys = "<leader>.",  func = vim.lsp.buf.code_action, desc = "Code Actions" },
+    { keys = "<leader>ca", func = M.action.source,         desc = "Source Actions" },
+    { keys = "<leader>co", func = M.organizeImports,       desc = "Organize Imports" },
+    { keys = "<leader>cu", func = M.removeUnusedImports,   desc = "Remove Unused Imports" },
+    { keys = "<leader>cU", func = M.fixUnusedCode,         desc = "Fix Unused Code" },
+    { keys = "<leader>cM", func = M.addMissingImports,     desc = "Add Missing Imports" },
+    { keys = "<leader>cr", func = vim.lsp.buf.rename,      desc = "Code Rename" },
+    { keys = "<leader>cf", func = vim.lsp.buf.format,      desc = "Code Format" },
+    { keys = "<leader>k",  func = vim.lsp.buf.hover,       desc = "Documentation",        has = "hoverProvider" },
+    { keys = "K",          func = vim.lsp.buf.hover,       desc = "Documentation",        has = "hoverProvider" },
+    { keys = "gd",         func = vim.lsp.buf.definition,  desc = "Goto Definition",      has = "definitionProvider" },
     -- NOTE: Use snack UI for below keymaps
     -- { keys = "gD", func = vim.lsp.buf.declaration, desc = "Goto Declaration", has = "declarationProvider" },
     -- { keys = "gr", func = vim.lsp.buf.references, desc = "Goto References", has = "referencesProvider", nowait = true },
@@ -47,6 +51,39 @@ M.action = setmetatable({}, {
     end
   end,
 })
+
+M.organizeImports = function()
+  vim.lsp.buf.code_action({
+    context = { only = { "source.organizeImports" } },
+    apply = true
+  })
+end
+
+-- Remove unused imports
+M.removeUnusedImports = function()
+  vim.lsp.buf.code_action({
+    context = { only = { "source.removeUnusedImports" } },
+    apply = true
+  })
+end
+
+-- Fix unused code (e.g., unused variables, functions)
+M.fixUnusedCode = function()
+  vim.lsp.buf.code_action({
+    context = { only = { "source.fixAll" } },
+    apply = true
+  })
+end
+
+-- Add missing imports
+M.addMissingImports = function()
+  vim.lsp.buf.code_action({
+    context = { only = { "source.addMissingImports" } },
+    apply = true
+  })
+end
+
+
 
 -- Utils for conform
 --- Get the path of the config file in the current directory or the root of the git repo
