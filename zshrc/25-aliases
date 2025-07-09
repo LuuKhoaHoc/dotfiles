@@ -21,8 +21,9 @@ alias zshrc='nvim ~/Dev-Work/dotfiles/zshrc'
 alias szshrc='source ~/.zshrc'
 alias cchadwm='nvim ~/.config/chadwm/chadwm/config.def.h'
 alias mchadwm='cd ~/.config/chadwm/chadwm/; sudo make clean install; cd -'
-alias cst='nvim ~/.config/st/config.def.h'
+alias cst='nvim ~/.config/st'
 alias mst='cd ~/Dev-Work/dotfiles/st/; rm -rf config.h;  sudo make clean install; cd -'
+alias mpl='make publish'
 
 # -----------------------------------------------------
 # Yarn

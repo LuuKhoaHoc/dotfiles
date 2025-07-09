@@ -149,10 +149,9 @@ static const Key keys[] = {
     {MODKEY,                            XK_u,       spawn,
         SHCMD("maim --select | xclip -selection clipboard -t image/png")},
 
-    { MODKEY,                           XK_d,       spawn,          SHCMD("rofi -show drun -theme ~/Dev-Work/dotfiles/rofi/colors/catppuccin.rasi") },
+    { MODKEY,                           XK_d,       spawn,          SHCMD("rofi -show drun) },
     { MODKEY,                           XK_Return,  spawn,          SHCMD("st")},
-    {MODKEY,                            XK_w,       spawn,          SHCMD("google-chrome-stable")},
-    {MODKEY|ControlMask,                XK_w,       spawn,          SHCMD("firefox-developer-edition")},
+    { MODKEY,                           XK_w,       spawn,          SHCMD("firefox-developer-edition")},
 
     // Clipboard manager - Super + V
     {MODKEY,                            XK_v,       spawn,          SHCMD("rofi -modi 'clipboard:greenclip print' -show clipboard")},
@@ -161,7 +160,7 @@ static const Key keys[] = {
     {MODKEY|ShiftMask,                  XK_l,       spawn,          SHCMD("slock")},
 
     // toggle stuff
-    { MODKEY,                           XK_b,       togglebar,      {0} },
+    { MODKEY|ControlMask,               XK_b,       togglebar,      {0} },
     { MODKEY|ControlMask,               XK_t,       togglegaps,     {0} },
     { MODKEY|ShiftMask,                 XK_space,   togglefloating, {0} },
     { MODKEY,                           XK_f,       togglefullscr,  {0} },

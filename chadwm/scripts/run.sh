@@ -8,6 +8,7 @@ greenclip daemon &
 picom &
 fcitx5 &
 vesktop &
+/usr/lib/polkit-kde-authentication-agent-1 &
 
 
 dash ~/.config/chadwm/scripts/bar.sh &
