@@ -7,6 +7,7 @@ function M.get_default_keymaps()
   return {
     -- { keys = "<leader>ca", func = vim.lsp.buf.code_action, desc = "Code Actions" },
     { keys = "<leader>.",  func = vim.lsp.buf.code_action, desc = "Code Actions" },
+    { keys = "<leader>cA", func = vim.lsp.buf.code_action, desc = "Code Actions" },
     { keys = "<leader>ca", func = M.action.source,         desc = "Source Actions" },
     { keys = "<leader>co", func = M.organizeImports,       desc = "Organize Imports" },
     { keys = "<leader>cu", func = M.removeUnusedImports,   desc = "Remove Unused Imports" },

@@ -23,7 +23,11 @@ return {"nvim-lua/plenary.nvim", {
     end
 }, {
     "themaxmarchuk/tailwindcss-colors.nvim",
+    -- Defer loading until a JavaScript/TypeScript file is opened
+    ft = {"javascript", "javascriptreact", "typescript", "typescriptreact", "vue", "svelte"},
     config = function()
+        -- The setup function will be called automatically when the plugin loads
+        -- for the specified filetypes.
         require("tailwindcss-colors").setup()
     end
 }, {
@@ -223,6 +227,9 @@ return {"nvim-lua/plenary.nvim", {
             enable = true
         },
         indent = {
+            enable = true
+        },
+        folds = {
             enable = true
         },
         ensure_installed = {"bash", "c", "diff", "html", "javascript", "jsdoc", "json", "jsonc", "lua", "luadoc",
