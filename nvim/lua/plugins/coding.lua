@@ -21,7 +21,7 @@ return { -- Setup Copilot
         -- Set to true to assume that copilot is already mapped
         vim.g.copilot_assume_mapped = true
         -- Set workspace folders
-        vim.g.copilot_workspace_folders = "~/Projects"
+        vim.g.copilot_workspace_folders = "~/Dev-Work"
 
         -- Setup keymaps
         local keymap = vim.keymap.set
@@ -176,7 +176,7 @@ return { -- Setup Copilot
                     enabled = true,
                     max_items = 3,
                     module = "blink.cmp.sources.buffer",
-                    min_keyword_length = 2,
+                    min_keyword_length = 0,
                     score_offset = 15 -- the higher the number, the higher the priority
                 },
                 snippets = {
