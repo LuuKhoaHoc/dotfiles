@@ -1,0 +1,86 @@
+[
+  {
+    "prefix": "clg",
+    "description": "Console log",
+    "body": [
+      "console.log(${1});"
+    ]
+  },
+  {
+    "prefix": "fn",
+    "description": "Function declaration",
+    "body": [
+      "function ${1:name}(${2:params}) {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "nfn",
+    "description": "Arrow function",
+    "body": [
+      "const ${1:name} = (${2:params}) => {",
+      "  ${0}",
+      "};"
+    ]
+  },
+  {
+    "prefix": "for",
+    "description": "For loop",
+    "body": [
+      "for (let ${1:i} = 0; ${1:i} < ${2:arr}.length; ${1:i}++) {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "foreach",
+    "description": "Array forEach",
+    "body": [
+      "${1:arr}.forEach((${2:item}, ${3:index}) => {",
+      "  ${0}",
+      "});"
+    ]
+  },
+  {
+    "prefix": "map",
+    "description": "Array map",
+    "body": [
+      "${1:arr}.map((${2:item}, ${3:index}) => {",
+      "  ${0}",
+      "});"
+    ]
+  },
+  {
+    "prefix": "filter",
+    "description": "Array filter",
+    "body": [
+      "${1:arr}.filter((${2:item}) => {",
+      "  ${0}",
+      "});"
+    ]
+  },
+  {
+    "prefix": "reduce",
+    "description": "Array reduce",
+    "body": [
+      "${1:arr}.reduce((${2:acc}, ${3:item}) => {",
+      "  ${0}",
+      "}, ${4:init});"
+    ]
+  },
+  {
+    "prefix": "import",
+    "description": "Import statement",
+    "body": [
+      "import ${1:module} from '${2:path}';"
+    ]
+  },
+  {
+    "prefix": "export",
+    "description": "Export statement",
+    "body": [
+      "export ${1:default} ${2:name};"
+    ]
+  }
+]

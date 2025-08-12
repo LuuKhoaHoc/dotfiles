@@ -1,0 +1,312 @@
+[
+  {
+    "prefix": "rafce",
+    "description": "React Arrow Function Component",
+    "body": [
+      "import React from 'react';",
+      "",
+      "interface ${1:Props} {",
+      "  ",
+      "}",
+      "",
+      "const ${2:ComponentName} = (props:${1:Props}) => {",
+      "  return (",
+      "    <div>",
+      "      ${0}",
+      "    </div>",
+      "  );",
+      "};",
+      "",
+      "export default ${2:ComponentName};"
+    ]
+  },
+  {
+    "prefix": "useStateSnippet",
+    "description": "React useState hook",
+    "body": [
+      "const [${1:state}, set${2:State}] = React.useState<${3:type}>(${4:initialValue});"
+    ]
+  },
+  {
+    "prefix": "useEffectSnippet",
+    "description": "React useEffect hook",
+    "body": [
+      "React.useEffect(() => {",
+      "  ${0}",
+      "}, [${1:dependencies}]);"
+    ]
+  },
+  {
+    "prefix": "nextPageSnippet",
+    "description": "Next.js Page Component",
+    "body": [
+      "import React from 'react';",
+      "",
+      "const ${1:PageName}: React.FC = () => {",
+      "  return (",
+      "    <div>",
+      "      ${0}",
+      "    </div>",
+      "  );",
+      "};",
+      "",
+      "export default ${1:PageName};"
+    ]
+  },
+  {
+    "prefix": "getServerSideProps",
+    "description": "Next.js getServerSideProps",
+    "body": [
+      "export async function getServerSideProps(context: any) {",
+      "  ${0}",
+      "  return {",
+      "    props: {},",
+      "  };",
+      "}"
+    ]
+  },
+  {
+    "prefix": "getStaticProps",
+    "description": "Next.js getStaticProps",
+    "body": [
+      "export async function getStaticProps(context: any) {",
+      "  ${0}",
+      "  return {",
+      "    props: {},",
+      "  };",
+      "}"
+    ]
+  },
+  {
+    "prefix": "getStaticPaths",
+    "description": "Next.js getStaticPaths",
+    "body": [
+      "export async function getStaticPaths() {",
+      "  ${0}",
+      "  return {",
+      "    paths: [],",
+      "    fallback: false,",
+      "  };",
+      "}"
+    ]
+  },
+  {
+    "prefix": "useRouterSnippet",
+    "description": "Next.js App router useRouter hook",
+    "body": [
+      "import { useRouter } from 'next/navigation';",
+      "",
+      "const router = useRouter();"
+    ]
+  },
+  {
+    "prefix": "useCallbackSnippet",
+    "description": "React useCallback hook",
+    "body": [
+      "const ${1:callback} = React.useCallback(() => {",
+      "  ${0}",
+      "}, [${2:dependencies}]);"
+    ]
+  },
+  {
+    "prefix": "useMemoSnippet",
+    "description": "React useMemo hook",
+    "body": [
+      "const ${1:memoizedValue} = React.useMemo(() => ${2:computeValue}, [${3:dependencies}]);"
+    ]
+  },
+  {
+    "prefix": "useRefSnippet",
+    "description": "React useRef hook",
+    "body": [
+      "const ${1:ref} = React.useRef<${2:type}>(null);"
+    ]
+  },
+  {
+    "prefix": "map",
+    "description": "Array map in JSX",
+    "body": [
+      "{${1:items}.map((${2:item}, ${3:index}) => (",
+      "  <div key={${3:index}}>",
+      "    ${0}",
+      "  </div>",
+      "))}"
+    ]
+  },
+  {
+    "prefix": "props",
+    "description": "Props interface",
+    "body": [
+      "interface ${1:Props} {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "exportDefault",
+    "description": "Export default component",
+    "body": [
+      "export default ${1:ComponentName};"
+    ]
+  },
+  {
+    "prefix": "imr",
+    "description": "Import React",
+    "body": [
+      "import React from 'react';"
+    ]
+  },
+  {
+    "prefix": "importNextImage",
+    "description": "Import Next.js Image",
+    "body": [
+      "import Image from 'next/image';"
+    ]
+  },
+  {
+    "prefix": "importNextLink",
+    "description": "Import Next.js Link",
+    "body": [
+      "import Link from 'next/link';"
+    ]
+  },
+  {
+    "prefix": "nextHead",
+    "description": "Next.js Head component",
+    "body": [
+      "import Head from 'next/head';",
+      "",
+      "<Head>",
+      "  <title>${1:Title}</title>",
+      "</Head>"
+    ]
+  },
+  {
+    "prefix": "jsxFragment",
+    "description": "JSX Fragment",
+    "body": [
+      "<> ${0} </>"
+    ]
+  },
+  {
+    "prefix": "children",
+    "description": "Children prop in interface",
+    "body": [
+      "children?: React.ReactNode;"
+    ]
+  },
+  {
+    "prefix": "handleChange",
+    "description": "Handle input change",
+    "body": [
+      "const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {",
+      "  ${0}",
+      "};"
+    ]
+  },
+  {
+    "prefix": "handleSubmit",
+    "description": "Handle form submit",
+    "body": [
+      "const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {",
+      "  e.preventDefault();",
+      "  ${0}",
+      "};"
+    ]
+  },
+  {
+    "prefix": "useContextSnippet",
+    "description": "React useContext hook",
+    "body": [
+      "const ${1:context} = React.useContext(${2:Context});"
+    ]
+  },
+  {
+    "prefix": "createContext",
+    "description": "React createContext",
+    "body": [
+      "const ${1:Context} = React.createContext<${2:type}>(${3:defaultValue});"
+    ]
+  },
+  {
+    "prefix": "memo",
+    "description": "React.memo",
+    "body": [
+      "const ${1:MemoComponent} = React.memo((${2:props}: ${3:Props}) => {",
+      "  return (",
+      "    ${0}",
+      "  );",
+      "});"
+    ]
+  },
+  {
+    "prefix": "forwardRef",
+    "description": "React.forwardRef",
+    "body": [
+      "const ${1:Component} = React.forwardRef<${2:RefType}, ${3:Props}>((props, ref) => {",
+      "  return (",
+      "    ${0}",
+      "  );",
+      "});"
+    ]
+  },
+  {
+    "prefix": "useReducerSnippet",
+    "description": "React useReducer hook",
+    "body": [
+      "const [${1:state}, ${2:dispatch}] = React.useReducer(${3:reducer}, ${4:initialState});"
+    ]
+  },
+  {
+    "prefix": "useLayoutEffectSnippet",
+    "description": "React useLayoutEffect hook",
+    "body": [
+      "React.useLayoutEffect(() => {",
+      "  ${0}",
+      "}, [${1:dependencies}]);"
+    ]
+  },
+  {
+    "prefix": "useImperativeHandleSnippet",
+    "description": "React useImperativeHandle hook",
+    "body": [
+      "React.useImperativeHandle(${1:ref}, () => ({",
+      "  ${0}",
+      "}));"
+    ]
+  },
+  {
+    "prefix": "nextApi",
+    "description": "Next.js API route",
+    "body": [
+      "import type { NextApiRequest, NextApiResponse } from 'next';",
+      "",
+      "export default function handler(req: NextApiRequest, res: NextApiResponse) {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "importType",
+    "description": "Import type only",
+    "body": [
+      "import type { ${1:TypeName} } from '${2:module}';"
+    ]
+  },
+  {
+    "prefix": "imd",
+    "description": "Import destructured",
+    "body": [
+      "import { ${1:member} } from '${2:module}';"
+    ]
+  },
+  {
+    "prefix": "nfn",
+    "description": "Arrow function",
+    "body": [
+      "const ${1:fnName} = (${2:params}) => {",
+      "  ${0}",
+      "};"
+    ]
+  }
+]

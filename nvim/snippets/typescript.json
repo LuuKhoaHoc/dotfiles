@@ -1,0 +1,82 @@
+[
+  {
+    "prefix": "type",
+    "description": "Type alias",
+    "body": [
+      "type ${1:TypeName} = {",
+      "  ${0}",
+      "};"
+    ]
+  },
+  {
+    "prefix": "interface",
+    "description": "Interface declaration",
+    "body": [
+      "interface ${1:InterfaceName} {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "enum",
+    "description": "Enum declaration",
+    "body": [
+      "enum ${1:EnumName} {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "fn",
+    "description": "Function with type annotation",
+    "body": [
+      "function ${1:fnName}(${2:params}: ${3:Type}): ${4:ReturnType} {",
+      "  ${0}",
+      "}"
+    ]
+  },
+  {
+    "prefix": "nfn",
+    "description": "Arrow function with type",
+    "body": [
+      "const ${1:fnName} = (${2:params}: ${3:Type}): ${4:ReturnType} => {",
+      "  ${0}",
+      "};"
+    ]
+  },
+  {
+    "prefix": "imt",
+    "description": "Import type only",
+    "body": [
+      "import type { ${1:TypeName} } from '${2:module}';"
+    ]
+  },
+  {
+    "prefix": "readonly",
+    "description": "Readonly property",
+    "body": [
+      "readonly ${1:property}: ${2:type};"
+    ]
+  },
+  {
+    "prefix": "partial",
+    "description": "Partial type",
+    "body": [
+      "Partial<${1:Type}>"
+    ]
+  },
+  {
+    "prefix": "record",
+    "description": "Record type",
+    "body": [
+      "Record<${1:Keys}, ${2:Type}>"
+    ]
+  },
+  {
+    "prefix": "as",
+    "description": "Type assertion",
+    "body": [
+      "${1:value} as ${2:Type}"
+    ]
+  }
+]

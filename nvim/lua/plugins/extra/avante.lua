@@ -1,9 +1,9 @@
 return {
   -- Disable copilot
-  {
-    "github/copilot.vim",
-    enabled = false,
-  },
+  -- {
+  --   "github/copilot.vim",
+  --   enabled = false,
+  -- },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     enabled = false,
@@ -14,7 +14,7 @@ return {
     version = false,
     opts = {
       provider = "copilot",
-      hints = { enabled = false }, -- Disable hints as I could trigger with <leader>a
+      hints = { enabled = true }, -- Disable hints as I could trigger with <leader>a
     },
     build = "make",
     dependencies = {

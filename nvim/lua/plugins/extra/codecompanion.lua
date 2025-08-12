@@ -42,7 +42,7 @@ When given a task:
   vim.loop.os_uname().sysname
 )
 local COPILOT_EXPLAIN =
-  string.format [[You are a world-class coding tutor. Your code explanations perfectly balance high-level concepts and granular details. Your approach ensures that students not only understand how to write code, but also grasp the underlying principles that guide effective programming.
+    string.format [[You are a world-class coding tutor. Your code explanations perfectly balance high-level concepts and granular details. Your approach ensures that students not only understand how to write code, but also grasp the underlying principles that guide effective programming.
 When asked for your name, you must respond with "GitHub Copilot".
 Follow the user's requirements carefully & to the letter.
 Your expertise is strictly limited to software development topics.
@@ -70,7 +70,7 @@ Identify 'gotchas' or less obvious parts of the code that might trip up someone 
 Provide clear and relevant examples aligned with any provided context.
 ]]
 local COPILOT_REVIEW =
-  string.format [[Your task is to review the provided code snippet, focusing specifically on its readability and maintainability.
+    string.format [[Your task is to review the provided code snippet, focusing specifically on its readability and maintainability.
 Identify any issues related to:
 - Naming conventions that are unclear, misleading or doesn't follow conventions for the language being used.
 - The presence of unnecessary comments, or the lack of necessary ones.
@@ -91,7 +91,7 @@ Format your feedback as follows:
 If the code snippet has no readability issues, simply confirm that the code is clear and well-written as is.
 ]]
 local COPILOT_REFACTOR =
-  string.format [[Your task is to refactor the provided code snippet, focusing specifically on its readability and maintainability.
+    string.format [[Your task is to refactor the provided code snippet, focusing specifically on its readability and maintainability.
 Identify any issues related to:
 - Naming conventions that are unclear, misleading or doesn't follow conventions for the language being used.
 - The presence of unnecessary comments, or the lack of necessary ones.
@@ -239,10 +239,10 @@ return {
                 local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
                 return "Please explain how the following code works:\n\n```"
-                  .. context.filetype
-                  .. "\n"
-                  .. code
-                  .. "\n```\n\n"
+                    .. context.filetype
+                    .. "\n"
+                    .. code
+                    .. "\n```\n\n"
               end,
               opts = {
                 contains_code = true,
@@ -285,10 +285,11 @@ return {
             {
               role = "user",
               content = function()
-                return "Write commit message for the change with commitizen convention. Write clear, informative commit messages that explain the 'what' and 'why' behind changes, not just the 'how'."
-                  .. "\n\n```\n"
-                  .. vim.fn.system "git diff --staged"
-                  .. "\n```"
+                return
+                    "Write commit message for the change with commitizen convention. Write clear, informative commit messages that explain the 'what' and 'why' behind changes, not just the 'how'."
+                    .. "\n\n```\n"
+                    .. vim.fn.system "git diff --staged"
+                    .. "\n```"
               end,
               opts = {
                 contains_code = true,
@@ -312,11 +313,12 @@ return {
               content = function(context)
                 local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
-                return "Please provide documentation in comment code for the following code and suggest to have better naming to improve readability.\n\n```"
-                  .. context.filetype
-                  .. "\n"
-                  .. code
-                  .. "\n```\n\n"
+                return
+                    "Please provide documentation in comment code for the following code and suggest to have better naming to improve readability.\n\n```"
+                    .. context.filetype
+                    .. "\n"
+                    .. code
+                    .. "\n```\n\n"
               end,
               opts = {
                 contains_code = true,
@@ -340,11 +342,12 @@ return {
               content = function(context)
                 local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
-                return "Please brief how it works and provide documentation in comment code for the following code. Also suggest to have better naming to improve readability.\n\n```"
-                  .. context.filetype
-                  .. "\n"
-                  .. code
-                  .. "\n```\n\n"
+                return
+                    "Please brief how it works and provide documentation in comment code for the following code. Also suggest to have better naming to improve readability.\n\n```"
+                    .. context.filetype
+                    .. "\n"
+                    .. code
+                    .. "\n```\n\n"
               end,
               opts = {
                 contains_code = true,
@@ -375,11 +378,12 @@ return {
               content = function(context)
                 local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
-                return "Please review the following code and provide suggestions for improvement then refactor the following code to improve its clarity and readability:\n\n```"
-                  .. context.filetype
-                  .. "\n"
-                  .. code
-                  .. "\n```\n\n"
+                return
+                    "Please review the following code and provide suggestions for improvement then refactor the following code to improve its clarity and readability:\n\n```"
+                    .. context.filetype
+                    .. "\n"
+                    .. code
+                    .. "\n```\n\n"
               end,
               opts = {
                 contains_code = true,
@@ -405,7 +409,8 @@ return {
             },
             {
               role = "user",
-              content = "Please review the following code and provide suggestions for improvement then refactor the following code to improve its clarity and readability.",
+              content =
+              "Please review the following code and provide suggestions for improvement then refactor the following code to improve its clarity and readability.",
             },
           },
         },
@@ -433,10 +438,10 @@ return {
                 local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
                 return "Please refactor the following code to improve its clarity and readability:\n\n```"
-                  .. context.filetype
-                  .. "\n"
-                  .. code
-                  .. "\n```\n\n"
+                    .. context.filetype
+                    .. "\n"
+                    .. code
+                    .. "\n```\n\n"
               end,
               opts = {
                 contains_code = true,
@@ -483,10 +488,10 @@ return {
                 local code = require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
                 return "Please provide better names for the following variables and functions:\n\n```"
-                  .. context.filetype
-                  .. "\n"
-                  .. code
-                  .. "\n```\n\n"
+                    .. context.filetype
+                    .. "\n"
+                    .. code
+                    .. "\n```\n\n"
               end,
               opts = {
                 contains_code = true,
