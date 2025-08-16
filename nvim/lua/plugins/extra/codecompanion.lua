@@ -83,11 +83,11 @@ Identify any issues related to:
 Your feedback must be concise, directly addressing each identified issue with:
 - A clear description of the problem.
 - A concrete suggestion for how to improve or correct the issue.
-
+  
 Format your feedback as follows:
 - Explain the high-level issue or problem briefly.
 - Provide a specific suggestion for improvement.
-
+ 
 If the code snippet has no readability issues, simply confirm that the code is clear and well-written as is.
 ]]
 local COPILOT_REFACTOR =
@@ -147,7 +147,7 @@ return {
       strategies = {
         chat = {
           adapter = "copilot",
-          roles = { llm = "  Copilot Chat", user = "KhoaHoc" },
+          roles = { llm = "  Copilot Chat", user = "IT Man" },
           slash_commands = {
             ["buffer"] = {
               callback = "strategies.chat.slash_commands.buffer",
