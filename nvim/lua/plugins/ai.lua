@@ -1,49 +1,18 @@
 local prompts = {
-  -- Code Understanding
-  Explain          = "Explain the following code step-by-step",
-  Review           = "Review the following code and suggest improvements",
-  Documentation    = "Write detailed documentation for the following code",
-
   -- Code Modification
-  Refactor         = "Refactor the following code to improve clarity and maintainability",
-  FixCode          = "Fix the following code so it works as intended",
-  Optimize         = "Suggest performance optimizations for the following code",
-  SecurityAudit    = "Check for security vulnerabilities in the following code",
-
-  -- Testing
-  Tests            = "Explain the code and then generate unit tests for it",
-
-  -- API Docs
-  SwaggerApiDocs   = "Generate Swagger API documentation for the following code",
-  SwaggerJsDocs    = "Generate Swagger-style JSDoc comments for the following code",
+  Refactor = "Refactor the following code to improve clarity and maintainability {selection}",
+  ConvertToType = "Convert the following code to type {selection}",
 
   -- Text / Writing
-  BetterNaming     = "Suggest better variable and function names for the following code",
-  Summarize        = "Summarize the following text",
-  Spelling         = "Correct grammar and spelling errors in the following text",
-  Wording          = "Improve grammar and wording in the following text",
-  Concise          = "Rewrite the following text to be more concise",
+  BetterNaming = "Suggest better variable and function names for the following code {selection}",
+  Wording = "Improve grammar and wording in the following text {selection}",
+  Concise = "Rewrite the following text to be more concise {selection}",
 
   -- Special context
-  CommitMsg        = "Write a commit message for the following git diff: #gitdiff",
-  ExplainLog       = "Explain the cause of the following error log and suggest a fix",
-  RegexHelper      = "Create a regex pattern to match the following requirement",
-  TransToVi        = "Translate the following text to Vietnamese",
-
-  -- System personal
-  Yarrr            = {
-    system_prompt = "You are fascinated by pirates, so please respond in pirate speak."
-  },
-  NiceInstructions = {
-    system_prompt = 'You are a nice coding tutor, so please respond in a friendly and helpful manner. '
-        .. ((default_prompts and default_prompts.COPILOT_BASE and default_prompts.COPILOT_BASE.system_prompt) or ""),
-  },
-  StrictReviewer   = {
-    system_prompt = "You are a strict senior developer focused on clean, performant, and secure code."
-  },
-  FastFixer        = {
-    system_prompt = "You fix issues quickly with minimal changes while preserving functionality."
-  }
+  TransToVi =
+  "Please accurately translate the following text into Vietnamese, preserving its meaning and context: {selection}",
+  TransToEn =
+  "Please accurately translate the following text into English, preserving its meaning and context: {selection}"
 }
 
 -- Setup AI with CopilotChat
@@ -75,9 +44,18 @@ return {
     },
     build = "make tiktoken", -- Only on MacOS or Linux
     opts = {
+      model = "gpt-5-mini",
       question_header = "## User ",
       answer_header = "## Copilot ",
       error_header = "## Error ",
+      prompts = prompts,
+      window = {
+        width = 80,         -- Fixed width in columns
+        height = 20,        -- Fixed height in rows
+        border = 'rounded', -- 'single', 'double', 'rounded', 'solid'
+        title = '🤖 AI Assistant',
+        zindex = 100,       -- Ensure window stays on top
+      },
       mappings = {
         -- Use tab for completion
         complete = {
