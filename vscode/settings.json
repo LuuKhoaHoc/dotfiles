@@ -245,6 +245,10 @@
     },
     // Search/Git
     {
+      "before": ["leader", "leader"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
       "before": ["leader", "s", "g"],
       "commands": ["workbench.action.findInFiles"]
     },
@@ -258,6 +262,11 @@
         }
       ],
       "before": ["leader", "g", "g"]
+    },
+    // Command palette
+    {
+      "before": [":"],
+      "commands": ["workbench.action.showCommands"]
     }
   ],
   "vim.sneak": true,
