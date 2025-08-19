@@ -95,8 +95,11 @@ return {
     "postcss.config.mjs",
     "postcss.config.ts",
   },
-    on_attach = function(client, bufnr)
-        require("utils.lsp").on_attach(client, bufnr)
-        require("tailwindcss-colors").buf_attach(bufnr)
+  on_attach = function(client, bufnr)
+    require("utils.lsp").on_attach(client, bufnr)
+    local ok, colors = pcall(require, "tailwindcss-colors")
+    if ok then
+      colors.buf_attach(bufnr)
     end
+  end
 }
