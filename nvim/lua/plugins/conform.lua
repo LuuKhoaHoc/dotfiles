@@ -43,13 +43,13 @@ return {
       ["json"] = { "biome", "dprint", stop_after_first = true },
       ["markdown"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["markdown.mdx"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
-      ["javascript"] = { "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["javascript"] = { "eslint_d", "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
       ["javascriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
+        return { "rustywind", first(bufnr, "eslint_d", "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
       end,
-      ["typescript"] = { "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["typescript"] = { "eslint_d", "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
       ["typescriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
+        return { "rustywind", first(bufnr, "eslint_d", "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
       end,
       ["svelte"] = function(bufnr)
         return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
