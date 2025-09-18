@@ -11,6 +11,13 @@ return {
       typescript = { "oxlint", "eslint_d" },
       javascriptreact = { "oxlint", "eslint_d" },
       typescriptreact = { "oxlint", "eslint_d" },
+      json = { "eslint_d" },
+      jsonc = { "eslint_d" },
+      css = { "eslint_d" },
+      scss = { "eslint_d" },
+      sass = { "eslint_d" },
+      less = { "eslint_d" },
+      postcss = { "eslint_d" },
     },
     linters = {
       eslint_d = {

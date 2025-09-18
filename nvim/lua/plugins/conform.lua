@@ -41,6 +41,12 @@ return {
       -- npm install -g prettier@latest
       -- Install dprint globally.
       ["json"] = { "biome", "dprint", stop_after_first = true },
+      ["jsonc"] = { "biome", "dprint", stop_after_first = true },
+      ["css"] = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
+      ["scss"] = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
+      ["sass"] = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
+      ["less"] = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
+      ["postcss"] = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
       ["markdown"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["markdown.mdx"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["javascript"] = { "eslint_d", "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },

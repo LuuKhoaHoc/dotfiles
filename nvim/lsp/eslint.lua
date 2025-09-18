@@ -13,6 +13,13 @@ return {
     "vue",
     "svelte",
     "astro",
+    "json",
+    "jsonc",
+    "css",
+    "scss",
+    "sass",
+    "less",
+    "postcss",
   },
   root_markers = {
     ".eslintrc",
