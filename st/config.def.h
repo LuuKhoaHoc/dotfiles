@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "FantasqueSansM Nerd Font Mono:style=Bold:pixelsize=15";
+static char *font = "Maple Mono NF:style=Bold:pixelsize=14";
 static char *sparefonts[] = {
     // Decent icons with comprehensive coverage.
     "Symbols Nerd Font Mono:size=12",
@@ -229,8 +229,8 @@ static unsigned int mousebg = 0;
 #define ALPHA_ALL
 
 /* bg opacity */
-float alpha = 1;
-float alpha_unfocused = 0.96;
+float alpha = 0.9;
+float alpha_unfocused = 0.85;
 
 /*
  * Force mouse select/shortcuts while mask is active (when MODE_MOUSE is set).
