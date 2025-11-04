@@ -359,6 +359,23 @@ return {
     event = "VeryLazy",
     opts = {},
   },
+  -- Add surround support
+  {
+    "echasnovski/mini.surround",
+    event = "VeryLazy",
+    opts = {
+      mappings = {
+        add = "gs",             -- Add surrounding in Normal and Visual modes
+        delete = "gsd",         -- Delete surrounding
+        find = "gsf",           -- Find surrounding (forward)
+        find_left = "gsF",      -- Find surrounding (backward)
+        highlight = "gsh",      -- Highlight surrounding
+        replace = "gsr",        -- Replace surrounding
+        update_n_lines = "gsn", -- Update `n_lines`
+      },
+    },
+  },
+
   -- Extend and create a/i textobjects
   {
     "echasnovski/mini.ai",
@@ -397,5 +414,31 @@ return {
     keys = {
       { "<leader>ci", "<cmd>Neogen<cr>", desc = "Neogen: Annotation generator" },
     },
+  },
+  -- Auto close tag
+  {
+    "windwp/nvim-ts-autotag",
+    event = "InsertEnter",
+    opts = {
+      -- Defaults
+      enable_close = true,        -- Auto close tags
+      enable_rename = true,       -- Auto rename pairs of tags
+      enable_close_on_slash = false -- Auto close on trailing </
+    },
+    -- Also override individual filetype configs, these take priority.
+    -- Empty by default, useful if one of the "opts" global settings
+    -- doesn't work well in a specific filetype
+    per_filetype = {
+      ["html"] = {
+        enable_close = false
+      }
+    },
+  },
+  -- Convert case
+  {
+    'johmsalas/text-case.nvim',
+    config = function()
+      require('textcase').setup({})
+    end,
   },
 }

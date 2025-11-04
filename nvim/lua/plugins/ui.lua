@@ -58,7 +58,7 @@ return {
           local filename = MiniStatusline.section_filename { trunc_width = 140 }
           local diagnostics = MiniStatusline.section_diagnostics { trunc_width = 75 }
           return MiniStatusline.combine_groups {
-            { hl = mode_hl, strings = { mode:upper() } },
+            { hl = mode_hl,                 strings = { mode:upper() } },
             { hl = "MiniStatuslineDevinfo", strings = { git, diagnostics } },
             "%<", -- Mark general truncate point
             { hl = "MiniStatuslineFilename", strings = { filename } },
@@ -67,10 +67,10 @@ return {
               hl = "MiniStatuslineFileinfo",
               strings = {
                 vim.bo.filetype ~= ""
-                  and require("mini.icons").get("filetype", vim.bo.filetype) .. " " .. vim.bo.filetype,
+                and require("mini.icons").get("filetype", vim.bo.filetype) .. " " .. vim.bo.filetype,
               },
             },
-            { hl = mode_hl, strings = { "%l:%v" } },
+            { hl = mode_hl,                  strings = { "%l:%v" } },
           }
         end,
       },
@@ -80,17 +80,17 @@ return {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     keys = {
-      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle Pin" },
+      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>",            desc = "Toggle Pin" },
       { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete Non-Pinned Buffers" },
-      { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>", desc = "Delete Other Buffers" },
-      { "<leader>br", "<Cmd>BufferLineCloseRight<CR>", desc = "Delete Buffers to the Right" },
-      { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>", desc = "Delete Buffers to the Left" },
-      { "<S-h>", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
-      { "<S-l>", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
-      { "[b", "<cmd>BufferLineCyclePrev<cr>", desc = "Prev Buffer" },
-      { "]b", "<cmd>BufferLineCycleNext<cr>", desc = "Next Buffer" },
-      { "[B", "<cmd>BufferLineMovePrev<cr>", desc = "Move buffer prev" },
-      { "]B", "<cmd>BufferLineMoveNext<cr>", desc = "Move buffer next" },
+      { "<leader>bo", "<Cmd>BufferLineCloseOthers<CR>",          desc = "Delete Other Buffers" },
+      { "<leader>br", "<Cmd>BufferLineCloseRight<CR>",           desc = "Delete Buffers to the Right" },
+      { "<leader>bl", "<Cmd>BufferLineCloseLeft<CR>",            desc = "Delete Buffers to the Left" },
+      { "<S-h>",      "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev Buffer" },
+      { "<S-l>",      "<cmd>BufferLineCycleNext<cr>",            desc = "Next Buffer" },
+      { "[b",         "<cmd>BufferLineCyclePrev<cr>",            desc = "Prev Buffer" },
+      { "]b",         "<cmd>BufferLineCycleNext<cr>",            desc = "Next Buffer" },
+      { "[B",         "<cmd>BufferLineMovePrev<cr>",             desc = "Move buffer prev" },
+      { "]B",         "<cmd>BufferLineMoveNext<cr>",             desc = "Move buffer next" },
     },
     opts = {
       options = {
@@ -154,7 +154,7 @@ return {
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
       { "<c-space>", desc = "Increment Selection" },
-      { "<bs>", desc = "Decrement Selection", mode = "x" },
+      { "<bs>",      desc = "Decrement Selection", mode = "x" },
     },
     opts_extend = { "ensure_installed" },
     config = function(_, opts)
@@ -166,6 +166,7 @@ return {
     opts = {
       highlight = { enable = true },
       indent = { enable = true },
+      folding = { enable = true },
       ensure_installed = {
         "bash",
         "c",
@@ -204,7 +205,7 @@ return {
     },
   },
   {
-    "roobert/tailwindcss-colors.nvim",
+    "themaxmarchuk/tailwindcss-colors.nvim",
     -- lazy-load on filetype
     ft = {
       "aspnetcorerazor",

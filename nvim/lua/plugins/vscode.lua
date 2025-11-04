@@ -175,6 +175,12 @@ vim.api.nvim_create_autocmd("User", {
     vim.keymap.set("n", "<leader>bd", function()
       vscode.action "workbench.action.closeActiveEditor"
     end)
+
+    -- Quick close buffer
+    vim.keymap.set("n", "<S-q>", function()
+      vscode.action "workbench.action.closeActiveEditor"
+    end)
+
     -- Close other buffers
     vim.keymap.set("n", "<leader>bo", function()
       vscode.action "workbench.action.closeOtherEditors"

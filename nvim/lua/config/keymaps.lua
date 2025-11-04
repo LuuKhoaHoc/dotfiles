@@ -104,7 +104,7 @@ map("n", "]q", vim.cmd.cnext, { desc = "Next Quickfix" })
 -- diagnostic
 local diagnostic_goto = function(next, severity)
   severity = severity and vim.diagnostic.severity[severity] or nil
-  return function ()
+  return function()
     vim.diagnostic.jump({ count = next and 1 or -1, float = true, severity = severity })
   end
 end
@@ -201,9 +201,9 @@ map("n", "zk", "zckzOzz", {
 
 -- Refer [FAQ - Neovide](https://neovide.dev/faq.html#how-can-i-use-cmd-ccmd-v-to-copy-and-paste)
 if vim.g.neovide then
-  vim.keymap.set("n", "<D-s>", ":w<CR>") -- Save
-  vim.keymap.set("v", "<D-c>", '"+y') -- Copy
-  vim.keymap.set({ "n", "v" }, "<D-v>", '"+P') -- Paste normal and visual mode
+  vim.keymap.set("n", "<D-s>", ":w<CR>")          -- Save
+  vim.keymap.set("v", "<D-c>", '"+y')             -- Copy
+  vim.keymap.set({ "n", "v" }, "<D-v>", '"+P')    -- Paste normal and visual mode
   vim.keymap.set({ "i", "c" }, "<D-v>", "<C-R>+") -- Paste insert and command mode
   vim.keymap.set("t", "<D-v>", [[<C-\><C-N>"+P]]) -- Paste terminal mode  vim.keymap.set("n", "<D-s>", ":w<CR>") -- Save
 end
@@ -268,3 +268,20 @@ map(
   "<cmd>lua require('utils.cspell').add_word_to_c_spell_dictionary()<CR>",
   { noremap = true, silent = true, desc = "Add unknown to cspell dictionary" }
 )
+
+-- Case conversion (text-case.nvim)
+-- Operator mode mappings
+map("n", "gcs", "<cmd>lua require('textcase.operator').change('to_snake_case')<CR>", { desc = "Op: to snake_case" })
+map("n", "gcC", "<cmd>lua require('textcase.operator').change('to_camel_case')<CR>", { desc = "Op: to camel_case" })
+map("n", "gcP", "<cmd>lua require('textcase.operator').change('to_pascal_case')<CR>", { desc = "Op: to pascal_case" })
+map("n", "gcK", "<cmd>lua require('textcase.operator').change('to_kebab_case')<CR>", { desc = "Op: to kebab_case" })
+map("n", "gcu", "<cmd>lua require('textcase.operator').change('to_upper_case')<CR>", { desc = "Op: to upper_case" })
+map("n", "gcl", "<cmd>lua require('textcase.operator').change('to_lower_case')<CR>", { desc = "Op: to lower_case" })
+
+-- Visual mode mappings
+map("v", "gcs", "<cmd>lua require('textcase').to_snake_case()<CR>", { desc = "To snake_case" })
+map("v", "gcC", "<cmd>lua require('textcase').to_camel_case()<CR>", { desc = "To camel_case" })
+map("v", "gcP", "<cmd>lua require('textcase').to_pascal_case()<CR>", { desc = "To pascal_case" })
+map("v", "gcK", "<cmd>lua require('textcase').to_kebab_case()<CR>", { desc = "To kebab_case" })
+map("v", "gcu", "<cmd>lua require('textcase').to_upper_case()<CR>", { desc = "To upper_case" })
+map("v", "gcl", "<cmd>lua require('textcase').to_lower_case()<CR>", { desc = "To lower_case" })
