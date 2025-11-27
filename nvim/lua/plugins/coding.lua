@@ -20,7 +20,7 @@ return {
       -- Set to true to assume that copilot is already mapped
       vim.g.copilot_assume_mapped = true
       -- Set workspace folders
-      vim.g.copilot_workspace_folders = "~/Projects"
+      vim.g.copilot_workspace_folders = "~/Dev-Work"
 
       -- Setup keymaps
       local keymap = vim.keymap.set
@@ -53,6 +53,7 @@ return {
     -- If you use nix, you can build from source using latest nightly rust with:
     -- build = 'nix run .#build-plugin',
     dependencies = {
+      "saghen/blink.compat",
       -- optional: provides snippets for the snippet source
       "L3MON4D3/LuaSnip",
       version = "v2.*",
@@ -112,7 +113,27 @@ return {
       },
       snippets = { preset = "luasnip" },
       sources = {
-        default = { "lsp", "path", "snippets", "buffer" },
+        default = { "lsp", "path", "snippets", "buffer", "avante_commands", "avante_mentions", "avante_files" },
+        providers = {
+          avante_commands = {
+            name = "avante_commands",
+            module = "blink.compat.source",
+            score_offset = 90,
+            opts = {},
+          },
+          avante_files = {
+            name = "avante_files",
+            module = "blink.compat.source",
+            score_offset = 100,
+            opts = {},
+          },
+          avante_mentions = {
+            name = "avante_mentions",
+            module = "blink.compat.source",
+            score_offset = 1000,
+            opts = {},
+          },
+        },
       },
       fuzzy = { implementation = "prefer_rust_with_warning" },
       -- Disable cmdline completions
@@ -420,18 +441,20 @@ return {
     "windwp/nvim-ts-autotag",
     event = "InsertEnter",
     opts = {
-      -- Defaults
-      enable_close = true,        -- Auto close tags
-      enable_rename = true,       -- Auto rename pairs of tags
-      enable_close_on_slash = false -- Auto close on trailing </
-    },
-    -- Also override individual filetype configs, these take priority.
-    -- Empty by default, useful if one of the "opts" global settings
-    -- doesn't work well in a specific filetype
-    per_filetype = {
-      ["html"] = {
-        enable_close = false
-      }
+      opts = {
+        -- Defaults
+        enable_close = true,          -- Auto close tags
+        enable_rename = true,         -- Auto rename pairs of tags
+        enable_close_on_slash = false -- Auto close on trailing </
+      },
+      -- Also override individual filetype configs, these take priority.
+      -- Empty by default, useful if one of the "opts" global settings
+      -- doesn't work well in a specific filetype
+      per_filetype = {
+        ["html"] = {
+          enable_close = false
+        }
+      },
     },
   },
   -- Convert case
