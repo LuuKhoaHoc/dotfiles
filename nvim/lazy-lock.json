@@ -11,6 +11,7 @@
   "conform.nvim": { "branch": "master", "commit": "4993e07fac6679d0a5005aa7499e0bad2bd39f19" },
   "copilot.vim": { "branch": "release", "commit": "cd7f01009fb7b30e22840cadc4faad88b05c6eef" },
   "dressing.nvim": { "branch": "master", "commit": "2d7c2db2507fa3c4956142ee607431ddb2828639" },
+  "fast-cursor-move.nvim": { "branch": "main", "commit": "9ab80d0184861be18833647e983086725b9905f9" },
   "flash.nvim": { "branch": "main", "commit": "fcea7ff883235d9024dc41e638f164a450c14ca2" },
   "gitsigns.nvim": { "branch": "main", "commit": "cdafc320f03f2572c40ab93a4eecb733d4016d07" },
   "grug-far.nvim": { "branch": "main", "commit": "b58b2d65863f4ebad88b10a1ddd519e5380466e0" },
@@ -52,5 +53,6 @@
   "ts-error-translator.nvim": { "branch": "main", "commit": "c1e6a5529009e855eb102a668549679548757a05" },
   "typecheck.nvim": { "branch": "main", "commit": "5a0b0f50be009e85c337f3e183fa6cd28a3c95a0" },
   "vim-test": { "branch": "master", "commit": "bbdc7f5d6280a047c3b1a951614454555a566356" },
+  "vscode-multi-cursor.nvim": { "branch": "main", "commit": "210d64a6d190383a81b8dcdf8779d357006f3a69" },
   "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" }
 }
