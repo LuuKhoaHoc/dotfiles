@@ -1,3 +1,13 @@
+local Lsp = require "utils.lsp"
+
+--- Check if eslint_d should be disabled (when biome.json exists)
+---@return boolean
+local function should_disable_eslint()
+  local path = Lsp.biome_config_path()
+  local is_nvim = path and string.match(path, "nvim")
+  return path and not is_nvim
+end
+
 return {
   "mfussenegger/nvim-lint",
   event = "VeryLazy",
@@ -7,6 +17,7 @@ return {
       -- codespell: ux tool install codespell
       ["*"] = { "cspell", "codespell" },
       -- oxlint: npm install -g oxlint@latest
+      -- Note: eslint_d will be conditionally disabled when biome.json exists
       javascript = { "oxlint", "eslint_d" },
       typescript = { "oxlint", "eslint_d" },
       javascriptreact = { "oxlint", "eslint_d" },
@@ -60,6 +71,13 @@ return {
 
         -- Add global linters.
         vim.list_extend(names, lint.linters_by_ft["*"] or {})
+
+        -- Filter out eslint_d when biome.json exists
+        if should_disable_eslint() then
+          names = vim.tbl_filter(function(name)
+            return name ~= "eslint_d"
+          end, names)
+        end
 
         -- Run linters.
         if #names > 0 then

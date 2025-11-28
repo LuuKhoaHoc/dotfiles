@@ -49,13 +49,13 @@ return {
       ["postcss"] = { "eslint", "prettierd", "prettier", stop_after_first = true },
       ["markdown"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["markdown.mdx"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
-      ["javascript"] = { "eslint", "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["javascript"] = { "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
       ["javascriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "eslint", "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
+        return { "rustywind", first(bufnr, "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint") }
       end,
-      ["typescript"] = { "eslint", "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["typescript"] = { "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
       ["typescriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "eslint", "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
+        return { "rustywind", first(bufnr, "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint") }
       end,
       ["svelte"] = function(bufnr)
         return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
@@ -73,6 +73,19 @@ return {
           end
 
           return false
+        end,
+      },
+      eslint = {
+        condition = function()
+          local path = Lsp.biome_config_path()
+          -- Disable eslint formatting when biome.json exists (not in nvim)
+          local is_nvim = path and string.match(path, "nvim")
+
+          if path and not is_nvim then
+            return false
+          end
+
+          return true
         end,
       },
       deno_fmt = {
