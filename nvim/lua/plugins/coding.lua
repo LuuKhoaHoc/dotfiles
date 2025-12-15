@@ -117,27 +117,8 @@ return {
       },
       snippets = { preset = "luasnip" },
       sources = {
-        default = { "lsp", "path", "snippets", "buffer", "avante_commands", "avante_mentions", "avante_files" },
-        providers = {
-          avante_commands = {
-            name = "avante_commands",
-            module = "blink.compat.source",
-            score_offset = 90,
-            opts = {},
-          },
-          avante_files = {
-            name = "avante_files",
-            module = "blink.compat.source",
-            score_offset = 100,
-            opts = {},
-          },
-          avante_mentions = {
-            name = "avante_mentions",
-            module = "blink.compat.source",
-            score_offset = 1000,
-            opts = {},
-          },
-        },
+        default = { "lsp", "path", "snippets", "buffer" },
+        providers = {},
       },
       fuzzy = { implementation = "prefer_rust_with_warning" },
       -- Disable cmdline completions
