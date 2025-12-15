@@ -106,18 +106,18 @@ return {
       image = {
         -- NOTE: brew install imagemagick to install on Mac, refer https://imagemagick.org/script/download.php for more detail
         -- For mermaidjs: npm install -g @mermaid-js/mermaid-cli
-        enabled = true,
+        enabled = false, -- Disabled for performance
         doc = {
           -- enable image viewer for documents
           -- a treesitter parser must be available for the enabled languages.
-          enabled = true,
+          enabled = false,
           -- render the image inline in the buffer
           -- if your env doesn't support unicode placeholders, this will be disabled
           -- takes precedence over `opts.float` on supported terminals
           inline = false,
           -- render the image in a floating window
           -- only used if `opts.inline` is disabled
-          float = true,
+          float = false,
         },
       },
       explorer = {
@@ -208,35 +208,7 @@ return {
       bigfile = { enabled = true },
       scratch = { enabled = true },
       zen = {
-        enabled = true,
-        win = {
-          -- Hide backdrop
-          backdrop = { transparent = false },
-        },
-        toggles = {
-          -- Turn off dim plugin for zen mode
-          dim = false,
-        },
-        show = {
-          statusline = false, -- can only be shown when using the global statusline
-          tabline = true,
-        },
-        -- Zoom mode
-        zoom = {
-          toggles = {
-            -- Turn off dim plugin for zoom mode
-            dim = false,
-            git_signs = false,
-            mini_diff_signs = false,
-            -- diagnostics = false,
-            -- inlay_hints = false,
-          },
-          show = { statusline = false, tabline = true },
-          win = {
-            backdrop = { transparent = false },
-            width = 120,
-          },
-        },
+        enabled = false, -- Disabled for performance
       },
       indent = {
         enabled = true,
@@ -628,21 +600,7 @@ return {
         end,
         desc = "LSP Workspace Symbols",
       },
-      -- Zen mode
-      {
-        "<leader>cz",
-        function()
-          Snacks.zen()
-        end,
-        desc = "Toggle Zen Mode",
-      },
-      {
-        "<leader>tz",
-        function()
-          Snacks.zen.zoom()
-        end,
-        desc = "Toggle Zoom",
-      },
+
 
       -- Notifier
       {
@@ -778,7 +736,7 @@ return {
           Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map "<leader>ub"
           Snacks.toggle.inlay_hints():map "<leader>uh"
           Snacks.toggle.indent():map "<leader>ug"
-          Snacks.toggle.dim():map "<leader>uD"
+
         end,
       })
     end,
