@@ -65,63 +65,32 @@ return {
       biome = {
         condition = function()
           local path = Lsp.biome_config_path()
-          -- Skip if biome.json is in nvim
-          local is_nvim = path and string.match(path, "nvim")
-
-          if path and not is_nvim then
-            return true
-          end
-
-          return false
+          return path and not string.match(path, "nvim")
         end,
       },
       eslint = {
         condition = function()
           local path = Lsp.biome_config_path()
-          -- Disable eslint formatting when biome.json exists (not in nvim)
-          local is_nvim = path and string.match(path, "nvim")
-
-          if path and not is_nvim then
-            return false
-          end
-
-          return true
+          local has_biome = path and not string.match(path, "nvim")
+          return not has_biome and Lsp.eslint_config_exists()
         end,
       },
       deno_fmt = {
-        condition = function()
-          return Lsp.deno_config_exist()
-        end,
+        condition = Lsp.deno_config_exist,
       },
       dprint = {
-        condition = function()
-          return Lsp.dprint_config_exist()
-        end,
+        condition = Lsp.dprint_config_exist,
       },
       prettier = {
         condition = function()
           local path = Lsp.biome_config_path()
-          -- Skip if biome.json is in nvim
-          local is_nvim = path and string.match(path, "nvim")
-
-          if path and not is_nvim then
-            return false
-          end
-
-          return true
+          return not (path and not string.match(path, "nvim"))
         end,
       },
       prettierd = {
         condition = function()
           local path = Lsp.biome_config_path()
-          -- Skip if biome.json is in nvim
-          local is_nvim = path and string.match(path, "nvim")
-
-          if path and not is_nvim then
-            return false
-          end
-
-          return true
+          return not (path and not string.match(path, "nvim"))
         end,
       },
     },

@@ -32,8 +32,8 @@ return {
   {
     "previm/previm",
     config = function()
-      -- define global for open markdown preview, let g:previm_open_cmd = 'open -a Safari'
-      vim.g.previm_open_cmd = "/Applications/Brave\\ Browser.app/Contents/MacOS/Brave\\ Browser"
+      -- define global for open markdown preview -- use xdg-open if want to use default browser
+      vim.g.previm_open_cmd = "google-chrome-stable"
     end,
     ft = { "markdown" },
     keys = {

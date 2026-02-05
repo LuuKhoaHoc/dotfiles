@@ -188,3 +188,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
   end,
 })
+
+-- View docx files as markdown using pandoc
+vim.api.nvim_create_autocmd("BufReadCmd", {
+  pattern = "*.docx",
+  callback = function()
+    local file = vim.fn.expand("%")
+    vim.cmd("enew")
+    vim.cmd("read !pandoc -t markdown '" .. file .. "'")
+    vim.bo.buftype = "nofile"
+    vim.bo.filetype = "markdown"
+  end,
+})

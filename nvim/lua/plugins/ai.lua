@@ -1,119 +1,28 @@
--- ===== Custom prompts for CopilotChat =====
-local prompts = {
-  -- Code Modification
-  Refactor = [[Refactor the following code to improve clarity and maintainability while preserving behavior.
-Output format:
-1) Problem summary (Vietnamese)
-2) Explanation of changes (Vietnamese, bullets, keep technical terms in English)
-3) Unified diff (English code)
-Code:
-{selection}]],
+-- Setup AI with sidekick.nvim
 
-  ConvertToType = [[Convert the following code to proper TypeScript types or interfaces (prefer strict typing, avoid any).
-Output: Explanation (Vietnamese) -> Code/types (English).
-Code:
-{selection}]],
-
-  AddComments = [[Add comments/JSDoc/TSDoc to explain the following code (write comments in English).
-Output: Key points explanation (Vietnamese) -> Code with comments (English).
-Code:
-{selection}]],
-
-  Optimize = [[Optimize performance for the following code (avoid unnecessary re-renders, optimize data fetching/state).
-Output format:
-1) Current performance issues (Vietnamese)
-2) Optimization suggestions (Vietnamese, bullets)
-3) Unified diff (English)
-Code:
-{selection}]],
-
-  FindBugs = [[Analyze the following code and identify potential bugs/issues (logic, edge cases, types, async, security).
-Output format:
-1) Bug/issue summary (Vietnamese)
-2) Root cause and edge cases (Vietnamese)
-3) Unified diff to fix (English)
-4) How to verify (Vietnamese + English commands if needed)
-Code:
-{selection}]],
-
-  -- Text / Writing
-  BetterNaming = [[Suggest better variable/function names for the following code (clear, consistent, following conventions).
-Output format:
-1) Naming criteria explanation (Vietnamese)
-2) Table: oldName -> newName (English)
-3) (Optional) Unified diff if needed (English)
-Code:
-{selection}]],
-
-  Wording = [[Improve grammar and wording for the following text.
-Respond in Vietnamese, keep technical terms in English.
-Text:
-{selection}]],
-
-  Concise = [[Rewrite the following text to be more concise while preserving meaning.
-Respond in Vietnamese, keep technical terms in English.
-Text:
-{selection}]],
-
-  Document = [[Generate documentation for the following code (e.g., README section or module docs).
-Output:
-- Overview explanation in Vietnamese
-- Code examples/signatures in English.
-Code:
-{selection}]],
-
-  -- Testing
-  UnitTests = [[Write unit tests for the following code (prefer Jest + React Testing Library for UI).
-Output format:
-1) Test strategy explanation (Vietnamese)
-2) List of main test cases (Vietnamese)
-3) Test code (English)
-Code:
-{selection}]],
-
-  TestCases = [[Suggest edge cases and test scenarios for the following code.
-Respond in Vietnamese, use bullet points, specify input, expected output, and failure modes.
-Code:
-{selection}]],
-
-  -- Special context
-  TransToVi = [[Accurately translate the following text into Vietnamese, preserving meaning and context:
-{selection}]],
-
-  TransToEn = [[Accurately translate the following text into English, preserving meaning and context:
-{selection}]],
-
-  ExplainLikeIm5 = [[Explain the following concept as if to a 5-year-old, in Vietnamese, but keep technical words in English.
-Content:
-{selection}]],
-
-  ExplainDetail = [[Explain the selected code in detail:
-- Purpose of each block
-- Inputs/outputs, data flow, side effects
-- Potential bugs/edge cases
-- Improvement suggestions (prefer minimal changes)
-Output: Explanation (Vietnamese) -> Code examples (English if needed).
-Code:
-{selection}]],
-
-  -- GraphQL
-  GraphQLSchema = [[Create or improve GraphQL schema/types for the following code.
-Output format:
-1) Structure and relationships explanation (Vietnamese)
-2) Schema/types code (English)
-3) Example queries/mutations if needed (English)
-Code:
-{selection}]],
-
-  GraphQLResolver = [[Write resolver for the following GraphQL schema (prefer NestJS GraphQL for backend).
-Output format:
-1) Data flow explanation (Vietnamese)
-2) Resolver code with proper typing (English)
-Schema:
-{selection}]],
+-- Constants for special tokens
+local SIDEKICK_TOKENS = {
+  THIS = "{this}",
+  FILE = "{file}",
+  SELECTION = "{selection}",
 }
 
--- ===== Setup AI with CopilotChat =====
+-- Reusable prompts
+local COMMIT_PROMPT =
+"Run git diff --staged then do atomic commit message for the change with commitizen convention. Write clear, informative commit messages that explain the 'what' and 'why' behind changes, not just the 'how'."
+
+--- Safe require wrapper with error notification
+---@param module string Module name to require
+---@return table|nil The required module or nil if failed
+local function safe_require(module)
+  local ok, mod = pcall(require, module)
+  if not ok then
+    vim.notify("Failed to load " .. module .. ": " .. tostring(mod), vim.log.levels.ERROR)
+    return nil
+  end
+  return mod
+end
+
 return {
   {
     "folke/which-key.nvim",
@@ -124,158 +33,235 @@ return {
       },
     },
   },
-
+  -- integration with snacks.nvim for sending selection to sidekick
   {
-    "MeanderingProgrammer/render-markdown.nvim",
+    "folke/snacks.nvim",
     optional = true,
     opts = {
-      file_types = { "markdown", "copilot-chat" },
+      picker = {
+        actions = {
+          sidekick_send = function(...)
+            return require("sidekick.cli.picker.snacks").send(...)
+          end,
+        },
+        win = {
+          input = {
+            keys = {
+              ["<a-a>"] = {
+                "sidekick_send",
+                mode = { "n", "i" },
+              },
+            },
+          },
+        },
+      },
     },
-    ft = { "markdown", "copilot-chat" },
   },
   {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "main",
-    dependencies = {
-      { "github/copilot.vim" },
-      { "nvim-lua/plenary.nvim", branch = "master" },
-    },
-    build = "make tiktoken", -- Only on MacOS or Linux
+    "folke/sidekick.nvim",
     opts = {
-      -- Global system prompt cho mọi cuộc hội thoại
-      system_prompt = [[
-Bạn là AI pair-programmer của tôi trong Neovim, hành động như Senior Frontend/Full-stack Engineer tập trung vào maintainability và product UX.
-
-## Ngôn ngữ
-- Luôn trả lời bằng TIẾNG VIỆT cho phần giải thích, phân tích, hướng dẫn.
-- CHỈ dùng TIẾNG ANH cho:
-  - Technical terms (React hooks, state, props, hydration, memoization, middleware, v.v.)
-  - Tên thư viện/framework (React, Next.js, TailwindCSS, React Query, Redux, Jest, v.v.)
-  - Tên hàm/biến/types, tên API, error messages
-  - Toàn bộ code và unified diff.
-
-## Format trả lời mặc định
-Luôn cố gắng giữ đúng thứ tự sau (trừ khi user yêu cầu khác):
-1) Tóm tắt nhanh vấn đề (1-2 câu, VI)
-2) Giải thích nguyên nhân + hướng giải quyết (VI, dùng bullets)
-3) Đề xuất thay đổi chính và trade-offs (VI, bullets)
-4) Unified diff hoặc code block (EN)
-5) Cách verify (VI + commands/steps EN nếu cần)
-
-Nếu không đủ context quan trọng (file khác, API contract, error log), hãy:
-- Hỏi lại tối đa 3 câu ngắn gọn
-- Sau đó đưa ra 1-2 phương án hợp lý nhất, nêu rõ assumptions.
-
-## Stack & ưu tiên kỹ thuật
-- TypeScript strict mindset: tránh `any`, ưu tiên type rõ ràng, type guards.
-- React / Next.js (ưu tiên App Router):
-  - Semantic HTML + a11y (labels, aria, keyboard navigation).
-  - Hạn chế re-render không cần thiết, components nhỏ gọn, tách data-fetching khỏi presentation.
-- NestJS (backend):
-  - Modules, Controllers, Services pattern.
-  - DTOs với class-validator, Swagger decorators.
-  - Exception filters, Guards, Interceptors khi cần.
-- GraphQL:
-  - Code-first approach với NestJS.
-  - Proper typing cho resolvers, input types, object types.
-- Data/state:
-  - React Query cho server state; Redux/RTK cho global client state khi cần.
-  - Loading / error / empty states rõ ràng.
-- UI/UX:
-  - TailwindCSS với tokens nhất quán.
-  - Trải nghiệm mượt, feedback rõ ràng khi loading, error, submit, v.v.
-- Performance & security:
-  - Ưu tiên correctness > clarity > minimal changes > performance.
-  - Tránh over-engineering; thay đổi tối thiểu để dễ review/merge.
-
-## Quy tắc output trong terminal
-- Không dump toàn bộ file lớn; chỉ hiển thị phần code liên quan, dùng comment kiểu `// ...` cho phần bỏ qua.
-- Khi sửa code, mặc định ưu tiên unified diff (EN). Chỉ trả full file khi user yêu cầu rõ ràng.
-- Sử dụng Markdown, code fenced blocks với language tags (ts, tsx, js, jsx, bash, v.v.).
-      ]],
-
-      question_header = "## User ",
-      answer_header = "## Copilot ",
-      error_header = "## Error ",
-
-      prompts = prompts,
-      language = "vi",
-
-      window = {
-        width = 0.4,
-        height = 0.5,
-        border = "rounded",
-        title = "🤖 AI Assistant",
-        zindex = 100,
-        relativenumber = true,
-        winhighlight = "Normal:Normal,FloatBorder:DiagnosticInfo",
-      },
-
-      mappings = {
-        complete = {
-          detail = "Use @<Tab> or /<Tab> for options.",
-          insert = "<Tab>",
+      cli = {
+        mux = {
+          -- Terminal multiplexer backend for Sidekick CLI integration
+          -- Options: "tmux" or "zellij"
+          -- Determines which multiplexer is used to spawn and manage CLI sessions
+          backend = "tmux",
+          enabled = true,
         },
-        close = {
-          normal = "q",
-          insert = "<C-c>",
+        tools = {
+          -- Based on https://github.com/folke/sidekick.nvim/issues/158#issuecomment-3491732950
+          amp = {
+            cmd = { "amp" },
+            format = function(text)
+              local Text = require "sidekick.text"
+              -- Quote file paths containing special characters
+              Text.transform(text, function(str)
+                return str:find "[^%w/_%.%-]" and ('"' .. str .. '"') or str
+              end, "SidekickLocFile")
+              local ret = Text.to_string(text)
+              -- Transform Sidekick location format to amp's format
+              -- Multiline range with columns: @file :L5:C20-L6:C8 => @file#L5-6
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+%-L(%d+):C%d+", "@%1#L%2-%3")
+              -- Single line range with columns: @file :L5:C9-C29 => @file#L5
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+%-C%d+", "@%1#L%2")
+              -- Multiline range without columns: @file :L5-L13 => @file#L5-13
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+)%-L(%d+)", "@%1#L%2-%3")
+              -- Single line with column: @file :L5:C9 => @file#L5
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+", "@%1#L%2")
+              -- Single line without column: @file :L5 => @file#L5
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+)", "@%1#L%2")
+              return ret
+            end,
+          },
+          letta = {
+            cmd = { "letta" },
+            format = function(text)
+              local Text = require "sidekick.text"
+              -- Quote file paths containing special characters
+              Text.transform(text, function(str)
+                return str:find "[^%w/_%.%-]" and ('"' .. str .. '"') or str
+              end, "SidekickLocFile")
+              local ret = Text.to_string(text)
+              -- Transform Sidekick location format to amp's format
+              -- Multiline range with columns: @file :L5:C20-L6:C8 => @file#L5-6
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+%-L(%d+):C%d+", "@%1#L%2-%3")
+              -- Single line range with columns: @file :L5:C9-C29 => @file#L5
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+%-C%d+", "@%1#L%2")
+              -- Multiline range without columns: @file :L5-L13 => @file#L5-13
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+)%-L(%d+)", "@%1#L%2-%3")
+              -- Single line with column: @file :L5:C9 => @file#L5
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+", "@%1#L%2")
+              -- Single line without column: @file :L5 => @file#L5
+              ret = ret:gsub("@([^ ]+)%s*:L(%d+)", "@%1#L%2")
+              return ret
+            end,
+          },
         },
-        reset = {
-          normal = "<C-x>",
-          insert = "<C-x>",
-        },
-        submit_prompt = {
-          normal = "<CR>",
-          insert = "<C-CR>",
-        },
-        accept_diff = {
-          normal = "<C-y>",
-          insert = "<C-y>",
-        },
-        show_help = {
-          normal = "g?",
+        prompts = {
+          -- Simple string prompts
+          explain = "Explain this code",
+          optimize = "How can this code be optimized?",
+          tests = "Can you write tests for this code?",
+          -- Prompts with diagnostics context
+          diagnostics = {
+            msg = "What do the diagnostics in this file mean?",
+            diagnostics = true,
+          },
+          fix = {
+            msg = "Can you fix the issues in this code?",
+            diagnostics = true,
+          },
+          review = {
+            msg = "Can you review this code for any issues or improvements?",
+            diagnostics = true,
+          },
+          -- Custom prompts
+          commit = {
+            msg = COMMIT_PROMPT,
+          },
+          refactor = "Refactor this code to improve readability and maintainability while preserving functionality.",
+          document = "Add documentation comments to this code following best practices.",
+          security = {
+            msg = "Review this code for potential security vulnerabilities.",
+            diagnostics = true,
+          },
+          -- Factory AI use cases
+          understand =
+          "Explain the purpose and structure of this code. What does it do and how does it fit into the broader system?",
+          coverage =
+          "Analyze this code and suggest improvements to test coverage. What edge cases or scenarios are missing?",
+          debug = "Help me debug this code. Analyze the error, suggest root causes, and propose a minimal fix.",
+          feature =
+          "Help me implement this feature. Create a plan first, then implement step by step with clear explanations.",
+          dependency = "Review this code for dependency issues, security vulnerabilities, and compatibility problems.",
+          tdd =
+          "Help with test-driven development. First write tests that define the expected behavior, then implement the code to pass those tests.",
         },
       },
     },
+    -- stylua: ignore
     keys = {
       {
-        "<leader>ap",
+        "<leader>aa",
         function()
-          require("CopilotChat").select_prompt {
-            context = {
-              "buffers",
-            },
-          }
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.toggle() end
         end,
-        desc = "CopilotChat - Prompt actions",
+        desc = "Sidekick Toggle CLI",
+      },
+      {
+        "<leader>as",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.select() end
+        end,
+        desc = "Select CLI",
+      },
+      {
+        "<leader>ad",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.close() end
+        end,
+        desc = "Detach a CLI session",
+      },
+      {
+        "<leader>at",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.send({ msg = SIDEKICK_TOKENS.THIS }) end
+        end,
+        mode = { "x", "n" },
+        desc = "Send This",
+      },
+      {
+        "<leader>af",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.send({ msg = SIDEKICK_TOKENS.FILE }) end
+        end,
+        desc = "Send File",
+      },
+      {
+        "<leader>av",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.send({ msg = SIDEKICK_TOKENS.SELECTION }) end
+        end,
+        mode = { "x" },
+        desc = "Send Visual Selection",
       },
       {
         "<leader>ap",
         function()
-          require("CopilotChat").select_prompt()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.prompt() end
         end,
-        mode = "x",
-        desc = "CopilotChat - Prompt actions",
+        mode = { "n", "x" },
+        desc = "Sidekick Select Prompt",
+      },
+      {
+        "<tab>",
+        function()
+          local sidekick = safe_require("sidekick")
+          if not sidekick then
+            return vim.api.nvim_replace_termcodes("<Tab>", true, true, true)
+          end
+          -- If there is a next edit, jump to it, otherwise apply it if any
+          local result = sidekick.nes_jump_or_apply()
+          if result == false or result == nil then
+            return vim.api.nvim_replace_termcodes("<Tab>", true, true, true)
+          end
+        end,
+        expr = true,
+        desc = "Goto/Apply Next Edit Suggestion",
+      },
+      {
+        "<c-.>",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.focus() end
+        end,
+        mode = { "n", "x", "i", "t" },
+        desc = "Sidekick Switch Focus",
+      },
+      {
+        "<leader>ag",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.toggle({ name = "gemini", focus = true }) end
+        end,
+        desc = "Sidekick Toggle Gemini",
       },
       {
         "<leader>am",
-        "<cmd>CopilotChatCommit<cr>",
-        desc = "CopilotChat - Generate commit message for all changes",
-      },
-      { "<leader>af", "<cmd>CopilotChatFix<cr>",           desc = "CopilotChat - Fix Diagnostic" },
-      { "<leader>al", "<cmd>CopilotChatReset<cr>",         desc = "CopilotChat - Clear buffer and chat history" },
-      { "<leader>av", "<cmd>CopilotChatToggle<cr>",        desc = "CopilotChat - Toggle" },
-      { "<leader>a?", "<cmd>CopilotChatModels<cr>",        desc = "CopilotChat - Select Models" },
-      { "<leader>aa", "<cmd>CopilotChatAgents<cr>",        desc = "CopilotChat - Select Agents" },
-      {
-        "<leader>ae",
         function()
-          local input = vim.fn.input("Quick chat: ")
-          if input ~= "" then
-            require("CopilotChat").ask(input)
+          local cli = safe_require("sidekick.cli")
+          if cli then
+            cli.send({ focus = true, msg = COMMIT_PROMPT, submit = true })
           end
         end,
-        desc = "CopilotChat - Quick chat",
+        desc = "Sidekick - Generate commit message for staged changes",
       },
     },
   },
