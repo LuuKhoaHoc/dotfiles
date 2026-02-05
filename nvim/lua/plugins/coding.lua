@@ -20,7 +20,7 @@ return {
       -- Set to true to assume that copilot is already mapped
       vim.g.copilot_assume_mapped = true
       -- Set workspace folders
-      vim.g.copilot_workspace_folders = "~/Dev-Work"
+      vim.g.copilot_workspace_folders = { "~/Dev-Work", "/run/media/khoahoc/Data/Obsidian Vault" }
 
       -- Setup keymaps
       local keymap = vim.keymap.set

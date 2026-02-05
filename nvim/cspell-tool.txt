@@ -210,7 +210,6 @@ norg
 typst
 mermaidjs
 oldfiles
-Productsway
 bunx
 cowsay
 tabline
