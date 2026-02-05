@@ -39,6 +39,7 @@ else
     "gopls",           -- Go
     "tailwindcss",     -- Tailwind CSS
     "eslint",          -- ESLint
+    "odoo-lsp",        -- Odoo LSP
   }
 
   -- Load Lsp on-demand, e.g: eslint is disable by default
