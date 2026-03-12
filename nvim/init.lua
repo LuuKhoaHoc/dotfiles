@@ -1,4 +1,5 @@
 require "config.options"
+require "config.performance"
 
 -- Load project setting if available, e.g: .nvim-config.lua
 -- This file is not tracked by git
@@ -12,6 +13,9 @@ if vim.loop.fs_stat(project_setting) then
     vim.notify("Error loading project setting: " .. err, vim.log.levels.ERROR)
   end
 end
+
+-- Setup performance optimizations
+require("config.performance").setup()
 
 require "config.autocmds"
 require "config.lazy"
@@ -27,7 +31,7 @@ else
   -- Load the theme
   require("kanagawa").load "wave"
 
-  local ts_server = vim.g.lsp_typescript_server or "ts_ls"   -- "ts_ls" or "vtsls" for TypeScript
+  local ts_server = vim.g.lsp_typescript_server or "vtsls"   -- "ts_ls" or "vtsls" for TypeScript
 
   -- Enable LSP servers for Neovim 0.11+
   vim.lsp.enable {
@@ -38,8 +42,8 @@ else
     "pyright",         -- Python
     "gopls",           -- Go
     "tailwindcss",     -- Tailwind CSS
+    "cssmodules",      -- CSS Language Server
     "eslint",          -- ESLint
-    "odoo-lsp",        -- Odoo LSP
   }
 
   -- Load Lsp on-demand, e.g: eslint is disable by default
