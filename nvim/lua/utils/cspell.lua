@@ -78,12 +78,17 @@ function M.add_word_from_diagnostics_to_c_spell_dictionary()
   local bufnr = vim.api.nvim_get_current_buf()
   local winnr = vim.api.nvim_get_current_win()
   local cursor = vim.api.nvim_win_get_cursor(winnr)
-  local diagnostics = vim.lsp.diagnostic.get_line_diagnostics(bufnr, cursor[1] - 1)
+  local diagnostics = vim.diagnostic.get(bufnr, { lnum = cursor[1] - 1 })
   local cspell_diagnostics = {}
   for _, diagnostic in ipairs(diagnostics) do
     if diagnostic.source == "cspell" then
       table.insert(cspell_diagnostics, diagnostic)
     end
+  end
+
+  if #cspell_diagnostics == 0 then
+    vim.notify("No cspell diagnostics found", vim.log.levels.WARN, { title = "cSpell" })
+    return
   end
 
   -- Get the first word from the first cspell diagnostic

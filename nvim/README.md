@@ -596,7 +596,7 @@ You can also manually create a `.nvim-config.lua` file:
 -- Project-specific Neovim configuration
 
 -- Set TypeScript LSP server
-vim.g.lsp_typescript_server = "ts_ls"
+ vim.g.lsp_typescript_server = "vtsls"
 
 -- Enable additional LSP servers
 vim.g.lsp_on_demands = {
@@ -615,6 +615,39 @@ vim.opt.shiftwidth = 2
 ```
 
 This file is not tracked by git, making it perfect for project-specific customizations.
+
+### Monorepo/Micro-frontend Configuration
+
+For monorepo projects (pnpm workspaces, Turborepo, Nx, Lerna, etc.), create a `.nvim-config.lua` file in your project root:
+
+```lua
+-- .nvim-config.lua for monorepo projects
+
+-- Use vtsls for better monorepo support (recommended)
+vim.g.lsp_typescript_server = "vtsls"
+
+-- Enable ESLint and TailwindCSS for full-stack development
+vim.g.lsp_on_demands = {
+  "eslint",
+  "tailwindcss",
+}
+
+-- The LSP servers will automatically detect:
+-- - pnpm-workspace.yaml for pnpm monorepos
+-- - turbo.json for Turborepo
+-- - nx.json for Nx workspaces
+-- - lerna.json for Lerna projects
+-- - Multiple package.json files in apps/* and packages/*
+```
+
+The enhanced configuration provides:
+
+- **Automatic workspace detection**: Finds all `package.json` files in your monorepo
+- **Smart root resolution**: Detects `tsconfig.json`, `pnpm-workspace.yaml`, `turbo.json`, etc.
+- **Multi-package support**: TypeScript, ESLint, and TailwindCSS work across all packages
+- **Path aliases**: Proper resolution of TypeScript path mappings
+
+For more details, see [`.nvim-config.lua.example`](.nvim-config.lua.example).
 
 </details>
 
