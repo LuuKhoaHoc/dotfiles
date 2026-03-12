@@ -22,9 +22,10 @@ local logo = [[
 -- Terminal Mappings
 local function term_nav(dir)
   return function(self)
-    return self:is_floating() and "<c-" .. dir .. ">" or vim.schedule(function()
-      vim.cmd.wincmd(dir)
-    end)
+    if self:is_floating() then
+      return "<c-" .. dir .. ">"
+    end
+    return "<cmd>wincmd " .. dir .. "<cr>"
   end
 end
 local hostname = io.popen("hostname"):read("*a"):gsub("%s+", "")
@@ -123,6 +124,16 @@ return {
             hidden = true, -- show hidden files
             ignored = true,
             follow = true,
+            -- Exclude node_modules and other heavy directories from file search
+            exclude = {
+              "**/node_modules/**",
+              "**/.git/**",
+              "**/dist/**",
+              "**/build/**",
+              "**/coverage/**",
+              "**/.next/**",
+              "**/vendor/**",
+            },
           },
         },
         ----@class snacks.picker.layout.Config
@@ -141,7 +152,7 @@ return {
         previewers = {
           git = {
             native = true, -- use native (terminal) or Neovim for previewing git diffs and commits
-            cmd = { "delta " },
+            cmd = { "delta" },
           },
         },
         ---@class snacks.picker.icons.Config
@@ -159,7 +170,7 @@ return {
               ["<Esc>"] = { "close", mode = { "n", "i" } },
               -- Hidden
               ["<a-.>"] = { "toggle_hidden", mode = { "i", "n" } },
-              ["<a-h"] = false,
+              ["<a-h>"] = false,
             },
           },
         },

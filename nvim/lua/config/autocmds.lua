@@ -95,7 +95,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- wrap and check for spell in text filetypes
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup "wrap_spell",
-  pattern = { "*.txt", "*.tex", "*.typ", "gitcommit", "markdown" },
+  pattern = { "text", "tex", "typ", "gitcommit", "markdown" },
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.spell = true
@@ -146,7 +146,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 -- Set filetype for .toml files
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   group = augroup "toml_filetype",
-  pattern = { "*.tomg-config*" },
+  pattern = { "*.toml" },
   callback = function()
     vim.opt_local.filetype = "toml"
   end,
@@ -193,6 +193,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 vim.api.nvim_create_autocmd("BufReadCmd", {
   pattern = "*.docx",
   callback = function()
+    if vim.fn.executable "pandoc" == 0 then
+      vim.notify("pandoc is not installed", vim.log.levels.WARN)
+      return
+    end
     local file = vim.fn.expand("%")
     vim.cmd("enew")
     vim.cmd("read !pandoc -t markdown '" .. file .. "'")

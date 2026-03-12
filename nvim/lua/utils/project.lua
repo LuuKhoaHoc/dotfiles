@@ -60,7 +60,7 @@ Available options:
 -- Project-specific Neovim configuration
 
 -- Set TypeScript LSP server
-vim.g.lsp_typescript_server = "ts_ls" -- or "vtsls"
+ vim.g.lsp_typescript_server = "vtsls" -- or "ts_ls"
 
 -- Enable additional LSP servers
 vim.g.lsp_on_demands = {
@@ -127,7 +127,7 @@ local function create_nvim_config()
 -- Project-specific Neovim configuration
 
 -- Set TypeScript LSP server
-vim.g.lsp_typescript_server = "ts_ls" -- or "vtsls"
+ vim.g.lsp_typescript_server = "vtsls" -- or "ts_ls"
 
 -- Enable additional LSP servers
 vim.g.lsp_on_demands = {
