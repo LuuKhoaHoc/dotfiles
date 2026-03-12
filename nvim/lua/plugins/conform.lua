@@ -27,7 +27,7 @@ return {
     formatters_by_ft = {
       lua = { "stylua" },
       -- Conform will run multiple formatters sequentially
-      go = { "goimports", "gofmt" },
+      go = { "goimports", "gofumpt", "gofmt" },
       -- Install Ruff globally.
       -- uv tool install ruff@latest
       python = function(bufnr)
@@ -42,11 +42,51 @@ return {
       -- Install dprint globally.
       ["json"] = { "biome", "dprint", stop_after_first = true },
       ["jsonc"] = { "biome", "dprint", stop_after_first = true },
-      ["css"] = { "eslint", "prettierd", "prettier", stop_after_first = true },
-      ["scss"] = { "eslint", "prettierd", "prettier", stop_after_first = true },
-      ["sass"] = { "eslint", "prettierd", "prettier", stop_after_first = true },
-      ["less"] = { "eslint", "prettierd", "prettier", stop_after_first = true },
-      ["postcss"] = { "eslint", "prettierd", "prettier", stop_after_first = true },
+      ["css"] = function(bufnr)
+        if require("conform").get_formatter_info("eslint", bufnr).available then
+          return { "eslint" }
+        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
+          return { "prettierd" }
+        else
+          return { "prettier" }
+        end
+      end,
+      ["scss"] = function(bufnr)
+        if require("conform").get_formatter_info("eslint", bufnr).available then
+          return { "eslint" }
+        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
+          return { "prettierd" }
+        else
+          return { "prettier" }
+        end
+      end,
+      ["sass"] = function(bufnr)
+        if require("conform").get_formatter_info("eslint", bufnr).available then
+          return { "eslint" }
+        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
+          return { "prettierd" }
+        else
+          return { "prettier" }
+        end
+      end,
+      ["less"] = function(bufnr)
+        if require("conform").get_formatter_info("eslint", bufnr).available then
+          return { "eslint" }
+        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
+          return { "prettierd" }
+        else
+          return { "prettier" }
+        end
+      end,
+      ["postcss"] = function(bufnr)
+        if require("conform").get_formatter_info("eslint", bufnr).available then
+          return { "eslint" }
+        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
+          return { "prettierd" }
+        else
+          return { "prettier" }
+        end
+      end,
       ["markdown"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["markdown.mdx"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["javascript"] = { "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
@@ -74,6 +114,7 @@ return {
           local has_biome = path and not string.match(path, "nvim")
           return not has_biome and Lsp.eslint_config_exists()
         end,
+        command = "eslint_d",
       },
       deno_fmt = {
         condition = Lsp.deno_config_exist,
@@ -84,13 +125,15 @@ return {
       prettier = {
         condition = function()
           local path = Lsp.biome_config_path()
-          return not (path and not string.match(path, "nvim"))
+          local has_biome = path and not string.match(path, "nvim")
+          return not has_biome and Lsp.prettier_config_exists()
         end,
       },
       prettierd = {
         condition = function()
           local path = Lsp.biome_config_path()
-          return not (path and not string.match(path, "nvim"))
+          local has_biome = path and not string.match(path, "nvim")
+          return not has_biome and Lsp.prettier_config_exists()
         end,
       },
     },

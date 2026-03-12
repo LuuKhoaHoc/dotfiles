@@ -83,17 +83,43 @@ return {
         templ = "html",
         htmlangular = "html",
       },
+      -- Monorepo support: search for tailwind config in workspace
+      experimental = {
+        classRegex = {},
+      },
+      -- Emmet completions
+      emmetCompletions = true,
+      -- Enable suggestions for custom class attributes
+      suggestions = true,
+      -- IntelliSense options
+      intellisense = {
+        classNameMetadata = true,
+      },
     },
   },
+  -- Enhanced root markers for monorepo support
   root_markers = {
+    -- Tailwind config files (priority order)
     "tailwind.config.js",
     "tailwind.config.cjs",
     "tailwind.config.mjs",
     "tailwind.config.ts",
+    "tailwind.config.json",
+    -- PostCSS config
     "postcss.config.js",
     "postcss.config.cjs",
     "postcss.config.mjs",
     "postcss.config.ts",
+    -- Package files for monorepo detection
+    "package.json",
+    "pnpm-workspace.yaml",
+    "yarn.lock",
+    "package-lock.json",
+    -- Monorepo configs
+    "turbo.json",
+    "lerna.json",
+    "nx.json",
+    ".git",
   },
   on_attach = function(client, bufnr)
     require("utils.lsp").on_attach(client, bufnr)

@@ -170,4 +170,43 @@ M.eslint_config_exists = function()
   return false
 end
 
+M.prettier_config_exists = function()
+  local current_dir = vim.fn.getcwd()
+  local config_files = {
+    ".prettierrc",
+    ".prettierrc.js",
+    ".prettierrc.cjs",
+    ".prettierrc.yaml",
+    ".prettierrc.yml",
+    ".prettierrc.json",
+    ".prettierrc.json5",
+    ".prettierrc.toml",
+    "prettier.config.js",
+    "prettier.config.cjs",
+    ".prettierrc.mjs",
+    "prettier.config.mjs",
+  }
+
+  for _, file in ipairs(config_files) do
+    local config_file = current_dir .. "/" .. file
+    if vim.fn.filereadable(config_file) == 1 then
+      return true
+    end
+  end
+
+  -- If the current directory is a git repo, check if the root of the repo
+  -- contains a prettier config file
+  local git_root = Path.get_git_root()
+  if Path.is_git_repo() and git_root ~= current_dir then
+    for _, file in ipairs(config_files) do
+      local config_file = git_root .. "/" .. file
+      if vim.fn.filereadable(config_file) == 1 then
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
 return M

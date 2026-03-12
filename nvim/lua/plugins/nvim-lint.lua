@@ -1,11 +1,13 @@
 local Lsp = require "utils.lsp"
 
---- Check if eslint_d should be disabled (when biome.json exists)
+--- Check if eslint_d should be disabled (when biome.json exists or no eslint config)
 ---@return boolean
 local function should_disable_eslint()
   local path = Lsp.biome_config_path()
   local is_nvim = path and string.match(path, "nvim")
-  return path and not is_nvim
+  local has_biome = path and not is_nvim
+  local has_eslint_config = Lsp.eslint_config_exists()
+  return has_biome or not has_eslint_config
 end
 
 return {
@@ -29,6 +31,8 @@ return {
       sass = { "eslint_d" },
       less = { "eslint_d" },
       postcss = { "eslint_d" },
+      go = { "golangci_lint" },
+      python = { "ruff" },
     },
     linters = {
       eslint_d = {
@@ -86,7 +90,6 @@ return {
             local cmd = vim.fn.executable(name)
             if cmd == 0 then
               vim.notify("Linter " .. name .. " is not available", vim.log.levels.INFO)
-              return
             else
               -- Run the linter
               lint.try_lint(name)
