@@ -1,4 +1,4 @@
--- Bootstrap lazy.nvim
+-- Bootstrap lazy.nvim only when it is missing from the local data directory.
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -16,7 +16,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 local specs = { { import = "plugins" }, { import = "langs" } }
--- Load extra plugins base on vim.g.enable_extra_plugins and merge to specs
+-- Append project-selected extras from .nvim-config.lua without changing the base set.
 local extra_plugins = vim.g.enable_extra_plugins -- e.g: { "no-neck-pain", "nvim-eslint" }
 if extra_plugins then
   for _, plugin in ipairs(vim.g.enable_extra_plugins) do
@@ -26,7 +26,7 @@ if extra_plugins then
   end
 end
 
--- Setup lazy.nvim
+-- Keep plugin installation predictable and let lazy.nvim handle updates in the background.
 require("lazy").setup {
   spec = specs,
   -- Configure any other settings here. See the documentation for more details.

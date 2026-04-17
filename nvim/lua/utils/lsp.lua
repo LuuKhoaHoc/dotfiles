@@ -2,7 +2,7 @@ local Path = require "utils.path"
 
 local M = {}
 
--- Get default LSP keymaps without any plugin dependencies
+-- Provide LSP-only keymaps so the rest of the config can stay plugin-agnostic.
 function M.get_default_keymaps()
   return {
     { keys = "<leader>ca", func = vim.lsp.buf.code_action, desc = "Code Actions" },
@@ -53,30 +53,31 @@ M.action = setmetatable({}, {
 })
 
 M.organizeImports = function()
+  -- Use source actions to keep import cleanup aligned with the active server.
   vim.lsp.buf.code_action({
     context = { only = { "source.organizeImports" } },
     apply = true
   })
 end
 
--- Remove unused imports
 M.removeUnusedImports = function()
+  -- Remove imports through the server so the result matches language-specific rules.
   vim.lsp.buf.code_action({
     context = { only = { "source.removeUnusedImports" } },
     apply = true
   })
 end
 
--- Fix unused code (e.g., unused variables, functions)
 M.fixUnusedCode = function()
+  -- Let the server fix broader dead-code issues when it knows how.
   vim.lsp.buf.code_action({
     context = { only = { "source.fixAll" } },
     apply = true
   })
 end
 
--- Add missing imports
 M.addMissingImports = function()
+  -- Ask the server to infer and add unresolved imports.
   vim.lsp.buf.code_action({
     context = { only = { "source.addMissingImports" } },
     apply = true
@@ -85,7 +86,7 @@ end
 
 
 
--- Utils for conform
+-- Conform and lint helpers share config-path discovery logic.
 --- Get the path of the config file in the current directory or the root of the git repo
 ---@param filename string
 ---@return string | nil
@@ -96,8 +97,7 @@ local function get_config_path(filename)
     return current_dir
   end
 
-  -- If the current directory is a git repo, check if the root of the repo
-  -- contains a biome.json file
+  -- Fall back to the repo root so nested packages still inherit shared config.
   local git_root = Path.get_git_root()
   if Path.is_git_repo() and git_root ~= current_dir then
     config_file = git_root .. "/" .. filename
@@ -155,8 +155,7 @@ M.eslint_config_exists = function()
     end
   end
 
-  -- If the current directory is a git repo, check if the root of the repo
-  -- contains a eslint config file
+  -- Fall back to the repo root so workspaces can share a single ESLint config.
   local git_root = Path.get_git_root()
   if Path.is_git_repo() and git_root ~= current_dir then
     for _, file in ipairs(config_files) do
@@ -194,8 +193,7 @@ M.prettier_config_exists = function()
     end
   end
 
-  -- If the current directory is a git repo, check if the root of the repo
-  -- contains a prettier config file
+  -- Fall back to the repo root so nested packages can share a formatter config.
   local git_root = Path.get_git_root()
   if Path.is_git_repo() and git_root ~= current_dir then
     for _, file in ipairs(config_files) do

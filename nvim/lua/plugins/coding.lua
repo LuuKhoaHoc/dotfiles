@@ -447,6 +447,26 @@ return {
     'johmsalas/text-case.nvim',
     config = function()
       require('textcase').setup({})
+    end
+  },
+  -- Multi-cursor: VS Code Ctrl-D equivalent
+  {
+    "jake-stewart/multicursor.nvim",
+    event = "VeryLazy",
+    config = function()
+      local mc = require("multicursor-nvim")
+      mc.setup()
+
+      -- Ctrl+D: visual mode adds cursor to next match (like VS Code)
+      vim.keymap.set("x", "<C-A-d>", mc.matchAddCursor, { desc = "Add cursor to next match" })
+      -- Alt+A: add all matches (Ctrl+Shift+L doesn't work in most terminals)
+      vim.keymap.set("x", "<A-a>", mc.matchAllAddCursors, { desc = "Add cursors to all matches" })
+      -- Ctrl+X: skip current, add next
+      vim.keymap.set("x", "<C-x>", mc.matchSkipCursor, { desc = "Skip, add next match" })
+      -- Ctrl+P: remove last cursor
+      vim.keymap.set({ "n", "x" }, "<C-p>", mc.deleteCursor, { desc = "Remove cursor" })
+      -- Esc: clear all cursors
+      vim.keymap.set("n", "<Esc>", mc.clearCursors, { desc = "Clear all cursors" })
     end,
   },
 }

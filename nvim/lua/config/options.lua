@@ -3,12 +3,10 @@ vim.g.maplocalleader = "\\"
 
 local opt = vim.opt
 
--- Borrow those settings from LazyVim
+-- Start from a predictable editing baseline and only keep the overrides that matter here.
 opt.autowrite = true -- Enable auto write
--- only set clipboard if not in ssh, to make sure the OSC 52
--- integration works automatically. Requires Neovim >= 0.10.0
+-- Keep clipboard sync local unless SSH OSC 52 can bridge it safely.
 opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus" -- Sync with system clipboard
--- Refer https://neovim.io/doc/user/options.html#'completeopt'
 opt.completeopt = "menu,menuone,noselect,fuzzy"
 opt.conceallevel = 0
 opt.confirm = true             -- Confirm to save changes before exiting modified buffer
@@ -56,10 +54,10 @@ opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5                -- Minimum window width
 opt.wrap = false                   -- Disable line wrap
 
--- Fix markdown indentation settings
+-- Markdown indentation is handled by the markdown plugin stack instead of core defaults.
 vim.g.markdown_recommended_style = 0
 
--- Folding
+-- Prefer visually stable folds with explicit fallbacks.
 opt.fillchars = {
   foldopen = "",
   foldclose = "",
@@ -72,22 +70,21 @@ opt.foldlevel = 99
 opt.smoothscroll = true
 opt.foldtext = ""
 
--- Use Treesitter for folding (Neovim 0.10+ built-in)
+-- Use Tree-sitter folds when a parser exists; otherwise keep indent-based folds.
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "*",
   callback = function()
-    -- Only set folding for buffers with treesitter parser available
     local ok, parser = pcall(vim.treesitter.get_parser, 0)
     if ok and parser then
       vim.opt_local.foldmethod = "expr"
       vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
     else
-      vim.opt_local.foldmethod = "indent" -- Fallback to indent-based folding
+      vim.opt_local.foldmethod = "indent"
     end
   end,
 })
 
--- Diagnostic settings
+-- Keep diagnostics prominent in the sign column while keeping inline noise low.
 local diagnostics = {
   Error = " ",
   Warn = " ",
@@ -113,14 +110,13 @@ vim.diagnostic.config {
   },
 }
 
--- Disable providers
+-- Disable providers we do not use to avoid startup overhead and probe noise.
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_node_provider = 0
 vim.g.loaded_python3_provider = 0
 
--- Setup options for Neovide
--- Install neovide: ❯ brew install --ignore-dependencies  neovide
+-- Apply GUI-only settings only when Neovide is actually running.
 if vim.g.neovide then
   vim.o.guifont = "Maple Font NF:h20"
   vim.g.neovide_hide_mouse_when_typing = true

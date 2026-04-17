@@ -1,5 +1,7 @@
 local M = {}
 
+-- Git repository detection and root directory discovery for project-aware features.
+
 --- Check if current directory is a git repo
 ---@return boolean
 function M.is_git_repo()
@@ -23,6 +25,8 @@ function M.get_root_directory()
   return vim.fn.getcwd()
 end
 
+-- Monorepo support: detect the current package and its type (app or package).
+
 --- Detect current package in monorepo (for MFE projects)
 ---@return string|nil package name or nil if not in monorepo
 function M.get_monorepo_package()
@@ -33,7 +37,7 @@ function M.get_monorepo_package()
     return nil
   end
 
-  -- Check if we're in apps/ or packages/ directory
+  -- Use the current working directory as the anchor for monorepo-relative checks.
   local rel_path = vim.fn.fnamemodify(current_dir, ":~")
 
   -- Extract package name from package.json
@@ -43,13 +47,15 @@ function M.get_monorepo_package()
     local json_str = table.concat(content, "\n")
     local name = string.match(json_str, '"name"%s*:%s*"([^"]+)"')
     if name then
-      -- Return short name (without scope if present)
+      -- Return a short package name so UI labels stay compact.
       return string.match(name, "^@?([^/]+)$") or name
     end
   end
 
   return nil
 end
+
+-- Classify the current package location within the monorepo structure.
 
 --- Get monorepo package type (app or package)
 ---@return string|nil "app" or "package" or nil
@@ -71,6 +77,8 @@ function M.get_monorepo_package_type()
 
   return nil
 end
+
+-- Format monorepo context for display in UI elements like statusline.
 
 --- Get current MFE app info for display
 ---@return string|nil

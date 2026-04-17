@@ -116,6 +116,9 @@ return {
               return ret
             end,
           },
+          kilocode = {
+            cmd = { "kilocode" },
+          },
         },
         prompts = {
           -- Simple string prompts
@@ -244,14 +247,6 @@ return {
         end,
         mode = { "n", "x", "i", "t" },
         desc = "Sidekick Switch Focus",
-      },
-      {
-        "<leader>ag",
-        function()
-          local cli = safe_require("sidekick.cli")
-          if cli then cli.toggle({ name = "gemini", focus = true }) end
-        end,
-        desc = "Sidekick Toggle Gemini",
       },
       {
         "<leader>am",

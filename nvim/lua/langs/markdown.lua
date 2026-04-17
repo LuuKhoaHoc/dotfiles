@@ -16,9 +16,17 @@ return {
   -- Markdown preview
   {
     "MeanderingProgrammer/render-markdown.nvim",
+    version = "v8.12.0",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     opts = {
       latex = { enabled = false },
+      preview = {
+        enabled = false,
+      },
+      ignore = function(buf)
+        local bt = vim.bo[buf].buftype
+        return not vim.bo[buf].buflisted or bt == "nofile" or bt == "prompt" or bt == "help"
+      end,
     },
     ft = { "markdown" },
     keys = {

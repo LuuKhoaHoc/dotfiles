@@ -1,25 +1,26 @@
 local M = {}
 
+-- Inspect the extras directory to build a discoverable list for the setup prompt.
 local function scan_directory(directory)
   local files = {}
-  local handle = io.popen(string.format("ls -1 %s/*.lua 2>/dev/null", directory))
+  local handle = vim.fs.dir(directory)
   if handle then
-    for file in handle:lines() do
-      local name = file:match "([^/]+)%.lua$"
-      if name then
-        table.insert(files, name)
+    for name, type in handle do
+      if type == "file" and name:match "%.lua$" then
+        table.insert(files, name:match "([^/]+)%.lua$")
       end
     end
-    handle:close()
   end
   return files
 end
 
+-- Keep plugin names aligned with the filenames under lua/plugins/extras.
 local function get_available_plugins()
-  local plugins_dir = vim.fn.stdpath "config" .. "/lua/plugins/extra"
+  local plugins_dir = vim.fn.stdpath "config" .. "/lua/plugins/extras"
   return scan_directory(plugins_dir)
 end
 
+-- Keep LSP choices aligned with the local lsp/ directory.
 local function get_available_lsp()
   local lsp_dir = vim.fn.stdpath "config" .. "/lsp"
   return scan_directory(lsp_dir)
@@ -28,6 +29,7 @@ end
 local available_plugins = get_available_plugins()
 local available_lsp = get_available_lsp()
 
+-- Show a self-documenting prompt for creating per-project overrides.
 local function show_help()
   local help_text = [[
 Setup plugins and LSP servers for project-specific settings.
@@ -93,6 +95,7 @@ vim.g.enable_extra_plugins = {
   }
 end
 
+-- Collect user-selected extras and write them to .nvim-config.lua.
 local function create_nvim_config()
   -- Get plugin selection
   vim.ui.input({
@@ -176,10 +179,12 @@ vim.g.enable_extra_plugins = {
 end
 
 function M.setup()
+  -- Expose a command for generating a project-local config file.
   vim.api.nvim_create_user_command("ProjectSettings", create_nvim_config, {
     desc = "Create .nvim-config.lua with interactive plugin and LSP selection",
   })
 
+  -- Expose a help command that lists the supported extras.
   vim.api.nvim_create_user_command("ProjectSettingsHelp", show_help, {
     desc = "Show available plugins and LSP servers for project settings",
   })

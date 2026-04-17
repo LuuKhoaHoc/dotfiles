@@ -69,6 +69,7 @@ return {
         invalidConfigPath = "error",
         invalidTailwindDirective = "error",
         recommendedVariantOrder = "warning",
+        suggestCanonicalClasses = "warning",
       },
       classAttributes = {
         "class",

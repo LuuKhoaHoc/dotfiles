@@ -767,6 +767,29 @@ return {
           Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map "<leader>ub"
           Snacks.toggle.inlay_hints():map "<leader>uh"
           Snacks.toggle.indent():map "<leader>ug"
+
+          local ok, preview = pcall(require, "snacks.picker.core.preview")
+          if ok and not preview._markdown_preview_patched then
+            preview._markdown_preview_patched = true
+            local highlight = preview.highlight
+            function preview:highlight(opts)
+              opts = opts or {}
+              local ft = opts.ft
+              if not ft and (opts.file or opts.buf) then
+                ft = vim.filetype.match {
+                  buf = opts.buf or self.win.buf,
+                  filename = opts.file,
+                }
+              end
+              local lang = Snacks.util.get_lang(opts.lang or ft)
+              if lang == "markdown" then
+                vim.treesitter.stop(self.win.buf)
+                vim.bo[self.win.buf].syntax = ft or "markdown"
+                return
+              end
+              return highlight(self, opts)
+            end
+          end
         end,
       })
     end,
