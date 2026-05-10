@@ -31,7 +31,9 @@ while true; do
 		done \
 		| sort -n | cut -d':' -f2- \
 		| while read -r img; do
-			swww img -o $focused_monitor "$img" 
+			if [ "${HYPRLAND_SHELL:-waybar}" != "caelestia" ]; then
+				awww img -o $focused_monitor "$img"
+			fi
 			$wallust_refresh
 			sleep $INTERVAL
 			

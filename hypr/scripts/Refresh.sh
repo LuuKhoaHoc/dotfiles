@@ -15,30 +15,22 @@ file_exists() {
 }
 
 # Kill already running processes
-_ps=(waybar rofi swaync ags)
+_ps=(rofi swaync)
 for _prs in "${_ps[@]}"; do
     if pidof "${_prs}" >/dev/null; then
         pkill "${_prs}"
     fi
 done
 
-# added since wallust sometimes not applying
-killall -SIGUSR2 waybar 
+if [ "$HYPRLAND_SHELL" = "waybar" ] || [ -z "$HYPRLAND_SHELL" ]; then
+    if pidof waybar >/dev/null; then
+        pkill waybar
+    fi
+    sleep 1
+    waybar &
+fi
 
-# quit ags & relaunch ags
-ags -q && ags &
-
-# quit quickshell & relaunch quickshell
-#pkill qs && qs &
-
-# some process to kill
-for pid in $(pidof waybar rofi swaync ags swaybg); do
-    kill -SIGUSR1 "$pid"
-done
-
-#Restart waybar
-sleep 1
-waybar &
+# AGS disabled: installed AGS is v3, current config is older syntax
 
 # relaunch swaync
 sleep 0.5

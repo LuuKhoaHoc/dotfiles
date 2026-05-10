@@ -19,10 +19,15 @@ BEZIER=".43,1.19,1,.4"
 SWWW_PARAMS="--transition-fps $FPS --transition-type $TYPE --transition-duration $DURATION --transition-bezier $BEZIER"
 
 
-swww query || swww-daemon --format xrgb && swww img -o $focused_monitor ${RANDOMPICS} $SWWW_PARAMS
+if [ "${HYPRLAND_SHELL:-waybar}" != "caelestia" ]; then
+    awww query || awww-daemon --format xrgb
+    awww img -o $focused_monitor ${RANDOMPICS} $SWWW_PARAMS
+fi
 
 wait $!
-"$SCRIPTSDIR/WallustSwww.sh" &&
+cp -f "${RANDOMPICS}" "$HOME/.config/hypr/wallpaper_effects/.wallpaper_current" &&
+ln -sf "${RANDOMPICS}" "$HOME/.config/rofi/.current_wallpaper" &&
+wallust run "${RANDOMPICS}" -s &&
 
 wait $!
 sleep 2
