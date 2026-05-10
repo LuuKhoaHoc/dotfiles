@@ -1,0 +1,5 @@
+# Runtime/cache
+skills/.hub/
+skills/.usage.json
+skills/.curator_state
+skills/.skills_prompt_snapshot.json
