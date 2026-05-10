@@ -25,11 +25,13 @@ wheel_scroll_min_lines 1
 enable_audio_bell no
 
 window_padding_width 4
-# selection_foreground none
-# selection_background none
-# foreground #dddddd
-# background #000000
-# cursor #dddddd
+
+selection_foreground none
+selection_background none
+
+foreground #dddddd
+background #000000
+cursor #dddddd
 
 # Cấu hình thanh tab
 tab_bar_edge     top
@@ -50,9 +52,3 @@ map ctrl+kp_0 change_font_size all 0
 
 # Find content by fzf
 map ctrl+f launch --type=overlay --stdin-source=@screen_scrollback /usr/bin/fzf --no-sort --no-mouse --exact -i
-
-
-# BEGIN_KITTY_THEME
-# Noctalia
-include current-theme.conf
-# END_KITTY_THEME

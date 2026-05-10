@@ -16,6 +16,8 @@ export BUN_INSTALL="$HOME/.bun"
 # Add .NET Core SDK tools
 export PATH="$PATH:/home/khoahoc/.dotnet/tools"
 
+export PATH="$PATH:~/.spicetify"
+
 # -----------------------------------------------------
 # oh-myzsh themes: https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 # -----------------------------------------------------

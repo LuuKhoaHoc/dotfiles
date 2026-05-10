@@ -24,6 +24,7 @@ alias mchadwm='cd ~/.config/chadwm/chadwm/; sudo make clean install; cd -'
 alias cst='nvim ~/.config/st'
 alias mst='cd ~/Dev-Work/dotfiles/st-flexipatch/; rm -rf config.h;  sudo make clean install; cd -'
 alias mpl='make publish'
+alias mux='tmuxinator'
 
 # -----------------------------------------------------
 # Yarn
@@ -56,3 +57,15 @@ alias setkb='setxkbmap de;echo "Keyboard set back to de."'
 
 # Smart Branch alias - added by setup-linux.sh
 alias sb='/home/khoahoc/Dev-Work/dotfiles/smart-branch/src/sb'
+
+# -----------------------------------------------------
+# AUR Helper (Paru)
+# -----------------------------------------------------
+alias y='paru'
+alias ys='paru -S'
+alias ysyu='paru -Syu'
+alias yy='paru -Syyu'
+alias yr='paru -Rns'
+alias yc='paru -Sc'
+alias ycc='paru -Ycc'
+alias yua='paru -Sua --devel --timeupdate'

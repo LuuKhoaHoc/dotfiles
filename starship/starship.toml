@@ -9,6 +9,13 @@
 # format = '$all'
 format = '$env_var$os$directory$all$character'
 right_format = """$cmd_duration$memory_usage$battery$time"""
+add_newline = false
+
+[custom.hypr_profile]
+command = 'printf "%s" "${HYPRLAND_SHELL:-waybar}"'
+when = 'true'
+style = 'bold cyan'
+format = '[$output]($style) '
 
 [env_var.TMUX]
 # default = 'tmux'
