@@ -433,6 +433,7 @@ binds {
     Mod+Comma hotkey-overlay-title="Toggle Settings" { spawn-sh "qs -c noctalia-shell ipc call settings toggle"; }
     Mod+Ctrl+E hotkey-overlay-title="Open Emoji Picker" { spawn-sh "qs -c noctalia-shell ipc call launcher emoji"; }
     Mod+V hotkey-overlay-title="Open Clipboard Manager" { spawn-sh "qs -c noctalia-shell ipc call launcher clipboard"; }
+    Mod+W hotkey-overlay-title="Open Wallpaper Selector" { spawn-sh "qs -c noctalia-shell ipc call wallpaper toggle"; }
     
     // Custom App Shortcuts
     Mod+B hotkey-overlay-title="Open Zen Browser" { spawn "zen-browser" ; }
