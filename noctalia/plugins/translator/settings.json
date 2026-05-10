@@ -1,0 +1,7 @@
+{
+  "backend": "google",
+  "realTime": true,
+  "deeplApiKey": "",
+  "realTimeTranslation": true,
+  "showPreview": true
+}
