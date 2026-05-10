@@ -210,6 +210,7 @@ norg
 typst
 mermaidjs
 oldfiles
+Productsway
 bunx
 cowsay
 tabline
@@ -259,3 +260,7 @@ buttonless
 getnf
 todesktop
 Huynh
+claudecode
+deepcopy
+startinsert
+termcodes

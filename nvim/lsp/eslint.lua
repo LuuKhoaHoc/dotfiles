@@ -13,41 +13,20 @@ return {
     "vue",
     "svelte",
     "astro",
-    "json",
-    "jsonc",
-    "css",
-    "scss",
-    "sass",
-    "less",
-    "postcss",
   },
-  -- Enhanced root markers for monorepo support
   root_markers = {
-    -- ESLint config files (new flat config first)
-    "eslint.config.js",
-    "eslint.config.mjs",
-    "eslint.config.cjs",
-    "eslint.config.ts",
-    "eslint.config.mts",
-    "eslint.config.cts",
-    -- Legacy ESLint config files
     ".eslintrc",
     ".eslintrc.js",
     ".eslintrc.cjs",
     ".eslintrc.yaml",
     ".eslintrc.yml",
     ".eslintrc.json",
-    -- Package and monorepo configs
-    "package.json",
-    "pnpm-workspace.yaml",
-    "yarn.lock",
-    "package-lock.json",
-    "pnpm-lock.yaml",
-    -- Monorepo configs
-    "turbo.json",
-    "lerna.json",
-    "nx.json",
-    ".git",
+    "eslint.config.js",
+    "eslint.config.mjs",
+    "eslint.config.cjs",
+    "eslint.config.ts",
+    "eslint.config.mts",
+    "eslint.config.cts",
   },
   -- Refer to https://github.com/Microsoft/vscode-eslint#settings-options for documentation.
   settings = {
@@ -58,7 +37,7 @@ return {
       useFlatConfig = false,
     },
     codeActionOnSave = {
-      enable = true, -- Enable auto-fix on save
+      enable = false,
       mode = "all",
     },
     format = true,
@@ -71,7 +50,6 @@ return {
     },
     -- nodePath configures the directory in which the eslint server should start its node_modules resolution.
     -- This path is relative to the workspace folder (root dir) of the server instance.
-    -- For monorepo support, we leave this empty to allow workspace resolution
     nodePath = "",
     -- use the workspace folder location or the file location (if no workspace folder is open) as the working directory
     workingDirectory = { mode = "location" },
@@ -84,7 +62,5 @@ return {
         enable = true,
       },
     },
-    -- Monorepo support: use workspace dependencies
-    useWorkspaceDependencies = true,
   },
 }

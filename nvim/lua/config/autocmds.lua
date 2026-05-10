@@ -1,9 +1,8 @@
 local function augroup(name)
-  -- Keep related autocmds isolated so they can be cleared and reloaded safely.
   return vim.api.nvim_create_augroup("my_nvim_" .. name, { clear = true })
 end
 
--- Reload buffers after focus changes or terminal exits when the file changed on disk.
+-- Check if we need to reload the file when it changed
 vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
   group = augroup "checktime",
   callback = function()
@@ -13,7 +12,7 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
   end,
 })
 
--- Briefly highlight copied text to confirm the yank target.
+-- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup "highlight_yank",
   callback = function()
@@ -21,7 +20,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- Keep split sizes balanced when the UI window changes dimensions.
+-- resize splits if window got resized
 vim.api.nvim_create_autocmd({ "VimResized" }, {
   group = augroup "resize_splits",
   callback = function()
@@ -31,7 +30,7 @@ vim.api.nvim_create_autocmd({ "VimResized" }, {
   end,
 })
 
--- Restore the cursor to the last known position for file buffers.
+-- go to last loc when opening a buffer
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup "last_loc",
   callback = function(event)
@@ -49,14 +48,13 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
--- Make transient UI/help buffers easy to close and keep them out of buffer lists.
+-- close some filetypes with <q>
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup "close_with_q",
   pattern = {
     "PlenaryTestPopup",
     "checkhealth",
     "dbout",
-    "gitsigns-blame",
     "grug-far",
     "help",
     "lspinfo",
@@ -84,7 +82,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Inline man pages should behave like temporary help buffers.
+-- make it easier to close man-files when opened inline
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup "man_unlisted",
   pattern = { "man" },
@@ -93,17 +91,17 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Turn on wrap and spell-checking where prose matters more than strict layout.
+-- wrap and check for spell in text filetypes
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup "wrap_spell",
-  pattern = { "text", "tex", "typ", "gitcommit", "markdown" },
+  pattern = { "*.txt", "*.tex", "*.typ", "gitcommit", "markdown" },
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.spell = true
   end,
 })
 
--- Disable conceal in JSON-like files so quoted data stays readable.
+-- Fix conceallevel for json files
 vim.api.nvim_create_autocmd({ "FileType" }, {
   group = augroup "json_conceal",
   pattern = { "json", "jsonc", "json5" },
@@ -112,7 +110,7 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
   end,
 })
 
--- Create parent directories on save so new files do not fail on first write.
+-- Auto create dir when saving a file, in case some intermediate directory does not exist
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup "auto_create_dir",
   callback = function(event)
@@ -126,7 +124,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   end,
 })
 
--- Treat dotenv files as shell scripts for syntax and tooling support.
+-- Set filetype for .env and .env.* files
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   group = augroup "env_filetype",
   pattern = { "*.env", ".env.*" },
@@ -135,7 +133,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
--- Give Hurl files their dedicated filetype for plugin integration.
+-- Set filetype for .hurl files
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   group = augroup "hurl_filetype",
   pattern = { "*.hurl" },
@@ -144,25 +142,16 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
--- Ensure TOML files use the right syntax and indentation rules.
+-- Set filetype for .toml files
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   group = augroup "toml_filetype",
-  pattern = { "*.toml" },
+  pattern = { "*.tomg-config*" },
   callback = function()
     vim.opt_local.filetype = "toml"
   end,
 })
 
--- Recognize embedded template files so downstream tooling can adapt.
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  group = augroup "ejs_filetype",
-  pattern = { "*.ejs", "*.ejs.t" },
-  callback = function()
-    vim.opt_local.filetype = "embedded_template"
-  end,
-})
-
--- Open snippet definition files as JSON for editing support.
+-- Set filetype for .code-snippets files
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   group = augroup "code_snippets_filetype",
   pattern = { "*.code-snippets" },
@@ -171,7 +160,42 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
--- Enable built-in LSP completion and inlay hints only when the server supports them.
+vim.filetype.add {
+  extension = {
+    cshtml = "aspnetcorerazor",
+    edge = "edge",
+    eex = "eelixir",
+    ejs = "ejs",
+    gohtml = "gohtml",
+    gohtmltmpl = "gohtmltmpl",
+    gowork = "gowork",
+    gotmpl = "gotmpl",
+    handlebars = "handlebars",
+    hbs = "hbs",
+    jade = "jade",
+    leaf = "leaf",
+    mdx = "mdx",
+    mustache = "mustache",
+    njk = "njk",
+    nunjucks = "nunjucks",
+    pcss = "postcss",
+    razor = "razor",
+    re = "reason",
+    sss = "sugarss",
+    templ = "templ",
+  },
+  filename = {
+    ["go.work"] = "gowork",
+  },
+  pattern = {
+    [".*%.blade%.php"] = "blade",
+    [".*%.django%.html"] = "django-html",
+    [".*%.djhtml"] = "django-html",
+    [".*%.html%.eex"] = "html-eex",
+  },
+}
+
+-- LSP
 local completion = vim.g.completion_mode or "blink" -- or 'native'
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
@@ -187,21 +211,5 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
       end
     end
-  end,
-})
-
--- Render DOCX files as temporary markdown buffers through pandoc.
-vim.api.nvim_create_autocmd("BufReadCmd", {
-  pattern = "*.docx",
-  callback = function()
-    if vim.fn.executable "pandoc" == 0 then
-      vim.notify("pandoc is not installed", vim.log.levels.WARN)
-      return
-    end
-    local file = vim.fn.expand("%")
-    vim.cmd("enew")
-    vim.cmd("read !pandoc -t markdown '" .. file .. "'")
-    vim.bo.buftype = "nofile"
-    vim.bo.filetype = "markdown"
   end,
 })

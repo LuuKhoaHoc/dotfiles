@@ -1,36 +1,34 @@
 local logo = [[
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⢠⣿⣿⣿⣿⡿⠟⠉⠩⣿⠟⠉⣝⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⣴⣶⣶⣾⣿⡿⣿⠁⠀⠀⠀⠀⠀⠀⢀⡽⠿⠟⠋⠉⠉⢿⣿⣿⣿⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⢻⣿⣿⣿⣿⡃⠀⠀⠀⠀⠀⠀⠀⠀⣤⣄⣴⣶⣦⠀⠀⠈⠉⠙⢻⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣇⠀⠀⠀⠸⣿⣿⣿⣿⠉⠙⠋⠀⠀⠀⠀⠀⡀⢾⣿⡿⠿⠟⠀⠀⠀⠀⢀⣼⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣀⡀⠀⠉⠛⠛⠛⠛⠀⠀⠀⠀⠀⠈⠁⠀⣠⣀⣀⣀⣀⡀⠀⣠⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡶⠂⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠛⠛⠛⠉⠉⠻⣿⣿⡏⠀⠘⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡄⠀⠀⠀⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⠀⠈⠻⠷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⣤⣤⣾⣷⡆⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⢠⣿⣷⣤⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠃⢻⣿⣿⣿⠃⠀⢹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⠿⣿⣿⣿⡇⠀⣾⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣝⠁⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⠋⠀⠙⢿⣿⡇⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀⠀⠀⠀⣀⠀⠀⢀⣤⡶⠀⠈⠉⢀⡀⠈⠉⠛⠿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣷⣀⠀⠀⠈⠀⢸⣯⠻⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⣿⡆⠀⠀⠁⠀⢀⣤⠻⣿⣿⣿⣷⣶⣄⣘⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣷⡄⠀⠀⣸⣿⣄⣨⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠸⣷⣶⣶⣿⠃⠈⠛⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⣿⣤⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡆⠀⠀⠀⠀⠀⢸⣿⡿⢋⣴⣆⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠈⠉⣰⣿⣿⣿⣆⠀⢹⣿⣧⠹⢿⣿⣍⡙⢿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣭⣿⣿⣿⣿⣿⣿⣿⣿⣦⣄⣀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⣻⣿⣿⣿⣿⣿⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-    ]]
+      ██╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗
+      ██║╚══██╔══╝    ████╗ ████║██╔══██╗████╗  ██║
+      ██║   ██║       ██╔████╔██║███████║██╔██╗ ██║
+      ██║   ██║       ██║╚██╔╝██║██╔══██║██║╚██╗██║
+      ██║   ██║       ██║ ╚═╝ ██║██║  ██║██║ ╚████║
+      ╚═╝   ╚═╝       ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
+]]
+
+logo = string.rep("\n", 4) .. logo .. "\n\n"
 
 -- Terminal Mappings
 local function term_nav(dir)
   return function(self)
-    if self:is_floating() then
-      return "<c-" .. dir .. ">"
-    end
-    return "<cmd>wincmd " .. dir .. "<cr>"
+    return self:is_floating() and "<c-" .. dir .. ">" or vim.schedule(function()
+      vim.cmd.wincmd(dir)
+    end)
   end
 end
 local hostname = io.popen("hostname"):read("*a"):gsub("%s+", "")
 
 return {
+  {
+    "folke/lazydev.nvim",
+    optional = true,
+    opts = {
+      library = {
+        { path = "snacks.nvim", words = { "Snacks" } },
+      },
+    },
+  },
   {
     "nvim-treesitter/nvim-treesitter",
     optional = true,
@@ -96,44 +94,50 @@ return {
       image = {
         -- NOTE: brew install imagemagick to install on Mac, refer https://imagemagick.org/script/download.php for more detail
         -- For mermaidjs: npm install -g @mermaid-js/mermaid-cli
-        enabled = false, -- Disabled for performance
+        enabled = true,
         doc = {
           -- enable image viewer for documents
           -- a treesitter parser must be available for the enabled languages.
-          enabled = false,
+          enabled = true,
           -- render the image inline in the buffer
           -- if your env doesn't support unicode placeholders, this will be disabled
           -- takes precedence over `opts.float` on supported terminals
           inline = false,
           -- render the image in a floating window
           -- only used if `opts.inline` is disabled
-          float = false,
+          float = true,
         },
       },
       explorer = {
         enabled = true,
-        ignored = true, -- Show gitignored files
-        hidden = true,  -- Show dotfiles
-        show_empty = true,
       },
       picker = {
         enabled = true,
+        actions = {
+          flash = function(picker)
+            require("flash").jump {
+              pattern = "^",
+              label = { after = { 0, 0 } },
+              search = {
+                mode = "search",
+                exclude = {
+                  function(win)
+                    return vim.bo[vim.api.nvim_win_get_buf(win)].filetype ~= "snacks_picker_list"
+                  end,
+                },
+              },
+              action = function(match)
+                local idx = picker.list:row2idx(match.pos[1])
+                picker.list:_move(idx, true, true)
+              end,
+            }
+          end,
+        },
         ---@class snacks.picker.sources.Config
         sources = {
           files = {
             hidden = true, -- show hidden files
-            ignored = true,
             follow = true,
-            -- Exclude node_modules and other heavy directories from file search
-            exclude = {
-              "**/node_modules/**",
-              "**/.git/**",
-              "**/dist/**",
-              "**/build/**",
-              "**/coverage/**",
-              "**/.next/**",
-              "**/vendor/**",
-            },
           },
         },
         ----@class snacks.picker.layout.Config
@@ -152,7 +156,7 @@ return {
         previewers = {
           git = {
             native = true, -- use native (terminal) or Neovim for previewing git diffs and commits
-            cmd = { "delta" },
+            cmd = { "delta " },
           },
         },
         ---@class snacks.picker.icons.Config
@@ -170,7 +174,9 @@ return {
               ["<Esc>"] = { "close", mode = { "n", "i" } },
               -- Hidden
               ["<a-.>"] = { "toggle_hidden", mode = { "i", "n" } },
-              ["<a-h>"] = false,
+              ["<a-h"] = false,
+              ["<a-s>"] = { "flash", mode = { "n", "i" } },
+              ["s"] = { "flash" },
             },
           },
         },
@@ -200,7 +206,7 @@ return {
           { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
           {
             section = "terminal",
-            title = "luukhoahoc.me",
+            title = "Productsway.com",
             icon = "©",
             --  local user = hostname or vim.env.USER or "User"
             --  local user = vim.fn.expand("$USER")
@@ -212,7 +218,35 @@ return {
       bigfile = { enabled = true },
       scratch = { enabled = true },
       zen = {
-        enabled = false, -- Disabled for performance
+        enabled = false,
+        win = {
+          -- Hide backdrop
+          backdrop = { transparent = false },
+        },
+        toggles = {
+          -- Turn off dim plugin for zen mode
+          dim = false,
+        },
+        show = {
+          statusline = false, -- can only be shown when using the global statusline
+          tabline = true,
+        },
+        -- Zoom mode
+        zoom = {
+          toggles = {
+            -- Turn off dim plugin for zoom mode
+            dim = false,
+            git_signs = false,
+            mini_diff_signs = false,
+            -- diagnostics = false,
+            -- inlay_hints = false,
+          },
+          show = { statusline = false, tabline = true },
+          win = {
+            backdrop = { transparent = false },
+            width = 120,
+          },
+        },
       },
       indent = {
         enabled = true,
@@ -222,7 +256,7 @@ return {
       notifier = {
         enabled = true,
         --- Available style: "compact"|"fancy"|"minimal"
-        style = "fancy",             -- similar to the default nvim-notify style
+        style = "fancy", -- similar to the default nvim-notify style
         level = vim.log.levels.WARN, -- Show only warning and above
       },
       quickfile = { enabled = true },
@@ -236,8 +270,8 @@ return {
         },
         -- LazyGit full screen
         lazygit = {
-          width = 0,
-          height = 0,
+          width = 0.8,
+          height = 0.8,
         },
       },
       -- Learn this tip from LazyVim
@@ -288,8 +322,6 @@ return {
         function()
           Snacks.explorer {
             auto_close = true,
-            ignored = true,
-            hidden = true,
           }
         end,
         desc = "File Explorer",
@@ -300,8 +332,6 @@ return {
           Snacks.explorer {
             cwd = vim.fn.expand "%:p:h",
             auto_close = true,
-            ignored = true,
-            hidden = true,
           }
         end,
         desc = "File Explorer (cwd)",
@@ -608,7 +638,21 @@ return {
         end,
         desc = "LSP Workspace Symbols",
       },
-
+      -- Zen mode
+      {
+        "<leader>cz",
+        function()
+          Snacks.zen()
+        end,
+        desc = "Toggle Zen Mode",
+      },
+      {
+        "<leader>tz",
+        function()
+          Snacks.zen.zoom()
+        end,
+        desc = "Toggle Zoom",
+      },
 
       -- Notifier
       {
@@ -661,13 +705,6 @@ return {
           Snacks.rename.rename_file()
         end,
         desc = "Rename File",
-      },
-      {
-        "<leader>dd",
-        function()
-          Snacks.terminal("lazydocker")
-        end,
-        desc = "Lazydocker",
       },
       {
         "<leader>gg",
@@ -724,22 +761,6 @@ return {
         desc = "Prev Reference",
         mode = { "n", "t" },
       },
-      -- Dadbod UI
-      {
-        "<leader>db",
-        "<cmd>DBUIToggle<cr>",
-        desc = "Toggle DB UI",
-      },
-      {
-        "<leader>dB",
-        "<cmd>DBUIAddConnection<cr>",
-        desc = "Add DB Connection",
-      },
-      {
-        "<leader>dq",
-        "<cmd>DBget<cr>",
-        desc = "DB Query",
-      },
     },
     init = function()
       vim.api.nvim_create_autocmd("User", {
@@ -754,6 +775,9 @@ return {
           end
           vim.print = _G.dd -- Override print to use snacks for `:=` command
 
+          -- Setup statuscolumn
+          vim.opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
+
           -- Create some toggle mappings
           Snacks.toggle.option("spell", { name = "Spelling" }):map "<leader>us"
           Snacks.toggle.option("wrap", { name = "Wrap" }):map "<leader>uw"
@@ -761,35 +785,13 @@ return {
           Snacks.toggle.diagnostics():map "<leader>ud"
           Snacks.toggle.line_number():map "<leader>ul"
           Snacks.toggle
-              .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-              :map "<leader>uc"
+            .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
+            :map "<leader>uc"
           Snacks.toggle.treesitter():map "<leader>uT"
           Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map "<leader>ub"
           Snacks.toggle.inlay_hints():map "<leader>uh"
           Snacks.toggle.indent():map "<leader>ug"
-
-          local ok, preview = pcall(require, "snacks.picker.core.preview")
-          if ok and not preview._markdown_preview_patched then
-            preview._markdown_preview_patched = true
-            local highlight = preview.highlight
-            function preview:highlight(opts)
-              opts = opts or {}
-              local ft = opts.ft
-              if not ft and (opts.file or opts.buf) then
-                ft = vim.filetype.match {
-                  buf = opts.buf or self.win.buf,
-                  filename = opts.file,
-                }
-              end
-              local lang = Snacks.util.get_lang(opts.lang or ft)
-              if lang == "markdown" then
-                vim.treesitter.stop(self.win.buf)
-                vim.bo[self.win.buf].syntax = ft or "markdown"
-                return
-              end
-              return highlight(self, opts)
-            end
-          end
+          Snacks.toggle.dim():map "<leader>uD"
         end,
       })
     end,

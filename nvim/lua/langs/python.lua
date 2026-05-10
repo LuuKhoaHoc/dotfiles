@@ -1,6 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = { ensure_installed = { "ninja", "rst" } },
+    optional = true,
+    opts = { ensure_installed = { "python", "ninja", "rst" } },
   },
 }

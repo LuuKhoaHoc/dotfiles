@@ -26,8 +26,11 @@ return {
     -- Define your formatters
     formatters_by_ft = {
       lua = { "stylua" },
+      hurl = { "hurlfmt" },
       -- Conform will run multiple formatters sequentially
-      go = { "goimports", "gofumpt", "gofmt" },
+      go = { "goimports", "gofmt" },
+      -- rustfmt is installed via rustup component add rustfmt
+      rust = { "rustfmt" },
       -- Install Ruff globally.
       -- uv tool install ruff@latest
       python = function(bufnr)
@@ -41,61 +44,15 @@ return {
       -- npm install -g prettier@latest
       -- Install dprint globally.
       ["json"] = { "biome", "dprint", stop_after_first = true },
-      ["jsonc"] = { "biome", "dprint", stop_after_first = true },
-      ["css"] = function(bufnr)
-        if require("conform").get_formatter_info("eslint", bufnr).available then
-          return { "eslint" }
-        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
-          return { "prettierd" }
-        else
-          return { "prettier" }
-        end
-      end,
-      ["scss"] = function(bufnr)
-        if require("conform").get_formatter_info("eslint", bufnr).available then
-          return { "eslint" }
-        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
-          return { "prettierd" }
-        else
-          return { "prettier" }
-        end
-      end,
-      ["sass"] = function(bufnr)
-        if require("conform").get_formatter_info("eslint", bufnr).available then
-          return { "eslint" }
-        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
-          return { "prettierd" }
-        else
-          return { "prettier" }
-        end
-      end,
-      ["less"] = function(bufnr)
-        if require("conform").get_formatter_info("eslint", bufnr).available then
-          return { "eslint" }
-        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
-          return { "prettierd" }
-        else
-          return { "prettier" }
-        end
-      end,
-      ["postcss"] = function(bufnr)
-        if require("conform").get_formatter_info("eslint", bufnr).available then
-          return { "eslint" }
-        elseif require("conform").get_formatter_info("prettierd", bufnr).available then
-          return { "prettierd" }
-        else
-          return { "prettier" }
-        end
-      end,
       ["markdown"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["markdown.mdx"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
-      ["javascript"] = { "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["javascript"] = { "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
       ["javascriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint") }
+        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
       end,
-      ["typescript"] = { "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["typescript"] = { "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
       ["typescriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "biome", "eslint", "deno_fmt", "prettierd", "prettier", "dprint") }
+        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
       end,
       ["svelte"] = function(bufnr)
         return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
@@ -105,35 +62,50 @@ return {
       biome = {
         condition = function()
           local path = Lsp.biome_config_path()
-          return path and not string.match(path, "nvim")
+          -- Skip if biome.json is in nvim
+          local is_nvim = path and string.match(path, "nvim")
+
+          if path and not is_nvim then
+            return true
+          end
+
+          return false
         end,
-      },
-      eslint = {
-        condition = function()
-          local path = Lsp.biome_config_path()
-          local has_biome = path and not string.match(path, "nvim")
-          return not has_biome and Lsp.eslint_config_exists()
-        end,
-        command = "eslint_d",
       },
       deno_fmt = {
-        condition = Lsp.deno_config_exist,
+        condition = function()
+          return Lsp.deno_config_exist()
+        end,
       },
       dprint = {
-        condition = Lsp.dprint_config_exist,
+        condition = function()
+          return Lsp.dprint_config_exist()
+        end,
       },
       prettier = {
         condition = function()
           local path = Lsp.biome_config_path()
-          local has_biome = path and not string.match(path, "nvim")
-          return not has_biome and Lsp.prettier_config_exists()
+          -- Skip if biome.json is in nvim
+          local is_nvim = path and string.match(path, "nvim")
+
+          if path and not is_nvim then
+            return false
+          end
+
+          return true
         end,
       },
       prettierd = {
         condition = function()
           local path = Lsp.biome_config_path()
-          local has_biome = path and not string.match(path, "nvim")
-          return not has_biome and Lsp.prettier_config_exists()
+          -- Skip if biome.json is in nvim
+          local is_nvim = path and string.match(path, "nvim")
+
+          if path and not is_nvim then
+            return false
+          end
+
+          return true
         end,
       },
     },

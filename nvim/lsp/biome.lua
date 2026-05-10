@@ -5,7 +5,6 @@ function _G.biome_fix()
   local file = vim.fn.fnameescape(vim.fn.expand "%:p") -- Escape file path for shell
   vim.cmd("silent !biome lint --write " .. file)
 end
-
 function _G.biome_fix_unsafe()
   -- NOTE: Migrate to LSP later if it's available
   local file = vim.fn.fnameescape(vim.fn.expand "%:p") -- Escape file path for shell
@@ -36,6 +35,7 @@ return {
   end,
   filetypes = {
     "astro",
+    "css",
     "graphql",
     "javascript",
     "javascriptreact",
@@ -43,9 +43,8 @@ return {
     "jsonc",
     "svelte",
     "typescript",
-    "typescript.tsx",
     "typescriptreact",
     "vue",
   },
-  root_markers = { "biome.json", "biome.jsonc" },
+  root_markers = { "biome.json", "biome.jsonc", ".git" },
 }

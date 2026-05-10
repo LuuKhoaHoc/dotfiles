@@ -1,24 +1,47 @@
 local map = vim.keymap.set
 
--- Make wrapped-line motion feel natural in both normal and visual modes.
+local function in_git_repo()
+  return vim.fn.isdirectory ".git" == 1
+end
+
+local function close_buffer()
+  local ok, bufremove = pcall(require, "mini.bufremove")
+  if ok then
+    bufremove.delete(0, false)
+    return
+  end
+
+  vim.cmd "bdelete"
+end
+
+_G.mini_git_cli = function(command, fallback)
+  if not in_git_repo() then
+    vim.notify(fallback or "Not a git repository", vim.log.levels.WARN)
+    return
+  end
+
+  require("mini.pick").builtin.cli { command = command }
+end
+
+-- Better up/down
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
 map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
 
--- Keep window navigation on the same keys as terminal multiplexer muscle memory.
+-- Go to different windows
 map("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", remap = true })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window", remap = true })
 map("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window", remap = true })
 map("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window", remap = true })
 
--- Resize splits without leaving the home row.
+-- Resize window using <ctrl> arrow keys
 map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
 map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
 map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease Window Width" })
 map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase Window Width" })
 
--- Move lines up and down while preserving indentation and selection.
+-- Move Lines
 map("n", "<A-j>", "<cmd>execute 'move .+' . v:count1<cr>==", { desc = "Move Down" })
 map("n", "<A-k>", "<cmd>execute 'move .-' . (v:count1 + 1)<cr>==", { desc = "Move Up" })
 map("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move Down" })
@@ -26,22 +49,37 @@ map("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Up" })
 map("v", "<A-j>", ":<C-u>execute \"'<,'>move '>+\" . v:count1<cr>gv=gv", { desc = "Move Down" })
 map("v", "<A-k>", ":<C-u>execute \"'<,'>move '<-\" . (v:count1 + 1)<cr>gv=gv", { desc = "Move Up" })
 
--- Jump directly to the ends of the current line.
+-- Goto
 map("n", "gl", "$", { desc = "Go to end of line" })
 map("n", "gh", "^", { desc = "Go to start of line" })
 
--- Buffer switching keeps the common previous/next workflow simple.
+-- buffers
 map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next Buffer" })
 map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev Buffer" })
 map("n", "]b", "<cmd>bnext<cr>", { desc = "Next Buffer" })
+map("n", "<S-q>", close_buffer, { desc = "Delete Buffer" })
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 
--- Clear search highlighting from the same key used to exit insert mode.
-map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and Clear hlsearch" })
+-- Clear search with <esc>
+map({ "i", "n" }, "<esc>", function()
+  vim.cmd "noh"
+  if vim.api.nvim_get_mode().mode == "n" then
+    local ok, mc = pcall(require, "multicursor-nvim")
+    if ok then
+      if not mc.cursorsEnabled() then
+        mc.enableCursors()
+      elseif mc.hasCursors() then
+        mc.clearCursors()
+      end
+    end
+  end
+  return "<esc>"
+end, { desc = "Escape and Clear hlsearch", expr = true })
 
--- Refresh the screen and diff view in one explicit redraw shortcut.
+-- Clear search, diff update and redraw
+-- taken from runtime/lua/_editor.lua
 map(
   "n",
   "<leader>ur",
@@ -49,7 +87,7 @@ map(
   { desc = "Redraw / Clear hlsearch / Diff Update" }
 )
 
--- Keep search navigation consistent with the current search direction.
+-- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
 map("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next Search Result" })
 map("x", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
 map("o", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
@@ -57,26 +95,29 @@ map("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev Search R
 map("x", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
 map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
 
--- Insert explicit undo breakpoints after punctuation that often starts new thoughts.
+-- Add undo break-points
 map("i", ",", ",<c-g>u")
 map("i", ".", ".<c-g>u")
 map("i", ";", ";<c-g>u")
 
--- Save without leaving the current mode.
+-- save file
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
 
--- Make K use the configured keyword program explicitly.
+-- save file using leader
+map("n", "<leader>fs", "<cmd>w<cr>", { desc = "Save File" })
+
+--keywordprg
 map("n", "<leader>K", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 
--- Preserve the selection while reindenting visual blocks.
+-- better indenting
 map("v", "<", "<gv")
 map("v", ">", ">gv")
 
--- Insert line comments above or below the current line with a single motion.
+-- commenting
 map("n", "gco", "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Below" })
 map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Comment Above" })
 
--- Open the plugin manager on demand.
+-- lazy
 map("n", "<leader>zz", "<cmd>Lazy<cr>", { desc = "Lazy" })
 
 -- new file
@@ -104,7 +145,7 @@ map("n", "]q", vim.cmd.cnext, { desc = "Next Quickfix" })
 local diagnostic_goto = function(next, severity)
   severity = severity and vim.diagnostic.severity[severity] or nil
   return function()
-    vim.diagnostic.jump({ count = next and 1 or -1, float = true, severity = severity })
+    vim.diagnostic.jump { count = next and 1 or -1, float = true, severity = severity }
   end
 end
 map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
@@ -200,9 +241,9 @@ map("n", "zk", "zckzOzz", {
 
 -- Refer [FAQ - Neovide](https://neovide.dev/faq.html#how-can-i-use-cmd-ccmd-v-to-copy-and-paste)
 if vim.g.neovide then
-  vim.keymap.set("n", "<D-s>", ":w<CR>")          -- Save
-  vim.keymap.set("v", "<D-c>", '"+y')             -- Copy
-  vim.keymap.set({ "n", "v" }, "<D-v>", '"+P')    -- Paste normal and visual mode
+  vim.keymap.set("n", "<D-s>", ":w<CR>") -- Save
+  vim.keymap.set("v", "<D-c>", '"+y') -- Copy
+  vim.keymap.set({ "n", "v" }, "<D-v>", '"+P') -- Paste normal and visual mode
   vim.keymap.set({ "i", "c" }, "<D-v>", "<C-R>+") -- Paste insert and command mode
   vim.keymap.set("t", "<D-v>", [[<C-\><C-N>"+P]]) -- Paste terminal mode  vim.keymap.set("n", "<D-s>", ":w<CR>") -- Save
 end
@@ -219,6 +260,104 @@ map("n", "<C-c>", ":%y+<CR>", opts)
 
 -- Select all text in buffer with Alt-a
 map("n", "<A-a>", "ggVG", { noremap = true, silent = true, desc = "Select all" })
+
+-- Smart expand/shrink selection (VS Code-like)
+local selection_stack = {}
+
+local function get_visual_range()
+  local vpos = vim.fn.getpos "v"
+  local cpos = vim.fn.getpos "."
+  local s_row, s_col = vpos[2] - 1, vpos[3] - 1
+  local e_row, e_col = cpos[2] - 1, cpos[3] - 1
+
+  if s_row > e_row or (s_row == e_row and s_col > e_col) then
+    s_row, e_row = e_row, s_row
+    s_col, e_col = e_col, s_col
+  end
+  -- Treesitter is 0-indexed, and end is exclusive. 
+  -- Visual selection end in Vim is inclusive, so we'll handle that in the selection logic.
+  return s_row, s_col, e_row, e_col
+end
+
+local function ts_select(is_expand)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr)
+  if not ok or not parser then return end
+
+  if not selection_stack[bufnr] then selection_stack[bufnr] = {} end
+  local stack = selection_stack[bufnr]
+
+  local mode = vim.fn.mode()
+  if not is_expand then
+    if #stack <= 1 then 
+      -- If nothing to shrink, just exit visual mode
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+      return 
+    end
+    table.remove(stack)
+    local r = stack[#stack]
+    vim.api.nvim_win_set_cursor(0, { r[1] + 1, r[2] })
+    vim.cmd "normal! o"
+    vim.api.nvim_win_set_cursor(0, { r[3] + 1, math.max(0, r[4] - 1) })
+    return
+  end
+
+  local s_row, s_col, e_row, e_col
+  if mode:match("[vV\22]") then
+    s_row, s_col, e_row, e_col = get_visual_range()
+    -- We need to account for inclusive end in visual mode for Treesitter
+    e_col = e_col + 1
+  else
+    local pos = vim.api.nvim_win_get_cursor(0)
+    s_row, s_col, e_row, e_col = pos[1] - 1, pos[2], pos[1] - 1, pos[2] + 1
+    selection_stack[bufnr] = {} -- Reset stack on fresh start
+    stack = selection_stack[bufnr]
+  end
+
+  local root = parser:parse()[1]:root()
+  -- Find the smallest named node that contains the range
+  local node = root:named_descendant_for_range(s_row, s_col, e_row, e_col)
+  if not node then return end
+
+  local ns, nsc, ne, nec = node:range()
+  
+  -- If the node we found is exactly what we already have selected, go up
+  while ns == s_row and nsc == s_col and ne == e_row and nec == e_col do
+    local parent = node:parent()
+    if not parent then break end
+    node = parent
+    ns, nsc, ne, nec = node:range()
+  end
+
+  if node then
+    table.insert(stack, { ns, nsc, ne, nec })
+    if not mode:match("[vV\22]") then vim.cmd "normal! v" end
+    
+    -- In Neovim visual mode, one end is 'anchor' and other is 'cursor'
+    -- We set anchor first, then 'o' to move cursor to other end
+    vim.api.nvim_win_set_cursor(0, { ns + 1, nsc })
+    vim.cmd "normal! o"
+    -- nec is exclusive, so we go to nec - 1
+    vim.api.nvim_win_set_cursor(0, { ne + 1, math.max(0, nec - 1) })
+  end
+end
+
+-- Clear stack when leaving visual mode
+vim.api.nvim_create_autocmd("ModeChanged", {
+  pattern = "[vV\22]:n",
+  callback = function()
+    local bufnr = vim.api.nvim_get_current_buf()
+    selection_stack[bufnr] = nil
+  end,
+})
+
+map("n", "<C-space>", function() ts_select(true) end, { desc = "Expand Selection" })
+map("x", "<C-space>", function() ts_select(true) end, { desc = "Expand Selection" })
+map("x", "<BS>", function() ts_select(false) end, { desc = "Shrink Selection" })
+
+-- If you prefer Space instead of Alt:
+-- map("v", "<Space>", ts_select_parent, { desc = "Expand Selection (Space)" })
+-- map("v", "<S-Space>", ts_select_child, { desc = "Shrink Selection (Shift+Space)" })
 
 -- Visual --
 -- Stay in indent mode
@@ -263,24 +402,7 @@ map("n", "<leader>ts", "<cmd>set spell!<CR>", {
 
 map(
   "n",
-  "<leader>uS",
+  "<leader>us",
   "<cmd>lua require('utils.cspell').add_word_to_c_spell_dictionary()<CR>",
   { noremap = true, silent = true, desc = "Add unknown to cspell dictionary" }
 )
-
--- Case conversion (text-case.nvim)
--- Operator mode mappings
-map("n", "gcs", "<cmd>lua require('textcase.operator').change('to_snake_case')<CR>", { desc = "Op: to snake_case" })
-map("n", "gcC", "<cmd>lua require('textcase.operator').change('to_camel_case')<CR>", { desc = "Op: to camel_case" })
-map("n", "gcP", "<cmd>lua require('textcase.operator').change('to_pascal_case')<CR>", { desc = "Op: to pascal_case" })
-map("n", "gcK", "<cmd>lua require('textcase.operator').change('to_kebab_case')<CR>", { desc = "Op: to kebab_case" })
-map("n", "gcu", "<cmd>lua require('textcase.operator').change('to_upper_case')<CR>", { desc = "Op: to upper_case" })
-map("n", "gcl", "<cmd>lua require('textcase.operator').change('to_lower_case')<CR>", { desc = "Op: to lower_case" })
-
--- Visual mode mappings
-map("v", "gcs", "<cmd>lua require('textcase').to_snake_case()<CR>", { desc = "To snake_case" })
-map("v", "gcC", "<cmd>lua require('textcase').to_camel_case()<CR>", { desc = "To camel_case" })
-map("v", "gcP", "<cmd>lua require('textcase').to_pascal_case()<CR>", { desc = "To pascal_case" })
-map("v", "gcK", "<cmd>lua require('textcase').to_kebab_case()<CR>", { desc = "To kebab_case" })
-map("v", "gcu", "<cmd>lua require('textcase').to_upper_case()<CR>", { desc = "To upper_case" })
-map("v", "gcl", "<cmd>lua require('textcase').to_lower_case()<CR>", { desc = "To lower_case" })

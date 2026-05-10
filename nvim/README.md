@@ -1,6 +1,9 @@
 # Welcome to My Tiny Neovim 👋
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
@@ -18,7 +21,6 @@
 This configuration is a migration from [my-nvim-ide](https://github.com/jellydn/my-nvim-ide) with two main goals:
 
 1. **Leverage Neovim 0.11+ Built-in Features**:
-
    - Remove dependency on [`lspconfig`](https://github.com/neovim/nvim-lspconfig/pull/3659) by utilizing Neovim's built-in LSP support
    - No need for the `mason.nvim` plugin; instead, use a shell [script](./scripts/install-tools.sh) to install necessary tools
    - Experience faster startup times and reduced complexity
@@ -28,6 +30,11 @@ This configuration is a migration from [my-nvim-ide](https://github.com/jellydn/
    - Trim down the plugin list to only essential ones
    - Use `blink.cmp` for completion instead of built-in completion for better UX
    - Maintain a minimal yet powerful development environment
+
+3. **Adopt mini.nvim as Core UI Framework**:
+   - Migrate from snacks.nvim to mini.nvim for better integration
+   - Use consistent plugin ecosystem from the same author
+   - Reduce dependencies while maintaining feature parity
 
 The result is a faster, more maintainable configuration that still provides all the necessary features for modern development.
 
@@ -124,39 +131,83 @@ After installation, run the following commands to ensure everything is set up co
 
 For more detailed debugging information, refer to [conform.nvim debugging guide](https://github.com/stevearc/conform.nvim/blob/master/doc/debugging.md#tools).
 
+## Filetype Mappings
+
+This config includes custom filetype mappings to help LSPs attach cleanly and avoid `:checkhealth` warnings
+for uncommon extensions and templates. The mappings live in `lua/config/autocmds.lua`.
+
 ## Features
 
 <details>
 <summary>Click to expand features</summary>
 
-This configuration provides a minimal yet powerful development environment with carefully selected plugins organized by category:
+### Migration from snacks.nvim to mini.nvim
+
+This configuration has migrated from `snacks.nvim` to `mini.nvim` as its core UI framework.
+
+**Why mini.nvim?**
+
+- Consistent ecosystem from a single author
+- Better integration between plugins
+- Reduced dependencies while maintaining feature parity
+- Optimized for Neovim 0.11+
+
+| Feature      | Previously (snacks) | Now (mini.nvim)        |
+| ------------ | ------------------- | ---------------------- |
+| Fuzzy Picker | Snacks.picker       | mini.pick + mini.extra |
+| Dashboard    | Snacks.dashboard    | mini.starter           |
+| Git Diff     | Snacks.git          | mini.diff              |
+| Icons        | nvim-web-devicons   | mini.icons             |
+
+> **Note**: `snacks.nvim` is still available as an optional extra plugin if you prefer it.
+
+---
+
+### mini.nvim Ecosystem
+
+This configuration leverages the mini.nvim plugin suite as its core UI framework:
+
+- **mini.pick**: Fuzzy finder for files, buffers, git, and more
+- **mini.starter**: Beautiful start screen dashboard
+- **mini.diff**: Git diff integration with hunk navigation
+- **mini.statusline**: Lightweight, informative statusline
+- **mini.tabline**: Smart buffer/tabline with buffer management
+- **mini.icons**: Comprehensive icon support
+- **mini.files**: File explorer with a consistent mini.nvim UI
+- **mini.ai**: Enhanced text objects for code
+- **mini.pairs**: Automatic bracket and quote pairing
+- **mini.bufremove**: Cleaner buffer deletion
+- **mini.extra**: Additional pickers and utilities
+
+---
 
 ### Core Development
 
 - **LSP & Completion**
-
   - Built-in LSP support (Neovim 0.11+)
   - [blink.cmp](https://github.com/saghen/blink.cmp) (v1.\*): Enhanced completion menu
   - [conform.nvim](https://github.com/stevearc/conform.nvim): Code formatting
   - [nvim-lint](https://github.com/mfussenegger/nvim-lint): Linting support
 
 - **AI & Code Assistance**
+  - **Enabled by default:** [sidekick.nvim](https://github.com/folke/sidekick.nvim) for AI CLI tools + Copilot NES
+  - **Extra plugins:** [blink-copilot](https://github.com/fang2hou/blink-copilot), [copilot.vim](https://github.com/github/copilot.vim), [claudecode.nvim](https://github.com/coder/claudecode.nvim)
 
-  - [CopilotChat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim): AI-powered coding assistant
-  - [blink-copilot](https://github.com/fang2hou/blink-copilot): Copilot integration
-  - [copilot.vim](https://github.com/github/copilot.vim): GitHub Copilot integration
+  **Usage Tips:**
+  - **Sidekick** (`<leader>a*`): AI CLI integration with Claude, Gemini, Copilot CLI and more. Includes Next Edit Suggestions (NES) for multi-line refactorings
+  - **Claude Code** (`<C-,>`): Quick access to Claude in a floating window (when enabled)
+  - Both can be used simultaneously without conflicts - different keybindings and use cases
+
+  **Alternative:** [CopilotChat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim) is available as an extra plugin if you prefer the traditional chat interface
 
 - **Code Generation & Documentation**
-
   - [LuaSnip](https://github.com/L3MON4D3/LuaSnip) (v2.\*): Snippet engine
   - [friendly-snippets](https://github.com/rafamadriz/friendly-snippets): Snippet collection
   - [neogen](https://github.com/danymat/neogen): Documentation generator
   - [ts-comments.nvim](https://github.com/folke/ts-comments.nvim): Comment utilities
-  - [mini.pairs](https://github.com/echasnovski/mini.pairs): Auto pairs
-  - [mini.ai](https://github.com/echasnovski/mini.ai): Extend and create a/i textobjects
 
 - **Git Integration**
-  - [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim): Git signs in the sign column
+  - Git hunks and signs via mini.diff
 
 ### Testing & Debugging
 
@@ -167,18 +218,113 @@ This configuration provides a minimal yet powerful development environment with 
 ### UI & Theme
 
 - [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim): Beautiful theme inspired by Kanagawa wave
-- [bufferline.nvim](https://github.com/akinsho/bufferline.nvim): Enhanced buffer management
-- [mini.statusline](https://github.com/echasnovski/mini.statusline): Lightweight statusline
-- [mini.icons](https://github.com/echasnovski/mini.icons): Improved icon support
+- [mini.nvim](https://github.com/echasnovski/mini.nvim): Buffer management via mini.tabline/mini.bufremove
+- Statusline, tabline, icons, and starter via mini.nvim ecosystem
 - [noice.nvim](https://github.com/folke/noice.nvim): Improved notifications and command-line UI
-- [snacks.nvim](https://github.com/folke/snacks.nvim): Enhanced UI and utilities
+- [tiny-term.nvim](https://github.com/jellydn/tiny-term.nvim): Lightweight terminal manager with simple toggles
+
+Theme switching:
+
+- Default theme: `kanagawa`
+- Switch theme: `:Theme kanagawa`
+- Check current theme: `:Theme`
 
 ### Navigation & Search
 
 - [flash.nvim](https://github.com/folke/flash.nvim): Navigation and search enhancements
 - [which-key.nvim](https://github.com/folke/which-key.nvim): Keybinding hints and management
+- Fuzzy finder and extra pickers via mini.nvim ecosystem
 - [better-escape.nvim](https://github.com/max397574/better-escape.nvim): Better escape functionality
 - [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim): Advanced search and replace functionality
+
+### Picker Keymaps (mini.pick)
+
+#### General
+
+| Keymap | Mode | Description |
+| --- | --- | --- |
+| `<leader><space>` | n | Find Files (toggle hidden with `Alt-h`, unrestricted with `Alt-u`) |
+| `<leader>/` | n | Grep (live) |
+| `<leader>,` | n | Switch Buffer |
+| `<leader>:` | n | Command History |
+| `<C-g>` | n | Grep Project |
+| `<C-g>` | v | Grep visual selection |
+| `<C-e>` | n | Find Files at project directory |
+
+#### Explorer
+
+| Keymap | Mode | Description |
+| --- | --- | --- |
+| `<leader>e` | n | File Explorer (current file) |
+| `<leader>E` | n | File Explorer (cwd) |
+
+#### Find (`<leader>f`)
+
+| Keymap | Mode | Description |
+| --- | --- | --- |
+| `<leader>fb` | n | Buffers |
+| `<leader>fc` | n | Find Config File |
+| `<leader>ff` | n | Find Git Files |
+| `<leader>fa` | n | Find Files (all, including gitignored) |
+| `<leader>fg` | n | Find Git Files (including untracked) |
+| `<leader>fr` | n | Recent Files |
+| `<leader>fR` | n | Resume last picker |
+| `<leader>fl` | n | Live Grep (including hidden files) |
+
+#### Git (`<leader>g`)
+
+| Keymap | Mode | Description |
+| --- | --- | --- |
+| `<leader>gc` | n | Git Commits |
+| `<leader>gs` | n | Git Status |
+| `<leader>gS` | n | Git Stash |
+| `<leader>gb` | n | Git Branches |
+| `<leader>gB` | n | Git Buffer Commits |
+
+#### Search (`<leader>s`)
+
+| Keymap | Mode | Description |
+| --- | --- | --- |
+| `<leader>sb` | n | Search Current Buffer |
+| `<leader>sB` | n | Search Lines in Open Buffers |
+| `<leader>sg` | n | Grep (all files, including hidden) |
+| `<leader>sw` | n | Search word under cursor |
+| `<leader>sw` | v | Search visual selection |
+| `<leader>sW` | n | Search WORD under cursor |
+| `<leader>s"` | n | Registers |
+| `<leader>sa` | n | Find Actions (Commands) |
+| `<leader>s:` | n | Command History |
+| `<leader>sc` | n | Autocmds |
+| `<leader>sC` | n | Commands |
+| `<leader>sd` | n | Document Diagnostics |
+| `<leader>sD` | n | Workspace Diagnostics |
+| `<leader>sh` | n | Help Pages |
+| `<leader>sH` | n | Highlights |
+| `<leader>si` | n | LSP Incoming Calls |
+| `<leader>so` | n | LSP Outgoing Calls |
+| `<leader>sj` | n | Search Jumplist |
+| `<leader>sk` | n | Search Keymaps |
+| `<leader>sl` | n | Location List |
+| `<leader>sm` | n | Search Marks |
+| `<leader>sM` | n | Man Pages |
+| `<leader>sq` | n | Search Quickfix |
+| `<leader>st` | n | Todo Comments |
+| `<leader>sT` | n | Todo/Fix/Fixme |
+| `<leader>su` | n | Changelist |
+| `<leader>sp` | n | Search for Plugin Spec |
+| `<leader>uC` | n | Colorschemes |
+
+#### LSP
+
+| Keymap | Mode | Description |
+| --- | --- | --- |
+| `gd` | n | Goto Definition |
+| `gD` | n | Goto Declaration |
+| `gr` | n | References |
+| `gi` | n | Goto Implementation |
+| `gy` | n | Goto Type Definition |
+| `<leader>ss` | n | LSP Document Symbols |
+| `<leader>sS` | n | LSP Workspace Symbols |
 
 ### Task Management & Productivity
 
@@ -246,15 +392,11 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 
 | Key             | Description                 |
 | --------------- | --------------------------- |
-| `<leader>bp`    | Toggle Pin                  |
-| `<leader>bP`    | Delete Non-Pinned Buffers   |
 | `<leader>bo`    | Delete Other Buffers        |
 | `<leader>br`    | Delete Buffers to the Right |
 | `<leader>bl`    | Delete Buffers to the Left  |
 | `<S-h>` or `[b` | Previous Buffer             |
 | `<S-l>` or `]b` | Next Buffer                 |
-| `[B`            | Move Buffer Left            |
-| `]B`            | Move Buffer Right           |
 | `<leader>bb`    | Switch to Other Buffer      |
 | `<leader>`      | Switch to Other Buffer      |
 
@@ -299,49 +441,35 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 | `<A-k>` | Move Line Up                     |
 | `gl`    | Go to end of line                |
 | `gh`    | Go to start of line              |
-| `<A-h>` | Go to start of line              |
-| `<A-l>` | Go to end of line                |
 | `<A-a>` | Select all text                  |
 
 ### Git Operations
 
-| Key           | Description         |
-| ------------- | ------------------- |
-| `]h`          | Next Hunk           |
-| `[h`          | Previous Hunk       |
-| `]H`          | Last Hunk           |
-| `[H`          | First Hunk          |
-| `<leader>ghs` | Stage Hunk          |
-| `<leader>ghr` | Reset Hunk          |
-| `<leader>ghS` | Stage Buffer        |
-| `<leader>ghu` | Undo Stage Hunk     |
-| `<leader>ghR` | Reset Buffer        |
-| `<leader>ghp` | Preview Hunk Inline |
-| `<leader>ghb` | Blame Line          |
-| `<leader>ghB` | Blame Buffer        |
-| `<leader>ghd` | Diff This           |
-| `<leader>ghD` | Diff This ~         |
-| `<leader>tb`  | Toggle Blame Line   |
-| `<leader>gs`  | Git Status          |
+| Key           | Description   |
+| ------------- | ------------- |
+| `]h`          | Next Hunk     |
+| `[h`          | Previous Hunk |
+| `]H`          | Last Hunk     |
+| `[H`          | First Hunk    |
+| `<leader>ghs` | Stage Hunk    |
+| `<leader>ghr` | Reset Hunk    |
+| `<leader>gc`  | Git Log       |
+| `<leader>gs`  | Git Hunks     |
+| `<leader>gS`  | Git Stash     |
+| `<leader>gg`  | Lazygit       |
 
 ### LSP & Code Actions
 
-| Key          | Description                 |
-| ------------ | --------------------------- |
-| `<leader>ca` | Code Action                 |
-| `<leader>cA` | Source Action               |
-| `<leader>cr` | Rename                      |
-| `<leader>cf` | Format Document             |
-| `<leader>ck` | Run Type Check (TypeScript) |
-| `<leader>cR` | Refactor                    |
-| `<leader>.`  | Quick Fix                   |
-| `gr`         | Find References             |
-| `gd`         | Go to Definition            |
-| `gi`         | Go to Implementation        |
-| `go`         | Go to Type Definition       |
-| `K`          | Show Documentation          |
+| Key          | Description             |
+| ------------ | ----------------------- |
+| `<leader>ca` | Code Action             |
+| `<leader>cr` | Rename                  |
+| `<leader>cf` | Format Document         |
+| `<leader>.`  | Quick Fix / Code Action |
+| `gd`         | Go to Definition        |
+| `K`          | Show Documentation      |
 
-### Copilot
+### Copilot _(extra plugin)_
 
 | Key     | Description         |
 | ------- | ------------------- |
@@ -368,8 +496,8 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 | `<leader>xX` | Toggle Buffer Diagnostics         |
 | `<leader>cs` | Toggle Symbols                    |
 | `<leader>cl` | Toggle LSP Definitions/References |
-| `<leader>xl` | Toggle Location List              |
-| `<leader>xq` | Toggle Quickfix List              |
+| `<leader>xL` | Toggle Location List              |
+| `<leader>xQ` | Toggle Quickfix List              |
 | `[q`         | Previous Quickfix                 |
 | `]q`         | Next Quickfix                     |
 | `<leader>cd` | Line Diagnostics                  |
@@ -382,14 +510,30 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 
 ### File Operations
 
-| Key          | Description                      |
-| ------------ | -------------------------------- |
-| `<C-s>`      | Save File                        |
-| `<leader>fn` | New File                         |
-| `<leader>qq` | Quit All                         |
-| `<C-c>`      | Copy whole file content          |
-| `<leader>m`  | Markdown preview (Previm)        |
-| `<leader>tm` | Toggle Markdown preview (Render) |
+| Key          | Description                         |
+| ------------ | ----------------------------------- |
+| `<C-s>`      | Save File                           |
+| `<leader>fn` | New File                            |
+| `<leader>qq` | Quit All                            |
+| `<C-c>`      | Copy whole file content             |
+| `<leader>m`  | Markdown preview (Previm)          |
+| `<leader>tm` | Toggle Markdown preview (Render)    |
+| `<leader>e`  | File Explorer (mini.files)          |
+| `<leader>E`  | File Explorer (cwd)                 |
+| `.`          | Toggle hidden files (mini.files)    |
+| `<C-c>`      | Copy path (mini.files)              |
+| `<M-h>`      | Toggle hidden files (mini.pick)     |
+| `<M-u>`      | Toggle gitignored files (mini.pick) |
+
+### Search & Navigation
+
+| Key          | Description                              |
+| ------------ | ---------------------------------------- |
+| `<leader><space>` | Find Files (normal picker)          |
+| `<leader>ff` | Find Files (with hidden toggle)        |
+| `<leader>fA` | Find Files (all including gitignored)  |
+| `<leader>/`  | Live Grep (normal files only)           |
+| `<leader>sg` | Live Grep (hidden files, respects .gitignore) |
 
 ### UI & Formatting
 
@@ -410,23 +554,16 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 
 ### Dashboard
 
-| Key | Description     |
-| --- | --------------- |
-| `f` | Find File       |
-| `g` | Find Text       |
-| `r` | Recent Files    |
-| `c` | Config          |
-| `s` | Restore Session |
-| `q` | Quit            |
-| `l` | Lazy            |
-| `u` | Update          |
-
-### Zen Mode
-
-| Key          | Description      |
-| ------------ | ---------------- |
-| `<leader>cz` | Toggle Zen Mode  |
-| `<leader>tz` | Toggle Zoom Mode |
+| Item            | Description           |
+| --------------- | --------------------- |
+| Find File       | Open file picker      |
+| Find Text       | Live grep             |
+| Recent Files    | Recently opened files |
+| Config          | Find files in config  |
+| Restore Session | Load last session     |
+| Lazy            | Open lazy.nvim        |
+| Update          | Update plugins        |
+| Quit            | Quit Neovim           |
 
 ### Terminal
 
@@ -437,8 +574,8 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 | `<C-j>`      | Go to Lower Window |
 | `<C-k>`      | Go to Upper Window |
 | `<C-l>`      | Go to Right Window |
-| `<C-/>`      | Hide Terminal      |
-| `<C-t>`      | Toggle Terminal    |
+| `<leader>ft` | Toggle Terminal    |
+| `<C-/>`      | Toggle Terminal    |
 
 ### Treesitter
 
@@ -463,17 +600,43 @@ This configuration uses [kanagawa.nvim](https://github.com/rebelot/kanagawa.nvim
 | `<D-c>` | Copy (in visual mode) |
 | `<D-v>` | Paste (in all modes)  |
 
-### AI (Copilot Chat)
+### AI (Sidekick)
 
-| Key          | Description                                 |
-| ------------ | ------------------------------------------- |
-| `<leader>ap` | CopilotChat - Prompt actions                |
-| `<leader>am` | CopilotChat - Generate commit message       |
-| `<leader>af` | CopilotChat - Fix Diagnostic                |
-| `<leader>al` | CopilotChat - Clear buffer and chat history |
-| `<leader>av` | CopilotChat - Toggle                        |
-| `<leader>a?` | CopilotChat - Select Models                 |
-| `<leader>aa` | CopilotChat - Select Agents                 |
+| Key          | Description                         |
+| ------------ | ----------------------------------- |
+| `<leader>aa` | Sidekick - Toggle CLI               |
+| `<leader>as` | Sidekick - Select CLI tool          |
+| `<leader>ad` | Sidekick - Detach CLI session       |
+| `<leader>at` | Sidekick - Send "this" context      |
+| `<leader>af` | Sidekick - Send file                |
+| `<leader>av` | Sidekick - Send visual selection    |
+| `<leader>ap` | Sidekick - Select prompt            |
+| `<leader>ac` | Sidekick - Toggle Claude            |
+| `<leader>am` | Sidekick - Generate commit message  |
+| `<Tab>`      | Next Edit Suggestion - Jump/Apply   |
+| `<C-.>`      | Sidekick - Switch focus to/from CLI |
+
+### Claude Code (extra)
+
+| Key          | Description              |
+| ------------ | ------------------------ |
+| `<C-,>`      | Toggle Claude            |
+| `<leader>Cc` | Toggle Claude            |
+| `<leader>Cf` | Focus Claude             |
+| `<leader>Cs` | Send selection to Claude |
+| `<leader>Cb` | Add buffer to Claude     |
+| `<leader>Ca` | Accept diff              |
+| `<leader>Cd` | Deny diff                |
+| `<leader>Cp` | Select prompt            |
+| `<leader>Ce` | Explain code             |
+| `<leader>Cr` | Review code              |
+| `<leader>Ct` | Write tests              |
+| `<leader>Cm` | Generate commit message  |
+| `<leader>Co` | Optimize code            |
+| `<leader>Cx` | Fix issues               |
+| `<leader>CR` | Refactor code            |
+| `<leader>CD` | Add documentation        |
+| `<leader>CS` | Security review          |
 
 ### Testing
 
@@ -566,7 +729,6 @@ Example usage:
 Available options:
 
 1. Plugins:
-
    - `no-neck-pain`: Additional UI plugin
    - `codecompanion`: AI code companion
    - `avante`: Alternative AI assistant
@@ -596,7 +758,7 @@ You can also manually create a `.nvim-config.lua` file:
 -- Project-specific Neovim configuration
 
 -- Set TypeScript LSP server
- vim.g.lsp_typescript_server = "vtsls"
+vim.g.lsp_typescript_server = "ts_ls"
 
 -- Enable additional LSP servers
 vim.g.lsp_on_demands = {
@@ -616,39 +778,6 @@ vim.opt.shiftwidth = 2
 
 This file is not tracked by git, making it perfect for project-specific customizations.
 
-### Monorepo/Micro-frontend Configuration
-
-For monorepo projects (pnpm workspaces, Turborepo, Nx, Lerna, etc.), create a `.nvim-config.lua` file in your project root:
-
-```lua
--- .nvim-config.lua for monorepo projects
-
--- Use vtsls for better monorepo support (recommended)
-vim.g.lsp_typescript_server = "vtsls"
-
--- Enable ESLint and TailwindCSS for full-stack development
-vim.g.lsp_on_demands = {
-  "eslint",
-  "tailwindcss",
-}
-
--- The LSP servers will automatically detect:
--- - pnpm-workspace.yaml for pnpm monorepos
--- - turbo.json for Turborepo
--- - nx.json for Nx workspaces
--- - lerna.json for Lerna projects
--- - Multiple package.json files in apps/* and packages/*
-```
-
-The enhanced configuration provides:
-
-- **Automatic workspace detection**: Finds all `package.json` files in your monorepo
-- **Smart root resolution**: Detects `tsconfig.json`, `pnpm-workspace.yaml`, `turbo.json`, etc.
-- **Multi-package support**: TypeScript, ESLint, and TailwindCSS work across all packages
-- **Path aliases**: Proper resolution of TypeScript path mappings
-
-For more details, see [`.nvim-config.lua.example`](.nvim-config.lua.example).
-
 </details>
 
 ## Extra Plugins
@@ -661,7 +790,6 @@ This configuration includes several extra plugins that can be enabled on demand 
 ### Available Extra Plugins
 
 1. **[no-neck-pain.nvim](https://github.com/shortcuts/no-neck-pain.nvim)**
-
    - Distraction-free writing mode with customizable width
    - Alternative to zen-mode with a focus on reducing neck strain
    - Keymaps:
@@ -670,7 +798,6 @@ This configuration includes several extra plugins that can be enabled on demand 
      - `<leader>zd`: Decrease width
 
 2. **[codecompanion.nvim](https://github.com/olimorris/codecompanion.nvim)**
-
    - AI code companion with GitHub Copilot integration
    - Rich set of features including code explanation, refactoring, and inline documentation
    - Supports slash commands for context-aware actions
@@ -684,7 +811,6 @@ This configuration includes several extra plugins that can be enabled on demand 
      - `<leader>An`: Suggest better naming
 
 3. **[avante.nvim](https://github.com/yetone/avante.nvim)**
-
    - Alternative AI code assistant using Copilot
    - Replaces the standard Copilot implementation
    - Provides a more streamlined interface
@@ -693,6 +819,53 @@ This configuration includes several extra plugins that can be enabled on demand 
    - Minecraft Plugin Hub integration
    - Access Minecraft plugins directly from Neovim
    - Command: `:MCPHub`
+
+5. **[oil.nvim](https://github.com/stevearc/oil.nvim)**
+   - File explorer that lets you edit your filesystem like a buffer
+   - Replace netrw with a more intuitive file management experience
+   - Built-in git integration and smart file hiding
+   - Keymaps:
+     - `<leader>e`: Toggle floating file explorer (overrides mini.files)
+     - `<C-s>`: Save all changes in oil buffer
+     - `q`: Close oil buffer
+
+6. **[nvim-ufo](https://github.com/kevinhwang91/nvim-ufo)**
+   - Ultra-fast folding with treesitter and indent providers
+   - Enhanced fold text with line count display
+   - Improves code navigation and readability
+   - Keymaps:
+     - `zR`: Open all folds
+     - `zM`: Close all folds
+
+7. **[fold-preview.nvim](https://github.com/anuvyklack/fold-preview.nvim)**
+   - Preview folded code without opening the fold
+   - Includes pretty-fold.nvim for better fold text formatting
+   - Smart fold navigation with h/l keys
+   - Shows fold level indicators and line counts
+
+8a. **[copilot-chat.nvim](https://github.com/CopilotC-Nvim/CopilotChat.nvim)** - Traditional AI chat interface with GitHub Copilot - Interactive conversations, code explanations, and commit message generation - Alternative to sidekick.nvim if you prefer a dedicated chat window - Automatically disables sidekick.nvim when enabled - Keymaps (when enabled): - `<leader>ap`: Prompt actions - `<leader>am`: Generate commit message - `<leader>af`: Fix diagnostic - `<leader>al`: Clear buffer and chat history - `<leader>av`: Toggle chat window - `<leader>a?`: Select models
+
+8b. **[copilot.vim](https://github.com/github/copilot.vim)** - GitHub Copilot integration moved to extra plugins - Provides AI-powered code completion and suggestions - Keymaps (when enabled): - `<C-y>`: Accept suggestion - `<C-i>`: Accept line - `<C-j>`: Next suggestion - `<C-k>`: Previous suggestion - `<C-d>`: Dismiss suggestion - Note: This plugin is disabled by default and can be enabled via extra plugins
+
+8c. **[blink-copilot](https://github.com/fang2hou/blink-copilot)** - Copilot source for blink.cmp - Note: This plugin is disabled by default and can be enabled via extra plugins
+
+8d. **[claudecode.nvim](https://github.com/coder/claudecode.nvim)** - Claude Code integration (floating terminal + prompt shortcuts) - Note: This plugin is disabled by default and can be enabled via extra plugins
+
+9. **[difft.nvim](https://github.com/ahkohd/difft.nvim)**
+   - Beautiful structural diffs using difft
+   - Shows git diffs with better syntax highlighting and structure awareness
+   - Supports multiple layouts: buffer, float, or ivy_taller
+   - Keymaps:
+     - `<leader>gd`: Toggle Difft viewer
+
+10. **[scooter](https://github.com/liamg/scooter)**
+    - Blazingly fast file search and navigation
+    - Alternative to grug-far with better performance
+    - Interactive fuzzy search with file preview
+    - Automatically disables grug-far.nvim when enabled
+    - Keymaps:
+      - `<leader>sr`: Open scooter (normal mode)
+      - `<leader>sr`: Search selected text in scooter (visual mode)
 
 ### Enabling Extra Plugins
 
@@ -703,11 +876,20 @@ vim.g.enable_extra_plugins = {
   "no-neck-pain",
   "codecompanion",
   "avante",
-  "mcphub"
+  "mcphub",
+  "oil",
+  "nvim-ufo",
+  "fold-preview",
+  "copilot-chat",  -- Alternative to sidekick.nvim
+  "copilot",       -- GitHub Copilot integration
+  "blink-copilot", -- Copilot source for blink.cmp
+  "claudecode",    -- Claude Code integration
+  "difft",
+  "scooter"        -- Alternative to grug-far.nvim
 }
 ```
 
-Note that some plugins like `avante.nvim` will disable conflicting plugins (such as `copilot.vim`) when enabled.
+Note that some plugins like `avante.nvim`, `copilot-chat`, and `scooter` will disable conflicting plugins when enabled.
 
 </details>
 

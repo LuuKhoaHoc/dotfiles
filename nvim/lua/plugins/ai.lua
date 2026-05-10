@@ -9,7 +9,7 @@ local SIDEKICK_TOKENS = {
 
 -- Reusable prompts
 local COMMIT_PROMPT =
-"Run git diff --staged then do atomic commit message for the change with commitizen convention. Write clear, informative commit messages that explain the 'what' and 'why' behind changes, not just the 'how'."
+  "Run git diff --staged then do atomic commit message for the change with commitizen convention. Write clear, informative commit messages that explain the 'what' and 'why' behind changes, not just the 'how'."
 
 --- Safe require wrapper with error notification
 ---@param module string Module name to require
@@ -33,33 +33,22 @@ return {
       },
     },
   },
-  -- integration with snacks.nvim for sending selection to sidekick
   {
-    "folke/snacks.nvim",
-    optional = true,
-    opts = {
-      picker = {
-        actions = {
-          sidekick_send = function(...)
-            return require("sidekick.cli.picker.snacks").send(...)
-          end,
-        },
-        win = {
-          input = {
-            keys = {
-              ["<a-a>"] = {
-                "sidekick_send",
-                mode = { "n", "i" },
-              },
-            },
-          },
-        },
-      },
-    },
+    "echasnovski/mini.pick",
+    opts = {},
+    lazy = false,
+    config = function(_, opts)
+      local MiniPick = require "mini.pick"
+      MiniPick.setup(opts)
+      vim.ui.select = MiniPick.ui_select
+    end,
   },
   {
     "folke/sidekick.nvim",
     opts = {
+      nes = {
+        enabled = false,
+      },
       cli = {
         mux = {
           -- Terminal multiplexer backend for Sidekick CLI integration
@@ -69,6 +58,10 @@ return {
           enabled = true,
         },
         tools = {
+          -- Hermes Agent (one-shot mode)
+          hermes = { cmd = { "hermes" } },
+          -- GLM model with CCS
+          glm = { cmd = { "ccs", "glm" } },
           -- Based on https://github.com/folke/sidekick.nvim/issues/158#issuecomment-3491732950
           amp = {
             cmd = { "amp" },
@@ -92,32 +85,6 @@ return {
               ret = ret:gsub("@([^ ]+)%s*:L(%d+)", "@%1#L%2")
               return ret
             end,
-          },
-          letta = {
-            cmd = { "letta" },
-            format = function(text)
-              local Text = require "sidekick.text"
-              -- Quote file paths containing special characters
-              Text.transform(text, function(str)
-                return str:find "[^%w/_%.%-]" and ('"' .. str .. '"') or str
-              end, "SidekickLocFile")
-              local ret = Text.to_string(text)
-              -- Transform Sidekick location format to amp's format
-              -- Multiline range with columns: @file :L5:C20-L6:C8 => @file#L5-6
-              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+%-L(%d+):C%d+", "@%1#L%2-%3")
-              -- Single line range with columns: @file :L5:C9-C29 => @file#L5
-              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+%-C%d+", "@%1#L%2")
-              -- Multiline range without columns: @file :L5-L13 => @file#L5-13
-              ret = ret:gsub("@([^ ]+)%s*:L(%d+)%-L(%d+)", "@%1#L%2-%3")
-              -- Single line with column: @file :L5:C9 => @file#L5
-              ret = ret:gsub("@([^ ]+)%s*:L(%d+):C%d+", "@%1#L%2")
-              -- Single line without column: @file :L5 => @file#L5
-              ret = ret:gsub("@([^ ]+)%s*:L(%d+)", "@%1#L%2")
-              return ret
-            end,
-          },
-          kilocode = {
-            cmd = { "kilocode" },
           },
         },
         prompts = {
@@ -149,16 +116,12 @@ return {
             diagnostics = true,
           },
           -- Factory AI use cases
-          understand =
-          "Explain the purpose and structure of this code. What does it do and how does it fit into the broader system?",
-          coverage =
-          "Analyze this code and suggest improvements to test coverage. What edge cases or scenarios are missing?",
+          understand = "Explain the purpose and structure of this code. What does it do and how does it fit into the broader system?",
+          coverage = "Analyze this code and suggest improvements to test coverage. What edge cases or scenarios are missing?",
           debug = "Help me debug this code. Analyze the error, suggest root causes, and propose a minimal fix.",
-          feature =
-          "Help me implement this feature. Create a plan first, then implement step by step with clear explanations.",
+          feature = "Help me implement this feature. Create a plan first, then implement step by step with clear explanations.",
           dependency = "Review this code for dependency issues, security vulnerabilities, and compatibility problems.",
-          tdd =
-          "Help with test-driven development. First write tests that define the expected behavior, then implement the code to pass those tests.",
+          tdd = "Help with test-driven development. First write tests that define the expected behavior, then implement the code to pass those tests.",
         },
       },
     },
@@ -249,6 +212,14 @@ return {
         desc = "Sidekick Switch Focus",
       },
       {
+        "<leader>ac",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then cli.toggle({ name = "OpenCode", focus = true }) end
+        end,
+        desc = "Sidekick Toggle OpenCode",
+      },
+      {
         "<leader>am",
         function()
           local cli = safe_require("sidekick.cli")
@@ -257,6 +228,16 @@ return {
           end
         end,
         desc = "Sidekick - Generate commit message for staged changes",
+      },
+      {
+        "<leader>ah",
+        function()
+          local cli = safe_require("sidekick.cli")
+          if cli then
+            cli.send({ focus = true, tool = "hermes", submit = true })
+          end
+        end,
+        desc = "Hermes Agent",
       },
     },
   },

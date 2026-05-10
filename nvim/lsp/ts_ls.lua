@@ -7,41 +7,10 @@ return {
   filetypes = {
     "javascript",
     "javascriptreact",
-    "javascript.jsx",
     "typescript",
     "typescriptreact",
-    "typescript.tsx",
   },
-  -- Enhanced root markers for monorepo support
-  root_markers = {
-    -- TypeScript/JavaScript config files (highest priority)
-    "tsconfig.json",
-    "tsconfig.base.json",
-    "jsconfig.json",
-    -- Package managers
-    "package.json",
-    "pnpm-workspace.yaml",
-    "pnpm-lock.yaml",
-    "yarn.lock",
-    "package-lock.json",
-    -- Monorepo config files
-    "turbo.json",
-    "lerna.json",
-    "nx.json",
-    "rush.json",
-    "workspace.json",
-    -- Framework configs
-    "nest-cli.json",
-    "next.config.js",
-    "next.config.mjs",
-    "next.config.cjs",
-    "next.config.ts",
-    "vite.config.js",
-    "vite.config.ts",
-    "rollup.config.js",
-    "webpack.config.js",
-    ".git",
-  },
+  root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
   settings = {
     typescript = {
       -- Inlay Hints preferences
@@ -69,12 +38,6 @@ return {
         convertTabsToSpaces = vim.o.expandtab,
         tabSize = vim.o.tabstop,
       },
-      -- Monorepo support
-      suggest = {
-        includeCompletionsForModuleExports = true,
-        includeCompletionsWithInsertText = true,
-      },
-      updateImportsOnFileMove = { enabled = "always" },
     },
     javascript = {
       -- Inlay Hints preferences
@@ -101,11 +64,6 @@ return {
         indentSize = vim.o.shiftwidth,
         convertTabsToSpaces = vim.o.expandtab,
         tabSize = vim.o.tabstop,
-      },
-      -- Monorepo support
-      suggest = {
-        includeCompletionsForModuleExports = true,
-        includeCompletionsWithInsertText = true,
       },
     },
     completions = {

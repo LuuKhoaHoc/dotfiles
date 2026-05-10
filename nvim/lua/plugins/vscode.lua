@@ -175,12 +175,6 @@ vim.api.nvim_create_autocmd("User", {
     vim.keymap.set("n", "<leader>bd", function()
       vscode.action "workbench.action.closeActiveEditor"
     end)
-
-    -- Quick close buffer
-    vim.keymap.set("n", "<S-q>", function()
-      vscode.action "workbench.action.closeActiveEditor"
-    end)
-
     -- Close other buffers
     vim.keymap.set("n", "<leader>bo", function()
       vscode.action "workbench.action.closeOtherEditors"
@@ -242,6 +236,19 @@ vim.api.nvim_create_autocmd("User", {
     -- Multiple cursors
     vim.keymap.set({ "n", "x", "i" }, "<C-m>", function()
       require("vscode-multi-cursor").addSelectionToNextFindMatch()
+    end)
+
+    -- Save file, need to add this key to "vscode-neovim.ctrlKeysForInsertMode" and "vscode-neovim.ctrlKeysForNormalMode" in settings.json
+    vim.keymap.set({ "n", "i", "v" }, "<C-s>", function()
+      vscode.action "workbench.action.files.save"
+      if vim.fn.mode() ~= "n" then
+        vim.cmd "stopinsert"
+      end
+    end)
+
+    -- Close file/buffer
+    vim.keymap.set("n", "<S-q>", function()
+      vscode.action "workbench.action.closeActiveEditor"
     end)
   end,
 })

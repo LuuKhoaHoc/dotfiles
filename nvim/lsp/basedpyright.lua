@@ -1,16 +1,23 @@
 local Lsp = require "utils.lsp"
--- uv tool install pyright@latest
+-- npm install -g basedpyright
 return {
-  cmd = { "pyright-langserver", "--stdio" },
+  cmd = { "basedpyright-langserver", "--stdio" },
   on_attach = Lsp.on_attach,
   filetypes = { "python" },
+  root_markers = {
+    "pyproject.toml",
+    "setup.py",
+    "setup.cfg",
+    "requirements.txt",
+    ".git",
+  },
   settings = {
     python = {
       analysis = {
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
-        typeCheckingMode = "basic",
         diagnosticMode = "openFilesOnly",
+        typeCheckingMode = "basic",
       },
     },
   },

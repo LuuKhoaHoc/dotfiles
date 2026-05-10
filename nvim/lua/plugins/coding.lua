@@ -1,44 +1,12 @@
 local completion = vim.g.completion_mode or "blink" -- or 'native'
 
 return {
-  -- Setup Copilot
+  -- nvim-cmp compatibility layer for blink.cmp (required by 99 plugin for blink support)
   {
-    "github/copilot.vim",
-    -- NOTE: Pin version to avoid breaking changes
-    version = "v1.42.0",
-    event = "VeryLazy",
-    config = function()
-      -- For copilot.vim
-      -- enable copilot for specific filetypes
-      vim.g.copilot_filetypes = {
-        ["TelescopePrompt"] = false,
-        ["grug-far"] = false,
-        ["grug-far-history"] = false,
-        ["copilot-chat"] = false,
-      }
-
-      -- Set to true to assume that copilot is already mapped
-      vim.g.copilot_assume_mapped = true
-      -- Set workspace folders
-      vim.g.copilot_workspace_folders = { "~/Dev-Work", "/run/media/khoahoc/Data/Obsidian Vault" }
-
-      -- Setup keymaps
-      local keymap = vim.keymap.set
-      local opts = { silent = true }
-
-      -- Set <C-y> to accept copilot suggestion
-      keymap("i", "<C-y>", 'copilot#Accept("\\<CR>")', { expr = true, replace_keycodes = false })
-
-      -- Set <C-i> to accept line
-      keymap("i", "<C-i>", "<Plug>(copilot-accept-line)", opts)
-
-      -- Set <C-j> to next suggestion, <C-k> to previous suggestion
-      keymap("i", "<C-j>", "<Plug>(copilot-next)", opts)
-      keymap("i", "<C-k>", "<Plug>(copilot-previous)", opts)
-
-      -- Set <C-d> to dismiss suggestion
-      keymap("i", "<C-d>", "<Plug>(copilot-dismiss)", opts)
-    end,
+    "saghen/blink.compat",
+    -- use v2.* for blink.cmp v1.*
+    version = "2.*",
+    opts = {},
   },
   -- Autocomplete, refer to https://cmp.saghen.dev/#compared-to-built-in-completion for more information
   {
@@ -46,38 +14,34 @@ return {
     event = "InsertEnter",
     enable = completion == "blink",
     -- use a release tag to download pre-built binaries
-    -- version = "1.*",
-    branch = "main", -- NOTE: use main branch for latest features and fixes, use version tag for stable releases
+    version = "v0.*",
+    -- branch = "main", -- NOTE: use main branch for latest features and fixes, use version tag for stable releases
     -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-    -- build = 'cargo build --release',
+    build = "cargo build --release",
     -- If you use nix, you can build from source using latest nightly rust with:
     -- build = 'nix run .#build-plugin',
     dependencies = {
-      "saghen/blink.compat",
+      { "saghen/blink.lib", build = "cargo build --release" },
       -- optional: provides snippets for the snippet source
-      {
-        "L3MON4D3/LuaSnip",
-        version = "v2.*",
-        build = (function()
-          -- Build Step is needed for regex support in snippets.
-          -- This step is not supported in many windows environments.
-          -- Remove the below condition to re-enable on windows.
-          if vim.fn.has "win32" == 1 or vim.fn.executable "make" == 0 then
-            return
-          end
-          return "make install_jsregexp"
-        end)(),
-        dependencies = {
+      "L3MON4D3/LuaSnip",
+      version = "v2.*",
+      build = (function()
+        -- Build Step is needed for regex support in snippets.
+        -- This step is not supported in many windows environments.
+        -- Remove the below condition to re-enable on windows.
+        if vim.fn.has "win32" == 1 or vim.fn.executable "make" == 0 then
+          return
+        end
+        return "make install_jsregexp"
+      end)(),
+      dependencies = {
+        -- `friendly-snippets` contains a variety of premade snippets.
+        {
           "rafamadriz/friendly-snippets",
-        },
-        config = function(_, opts)
-          if opts then require("luasnip").setup(opts) end
-          require("luasnip.loaders.from_vscode").lazy_load()
-          require("luasnip.loaders.from_vscode").lazy_load { paths = { vim.fn.stdpath "config" .. "/snippets" } }
-        end,
-        opts = {
-          history = true,
-          delete_check_events = "TextChanged",
+          config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+            require("luasnip.loaders.from_vscode").lazy_load { paths = { vim.fn.stdpath "config" .. "/snippets" } }
+          end,
         },
       },
     },
@@ -117,8 +81,13 @@ return {
       },
       snippets = { preset = "luasnip" },
       sources = {
-        default = { "lsp", "path", "snippets", "buffer" },
-        providers = {},
+        default = { "lsp", "path", "snippets", "buffer", "cmp" },
+        providers = {
+          cmp = {
+            name = "cmp",
+            module = "blink.compat.source",
+          },
+        },
       },
       fuzzy = { implementation = "prefer_rust_with_warning" },
       -- Disable cmdline completions
@@ -128,9 +97,9 @@ return {
       -- Disable per file type
       enabled = function()
         return not vim.tbl_contains({ "copilot-chat" }, vim.bo.filetype)
-            and not vim.tbl_contains({ "codecompanion" }, vim.bo.filetype)
-            and vim.bo.buftype ~= "prompt"
-            and vim.b.completion ~= false
+          and not vim.tbl_contains({ "codecompanion" }, vim.bo.filetype)
+          and vim.bo.buftype ~= "prompt"
+          and vim.b.completion ~= false
       end,
     },
     -- without having to redefine it
@@ -146,8 +115,7 @@ return {
     opts = {
       library = {
         { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        { path = "snacks.nvim",        words = { "Snacks" } },
-        { path = "lazy.nvim",          words = { "LazyVim" } },
+        { path = "lazy.nvim", words = { "LazyVim" } },
       },
     },
     optional = true,
@@ -190,24 +158,6 @@ return {
       },
     },
   },
-  -- Support copilot as source
-  {
-    "saghen/blink.cmp",
-    dependencies = { "fang2hou/blink-copilot" },
-    opts = {
-      sources = {
-        default = { "copilot" },
-        providers = {
-          copilot = {
-            name = "copilot",
-            module = "blink-copilot",
-            score_offset = 100,
-            async = true,
-          },
-        },
-      },
-    },
-  },
   -- Refactoring
   {
     "folke/which-key.nvim",
@@ -224,7 +174,7 @@ return {
     "ThePrimeagen/refactoring.nvim",
     vscode = true,
     dependencies = {
-      { "nvim-lua/plenary.nvim",          vscode = true },
+      { "nvim-lua/plenary.nvim", vscode = true },
       { "nvim-treesitter/nvim-treesitter" },
     },
     keys = {
@@ -365,23 +315,6 @@ return {
     event = "VeryLazy",
     opts = {},
   },
-  -- Add surround support
-  {
-    "echasnovski/mini.surround",
-    event = "VeryLazy",
-    opts = {
-      mappings = {
-        add = "gs",             -- Add surrounding in Normal and Visual modes
-        delete = "gsd",         -- Delete surrounding
-        find = "gsf",           -- Find surrounding (forward)
-        find_left = "gsF",      -- Find surrounding (backward)
-        highlight = "gsh",      -- Highlight surrounding
-        replace = "gsr",        -- Replace surrounding
-        update_n_lines = "gsn", -- Update `n_lines`
-      },
-    },
-  },
-
   -- Extend and create a/i textobjects
   {
     "echasnovski/mini.ai",
@@ -396,14 +329,14 @@ return {
             i = { "@block.inner", "@conditional.inner", "@loop.inner" },
           },
           f = ai.gen_spec.treesitter { a = "@function.outer", i = "@function.inner" }, -- function
-          c = ai.gen_spec.treesitter { a = "@class.outer", i = "@class.inner" },       -- class
-          t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },          -- tags
-          d = { "%f[%d]%d+" },                                                         -- digits
-          e = {                                                                        -- Word with case
+          c = ai.gen_spec.treesitter { a = "@class.outer", i = "@class.inner" }, -- class
+          t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" }, -- tags
+          d = { "%f[%d]%d+" }, -- digits
+          e = { -- Word with case
             { "%u[%l%d]+%f[^%l%d]", "%f[%S][%l%d]+%f[^%l%d]", "%f[%P][%l%d]+%f[^%l%d]", "^[%l%d]+%f[^%l%d]" },
             "^().*()$",
           },
-          u = ai.gen_spec.function_call(),                          -- u for "Usage"
+          u = ai.gen_spec.function_call(), -- u for "Usage"
           U = ai.gen_spec.function_call { name_pattern = "[%w_]" }, -- without dot in function name
         },
       }
@@ -420,53 +353,5 @@ return {
     keys = {
       { "<leader>ci", "<cmd>Neogen<cr>", desc = "Neogen: Annotation generator" },
     },
-  },
-  -- Auto close tag
-  {
-    "windwp/nvim-ts-autotag",
-    event = "InsertEnter",
-    opts = {
-      opts = {
-        -- Defaults
-        enable_close = true,          -- Auto close tags
-        enable_rename = true,         -- Auto rename pairs of tags
-        enable_close_on_slash = false -- Auto close on trailing </
-      },
-      -- Also override individual filetype configs, these take priority.
-      -- Empty by default, useful if one of the "opts" global settings
-      -- doesn't work well in a specific filetype
-      per_filetype = {
-        ["html"] = {
-          enable_close = false
-        }
-      },
-    },
-  },
-  -- Convert case
-  {
-    'johmsalas/text-case.nvim',
-    config = function()
-      require('textcase').setup({})
-    end
-  },
-  -- Multi-cursor: VS Code Ctrl-D equivalent
-  {
-    "jake-stewart/multicursor.nvim",
-    event = "VeryLazy",
-    config = function()
-      local mc = require("multicursor-nvim")
-      mc.setup()
-
-      -- Ctrl+D: visual mode adds cursor to next match (like VS Code)
-      vim.keymap.set("x", "<C-A-d>", mc.matchAddCursor, { desc = "Add cursor to next match" })
-      -- Alt+A: add all matches (Ctrl+Shift+L doesn't work in most terminals)
-      vim.keymap.set("x", "<A-a>", mc.matchAllAddCursors, { desc = "Add cursors to all matches" })
-      -- Ctrl+X: skip current, add next
-      vim.keymap.set("x", "<C-x>", mc.matchSkipCursor, { desc = "Skip, add next match" })
-      -- Ctrl+P: remove last cursor
-      vim.keymap.set({ "n", "x" }, "<C-p>", mc.deleteCursor, { desc = "Remove cursor" })
-      -- Esc: clear all cursors
-      vim.keymap.set("n", "<Esc>", mc.clearCursors, { desc = "Clear all cursors" })
-    end,
   },
 }
