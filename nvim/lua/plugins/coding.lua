@@ -15,13 +15,7 @@ return {
     enable = completion == "blink",
     -- use a release tag to download pre-built binaries
     version = "v0.*",
-    -- branch = "main", -- NOTE: use main branch for latest features and fixes, use version tag for stable releases
-    -- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
-    build = "cargo build --release",
-    -- If you use nix, you can build from source using latest nightly rust with:
-    -- build = 'nix run .#build-plugin',
     dependencies = {
-      { "saghen/blink.lib", build = "cargo build --release" },
       -- optional: provides snippets for the snippet source
       "L3MON4D3/LuaSnip",
       version = "v2.*",
@@ -83,13 +77,16 @@ return {
       sources = {
         default = { "lsp", "path", "snippets", "buffer", "cmp" },
         providers = {
+          snippets = {
+            score_offset = -100,
+          },
           cmp = {
             name = "cmp",
             module = "blink.compat.source",
           },
         },
       },
-      fuzzy = { implementation = "prefer_rust_with_warning" },
+      fuzzy = { implementation = "lua" },
       -- Disable cmdline completions
       cmdline = {
         enabled = false,

@@ -7,15 +7,16 @@ return {
       -- codespell: ux tool install codespell
       ["*"] = { "cspell", "codespell" },
       -- oxlint: npm install -g oxlint@latest
-      javascript = { "oxlint", "eslint_d" },
-      typescript = { "oxlint", "eslint_d" },
-      javascriptreact = { "oxlint", "eslint_d" },
-      typescriptreact = { "oxlint", "eslint_d" },
+      javascript = { "oxlint" },
+      typescript = { "oxlint" },
+      javascriptreact = { "oxlint" },
+      typescriptreact = { "oxlint" },
     },
     linters = {
       eslint_d = {
+        cmd = "eslint_d", -- Dùng eslint_d nếu có, fallback về eslint
         args = {
-          "--no-warn-ignored", -- Ignore warnings, support Eslint 9
+          "--no-warn-ignored",
           "--format",
           "json",
           "--stdin",
