@@ -98,6 +98,7 @@ npm install -g --force \
   @tailwindcss/language-server \
   @vtsls/language-server \
   cspell \
+  eslint_d \
   npm-check-updates \
   oxlint \
   pnpm \

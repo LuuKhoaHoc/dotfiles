@@ -351,10 +351,49 @@ return {
   {
     "echasnovski/mini.pick",
     opts = {},
+    lazy = false,
     config = function(_, opts)
       local MiniPick = require "mini.pick"
       MiniPick.setup(opts)
-      vim.ui.select = MiniPick.ui_select
+
+      -- Use custom vim.ui.select to avoid stack overflow on circular references
+      -- and handle nested picker calls correctly.
+      if _G._original_ui_select == nil then
+        _G._original_ui_select = vim.ui.select
+      end
+
+      vim.ui.select = function(items, sopts, on_choice)
+        -- If already in a picker, fallback to original to avoid nesting issues
+        if MiniPick.get_picker_state() ~= nil then
+          return _G._original_ui_select(items, sopts, on_choice)
+        end
+
+        -- Wrap items in a function to avoid deep-copy crash (H.copy_tables) in mini.pick
+        local format_item = sopts.format_item or function(x)
+          return tostring(x)
+        end
+        local items_ext = {}
+        for i = 1, #items do
+          table.insert(items_ext, { text = format_item(items[i]), item = items[i], index = i })
+        end
+
+        local source = {
+          items = function()
+            return items_ext
+          end,
+          name = sopts.prompt or sopts.kind or "Select",
+          choose = function(item)
+            on_choice(items[item.index], item.index)
+          end,
+        }
+
+        local pick_opts = { source = source }
+        -- MiniPick.start is blocking, so we can handle the cancel case
+        local item = MiniPick.start(pick_opts)
+        if item == nil then
+          on_choice(nil)
+        end
+      end
     end,
     keys = {
       -- Picker

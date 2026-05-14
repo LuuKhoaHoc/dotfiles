@@ -46,13 +46,42 @@ return {
       ["json"] = { "biome", "dprint", stop_after_first = true },
       ["markdown"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
       ["markdown.mdx"] = { "prettierd", "prettier", "dprint", stop_after_first = true },
-      ["javascript"] = { "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
-      ["javascriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
+      ["javascript"] = function(bufnr)
+        -- Ưu tiên prettier nếu có .prettierrc trong project
+        local has_prettier_config = vim.fn.filereadable(".prettierrc") == 1 or 
+                                   vim.fn.filereadable(".prettierrc.json") == 1 or
+                                   vim.fn.filereadable("prettier.config.js") == 1
+        if has_prettier_config then
+          return { "prettier", "biome", "deno_fmt", stop_after_first = true }
+        end
+        return { "biome", "deno_fmt", "prettier", stop_after_first = true }
       end,
-      ["typescript"] = { "biome", "deno_fmt", "prettierd", "prettier", "dprint", stop_after_first = true },
+      ["javascriptreact"] = function(bufnr)
+        local has_prettier_config = vim.fn.filereadable(".prettierrc") == 1 or 
+                                   vim.fn.filereadable(".prettierrc.json") == 1 or
+                                   vim.fn.filereadable("prettier.config.js") == 1
+        if has_prettier_config then
+          return { "rustywind", "prettier", "biome", "deno_fmt", stop_after_first = true }
+        end
+        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettier", "dprint") }
+      end,
+      ["typescript"] = function(bufnr)
+        local has_prettier_config = vim.fn.filereadable(".prettierrc") == 1 or 
+                                   vim.fn.filereadable(".prettierrc.json") == 1 or
+                                   vim.fn.filereadable("prettier.config.js") == 1
+        if has_prettier_config then
+          return { "prettier", "biome", "deno_fmt", stop_after_first = true }
+        end
+        return { "biome", "deno_fmt", "prettier", stop_after_first = true }
+      end,
       ["typescriptreact"] = function(bufnr)
-        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
+        local has_prettier_config = vim.fn.filereadable(".prettierrc") == 1 or 
+                                   vim.fn.filereadable(".prettierrc.json") == 1 or
+                                   vim.fn.filereadable("prettier.config.js") == 1
+        if has_prettier_config then
+          return { "rustywind", "prettier", "biome", "deno_fmt", stop_after_first = true }
+        end
+        return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettier", "dprint") }
       end,
       ["svelte"] = function(bufnr)
         return { "rustywind", first(bufnr, "biome", "deno_fmt", "prettierd", "prettier", "dprint") }
