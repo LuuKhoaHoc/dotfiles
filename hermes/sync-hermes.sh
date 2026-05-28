@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
+DOTFILES_DIR="$HOME/dotfiles"
 HERMES_DIR="$HOME/.hermes"
 HERMES_DOTFILES="$DOTFILES_DIR/hermes"
 
@@ -16,22 +16,32 @@ SYNC_ITEMS=(
   "skills"
 )
 
+sync_copy() {
+  # Copy src → dst, giữ cả file lẫn thư mục
+  # Dùng rsync nếu có, không thì dùng cp
+  local src="$1"
+  local dst="$2"
+  local parent_dir
+  parent_dir="$(dirname "$dst")"
+  if [ ! -d "$parent_dir" ]; then
+    mkdir -p "$parent_dir"
+  fi
+  if [ -d "$src" ]; then
+    # Copy thư mục: xóa dst trước rồi copy lại
+    rm -rf "$dst"
+    cp -r "$src" "$dst"
+  else
+    cp "$src" "$dst"
+  fi
+}
+
 push() {
   echo "[hermes-sync] Copying ~/.hermes → dotfiles/hermes..."
   for item in "${SYNC_ITEMS[@]}"; do
     src="$HERMES_DIR/$item"
     dst="$HERMES_DOTFILES/$item"
     if [ -e "$src" ]; then
-      if [ -d "$src" ]; then
-        rsync -a --delete \
-          --exclude='.hub/' \
-          --exclude='.usage.json' \
-          --exclude='.curator_state' \
-          --exclude='.skills_prompt_snapshot.json' \
-          "$src/" "$dst/"
-      else
-        cp "$src" "$dst"
-      fi
+      sync_copy "$src" "$dst"
       echo "  ✓ $item"
     else
       echo "  - $item (không tồn tại, bỏ qua)"
@@ -59,16 +69,7 @@ pull() {
     src="$HERMES_DOTFILES/$item"
     dst="$HERMES_DIR/$item"
     if [ -e "$src" ]; then
-      if [ -d "$src" ]; then
-        rsync -a --delete \
-          --exclude='.hub/' \
-          --exclude='.usage.json' \
-          --exclude='.curator_state' \
-          --exclude='.skills_prompt_snapshot.json' \
-          "$src/" "$dst/"
-      else
-        cp "$src" "$dst"
-      fi
+      sync_copy "$src" "$dst"
       echo "  ✓ $item"
     else
       echo "  - $item (không tồn tại, bỏ qua)"
