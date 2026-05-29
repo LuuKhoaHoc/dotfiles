@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
 HERMES_DIR="$HOME/.hermes"
 HERMES_DOTFILES="$DOTFILES_DIR/hermes"
 

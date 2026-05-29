@@ -19,13 +19,13 @@ Config, memory và skills của [Hermes Agent](https://hermes-agent.nousresearch
 
 ```bash
 # 1. Clone dotfiles
-git clone git@github.com:LuuKhoaHoc/dotfiles.git ~/dotfiles
+git clone git@github.com:LuuKhoaHoc/dotfiles.git ~/Dev-Work/dotfiles
 
 # 2. Pull hermes config về ~/.hermes
-~/dotfiles/hermes/sync-hermes.sh pull
+~/Dev-Work/dotfiles/hermes/sync-hermes.sh pull
 
 # 3. Tạo symlink cho script (tiện dùng)
-ln -sf ~/dotfiles/hermes/sync-hermes.sh ~/.local/bin/hermes-sync
+ln -sf ~/Dev-Work/dotfiles/hermes/sync-hermes.sh ~/.local/bin/hermes-sync
 ```
 
 ## Workflow hàng ngày
