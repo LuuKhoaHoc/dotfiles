@@ -1,461 +1,417 @@
+// settings.json, generated at 11-06-2026 09:12:53 GMT+0800 (Singapore Standard Time)
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
 {
-  // ============================
-  // APPEARANCE & THEME SETTINGS
-  // ============================
-  "theme": {
-    "mode": "dark",
-    "light": "Nightfox - blurred",
-    "dark": "Nightfox - blurred"
-  },
-  "icon_theme": "Zed (Default)",
-  "unstable.ui_density": "comfortable",
-
-  // ============================
-  // CUSTOM THEME OVERRIDES
-  // ============================
-  "experimental.theme_overrides": {
-    // Background transparency settings
-    "background": "#00000000",
-    "editor.background": "#00000033",
-    "editor.gutter.background": "#00000033",
-    "editor.active_line.background": "#0000002f",
-
-    // Editor highlighting
-    "editor.document_highlight.bracket_background": "#855",
-    "editor.document_highlight.read_background": "#0005",
-    "editor.document_highlight.write_background": "#f00",
-
-    // UI component backgrounds
-    "title_bar.background": "#ffffff00",
-    "tab_bar.background": "#ffffff00",
-    "toolbar.background": "#ffffff00",
-    "status_bar.background": "#00000000",
-    "panel.background": "#00000000",
-    "panel.overlay_background": "#0006",
-
-    // Border styles
-    "border": "#0000",
-    "border.variant": "#0000",
-    "border.focused": "#fff",
-    "border.selected": "#fff",
-    "border.transparent": "#fff",
-    "panel.focused_border": "#fff",
-
-    // Interactive elements
-    "element.hover": "#fff2",
-    "element.selected": "#0003",
-
-    // Scrollbar styling
-    "scrollbar.thumb.background": "#fff1",
-    "scrollbar.thumb.border": "#0000",
-    "scrollbar.thumb.active_background": "#fff2",
-    "scrollbar.thumb.hover_background": "#fff2",
-    "scrollbar.track.background": "#0000",
-    "scrollbar.track.border": "#0000",
-
-    // Error highlighting
-    "error": "#f33",
-
-    // Cursor and selection
-    "players": [
-      {
-        "cursor": "#fff",
-        "selection": "#ff5555"
-      }
-    ],
-
-    // Syntax highlighting color scheme
-    "syntax": {
-      // Comments
-      "comment": { "color": "#B5CEAB" },
-      "comment.doc": { "color": "#B5CEAB" },
-
-      // Keywords
-      "keyword": { "color": "#aaa" },
-
-      // Code elements (unified white theme)
-      "variable": { "color": "#ffffff" },
-      "function": { "color": "#ffffff" },
-      "constant": { "color": "#ffffff" },
-      "tag": { "color": "#ffffff" },
-      "constructor": { "color": "#ffffff" },
-      "variant": { "color": "#ffffff" },
-      "variable.special": { "color": "#ffffff" },
-      "type": { "color": "#ffffff" },
-      "enum": { "color": "#ffffff" },
-      "property": { "color": "#ffffff" },
-      "attribute": { "color": "#ffffff" },
-
-      // Operators and punctuation
-      "operator": { "color": "#99ff99" },
-      "punctuation": { "color": "#ff99ff" },
-      "punctuation.bracket": { "color": "#ff77ff" },
-      "punctuation.delimiter": { "color": "#99ff99" },
-      "punctuation.definition.string": { "color": "#9999ff" },
-      "punctuation.separator": { "color": "#99ff99" },
-      "punctuation.special": { "color": "#ff99ff" },
-
-      // Literals
-      "boolean": { "color": "#eeee00" },
-      "number": { "color": "#efef00" },
-      "string": { "color": "#ffff77" }
-    }
-  },
-
-  // ============================
-  // AI & CONTEXT SERVERS
-  // ============================
-  "context_servers": {
-    "mcp-server-github": {
-      "source": "extension",
-      "enabled": true,
-      "settings": {
-        "github_personal_access_token": "GITHUB_PERSONAL_ACCESS_TOKEN"
-      }
-    },
-    "mcp-server-context7": {
-      "source": "extension",
-      "enabled": true,
-      "settings": {
-        "default_minimum_tokens": "10000"
-      }
-    }
-  },
-
-  "agent_servers": {
-    "qwen": {
-      "command": "qwen",
-      "args": ["--experimental-acp"],
-      "env": {}
-    },
-    "gemini": {
-      "ignore_system_version": false
-    }
-  },
-
-  "agent": {
-    "use_modifier_to_send": true,
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "gpt-4.1"
-    },
-    "profiles": {
-      "write": {
-        "name": "Write",
-        "tools": {
-          "copy_path": true,
-          "create_directory": true,
-          "delete_path": true,
-          "diagnostics": true,
-          "edit_file": true,
-          "fetch": true,
-          "list_directory": true,
-          "project_notifications": false,
-          "move_path": true,
-          "now": true,
-          "find_path": true,
-          "read_file": true,
-          "grep": true,
-          "terminal": true,
-          "thinking": true,
-          "web_search": true
-        },
-        "enable_all_context_servers": true,
-        "context_servers": {
-          "mcp-server-context7": {
-            "tools": {
-              "resolve-library-id": true,
-              "get-library-docs": true
-            }
-          }
-        }
-      }
-    },
-    "default_profile": "write",
-    "inline_assistant_model": {
-      "provider": "copilot_chat",
-      "model": "gpt-4.1"
-    },
-    "play_sound_when_agent_done": true,
-    "always_allow_tool_actions": true
-  },
-
-  // ============================
-  // EDITOR FEATURES & BEHAVIOR
-  // ============================
-  "edit_predictions": {
-    "disabled_globs": [
-      "**/.env*",
-      "**/*.pem",
-      "**/*.key",
-      "**/*.cert",
-      "**/*.crt",
-      "**/secrets.yml"
-    ],
-    "mode": "eager",
-    "enabled_in_text_threads": false,
-    "copilot": {
-      "proxy": null,
-      "proxy_no_verify": null,
-      "enterprise_uri": null
-    }
-  },
-
-  "features": {
-    "edit_prediction_provider": "zed"
-  },
-
-  // ============================
-  // UI & LAYOUT CONFIGURATION
-  // ============================
-  "base_keymap": "VSCode",
-  "ui_font_size": 13,
-  "ui_font_family": "Hack Nerd Font",
-  "buffer_font_size": 14.5,
-  "buffer_font_family": "Maple Mono NF",
-
-  // Panel positioning
-  "project_panel": {
-    "button": true,
-    "dock": "left",
-    "git_status": true
-  },
-  "git_panel": {
-    "dock": "left"
-  },
-  "outline_panel": {
-    "dock": "right"
-  },
-  "collaboration_panel": {
-    "dock": "left"
-  },
-  "notification_panel": {
-    "dock": "left"
-  },
-
-  // Tab and scrollbar settings
-  "tab_bar": {
-    "show": true
-  },
-  "tabs": {
-    "show_diagnostics": "errors"
-  },
-  "scrollbar": {
-    "show": "never"
-  },
-
-  // ============================
-  // EDITOR BEHAVIOR & FORMATTING
-  // ============================
-  "preferred_line_length": 150,
-  "soft_wrap": "bounded",
-  "show_wrap_guides": false,
-  "relative_line_numbers": true,
-  "format_on_save": "prettier",
-  // Indentation guides
-  "indent_guides": {
-    "enabled": true,
-    "coloring": "indent_aware"
-  },
-
-  // File finder configuration
-  "file_finder": {
-    "modal_max_width": "medium"
-  },
-
-  // Centered layout for zen mode
-  "centered_layout": {
-    "left_padding": 0.15,
-    "right_padding": 0.15
-  },
-
-  // ============================
-  // DIAGNOSTICS & HINTS
-  // ============================
-  "diagnostics": {
-    "inline": {
-      "enabled": true,
-      "max_severity": null
-    }
-  },
-
-  "inlay_hints": {
-    "enabled": true
-  },
-
-  // ============================
-  // VIM CONFIGURATION
-  // ============================
-  "vim_mode": true,
-  "vim": {
-    "use_smartcase_find": true,
-    "highlight_on_yank_duration": 300,
-    "custom_digraphs": {
-      "fz": "🧟‍♀️"
-    }
-  },
-
-  // ============================
-  // LANGUAGE-SPECIFIC SETTINGS
-  // ============================
-  "languages": {
-    "Shell Script": {
-      "show_edit_predictions": true
-    },
-    "JavaScript": {
-      "code_actions_on_format": {
-        "source.fixAll.eslint": true,
-        "source.organizeImports": true
-      },
-      "inlay_hints": {
-        "enabled": true,
-        "show_parameter_hints": false,
-        "show_other_hints": true,
-        "show_type_hints": false
-      }
-    },
-    "TypeScript": {
-      "language_servers": ["typescript-language-server", "!vtls"],
-      "code_actions_on_format": {
-        "source.fixAll.eslint": true,
-        "source.organizeImports": true
-      },
-      "inlay_hints": {
-        "enabled": true,
-        "show_parameter_hints": false,
-        "show_other_hints": true,
-        "show_type_hints": true
-      }
-    },
-    "TSX": {
-      "language_servers": [
-        "typescript-language-server",
-        "tailwindcss-language-server",
-        "..."
-      ],
-      "code_actions_on_format": {
-        "source.fixAll.eslint": true,
-        "source.organizeImports": true
-      },
-      "inlay_hints": {
-        "enabled": true,
-        "show_parameter_hints": true,
-        "show_other_hints": true,
-        "show_type_hints": false
-      }
-    },
-    "Python": {
-      "format_on_save": {
-        "language_server": {
-          "name": "ruff"
-        }
-      },
-      "formatter": {
-        "language_server": {
-          "name": "ruff"
-        }
-      },
-      "language_servers": ["pyright", "ruff"]
-    }
-  },
-
-  // ============================
-  // LSP CONFIGURATION
-  // ============================
-  "lsp": {
-    "vtsls": {
-      "settings": {
-        "vtsls": {
-          "experimental": {
-            "maxInlayHintLength": 15
-          }
-        }
-      }
-    },
-    "tailwindcss-language-server": {
-      "settings": {
-        "classAttributes": ["class", "className", "ngClass", "styles"],
-        "includeLanguages": {
-          "tsx": "html"
-        },
-        "experimental": {
-          "classRegex": ["[cls|className]\\s\\:\\=\\s\"([^\"]*)"]
-        }
-      }
-    },
-    "discord_presence": {
-      "initialization_options": {
-        "application_id": "1263505205522337886",
-        "base_icons_url": "https://raw.githubusercontent.com/xhyrom/zed-discord-presence/main/assets/icons/",
-        "state": "Working on {filename}",
-        "details": "In {workspace}",
-        "large_image": "{base_icons_url}/{language:lo}.png",
-        "large_text": "{language:u}",
-        "small_image": "{base_icons_url}/zed.png",
-        "small_text": "Zed",
-        "idle": {
-          "timeout": 300,
-          "action": "change_activity",
-          "state": "Idling",
-          "details": "In Zed",
-          "large_image": "{base_icons_url}/zed.png",
-          "large_text": "Zed",
-          "small_image": "{base_icons_url}/idle.png",
-          "small_text": "Idle"
-        },
-        "git_integration": true,
-        "languages": {
-          "TSX": {
-            "state": "Hacking on {filename}",
-            "details": "GSW at work"
-          }
-        }
-      }
-    }
-  },
-
-  // ============================
-  // TERMINAL CONFIGURATION
-  // ============================
-  "terminal": {
-    "font_size": 15,
-    "font_family": "MesloLGSDZ Nerd Font Mono",
-    "env": {
-      "EDITOR": "zed --wait"
-    }
-  },
-
-  // ============================
-  // FILE HANDLING & EXCLUSIONS
-  // ============================
-  "file_types": {
-    "Dockerfile": ["Dockerfile", "Dockerfile.*"],
-    "JSON": ["json", "jsonc", "*.code-snippets"]
-  },
-
-  "file_scan_exclusions": [
-    "**/.git",
-    "**/.svn",
-    "**/.hg",
-    "**/.jj",
-    "**/CVS",
-    "**/.DS_Store",
-    "**/Thumbs.db",
-    "**/.classpath",
-    "**/.settings",
-    "**/*.fbx",
-    "**/*.vrm",
-    "**/*.vrma",
-    "node_modules/.package-lock.json",
-    "package-lock.json",
-    "pnpm-lock.json"
-  ],
-
-  // ============================
-  // PRIVACY & TELEMETRY
-  // ============================
-  "telemetry": {
-    "diagnostics": false,
-    "metrics": false
-  }
+	"diff_view_style": "unified",
+	"agent_buffer_font_size": 13.5,
+	"ui_font_size": 14.0,
+	"agent_ui_font_size": 14.0,
+	"ui_font_family": "Hack Nerd Font",
+	"cli_default_open_behavior": "existing_window",
+	"wsl_connections": [
+		{
+			"distro_name": "Arch",
+			"user": null,
+			"projects": [
+				{
+					"paths": ["/home/khoahoc"],
+				},
+				{
+					"paths": ["/home/khoahoc/Dev-Work/Hilo/erp-admin/./"],
+				},
+			],
+		},
+	],
+	"context_servers": {
+		"mcp-server-notion": {
+			"enabled": true,
+			"remote": false,
+			"settings": {
+				"notion_token": "__REDACTED__",
+			},
+		},
+		"mcp-server-figma": {
+			"enabled": true,
+			"remote": false,
+			"settings": {
+				"figma_api_key": "__REDACTED__",
+			},
+		},
+		"mcp-server-gitlab": {
+			"enabled": true,
+			"remote": false,
+			"settings": {
+				"gitlab_personal_access_token": "__REDACTED__",
+				"gitlab_api_url": "https://gitlab.vppos.vn/api/v4",
+			},
+		},
+		"mcp-server-context7": {
+			"enabled": true,
+			"remote": false,
+			"settings": {
+				"context7_api_key": "__REDACTED__",
+			},
+		},
+	},
+	"edit_predictions": {
+		"provider": "zed",
+	},
+	"agent_servers": {
+		"codex-acp": {
+			"default_config_options": {
+				"model": "gpt-5.5",
+			},
+			"type": "registry",
+		},
+		"claude-acp": {
+			"type": "registry",
+		},
+		"gemini": {
+			"type": "registry",
+		},
+		"factory-droid": {
+			"type": "registry",
+		},
+		"github-copilot": {
+			"type": "registry",
+		},
+		"opencode": {
+			"default_config_options": {
+				"effort": "xhigh",
+				"model": "openai/gpt-5.5",
+				"mode": "plan",
+			},
+			"type": "registry",
+		},
+	},
+	"session": {
+		"trust_all_worktrees": true,
+	},
+	"git": {
+		"inline_blame": {
+			"enabled": true,
+		},
+	},
+	"status_bar": {
+		"experimental.show": true,
+	},
+	"gutter": {
+		"line_numbers": true,
+	},
+	"cursor_shape": "bar",
+	"cursor_blink": false,
+	"use_system_window_tabs": true,
+	"buffer_font_fallbacks": [
+		"Maple Mono NF",
+		"OperatorMonoLig Nerd Font",
+		"JetBrainsMono Nerd Font Mono",
+		"Menlo",
+		"Monaco",
+		"Courier New",
+	],
+	"show_whitespaces": "all",
+	"show_edit_predictions": true,
+	"hard_tabs": true,
+	"git_panel": {
+		"tree_view": true,
+		"dock": "right",
+	},
+	"icon_theme": {
+		"mode": "dark",
+		"light": "Catppuccin Mocha",
+		"dark": "Material Icon Theme",
+	},
+	"base_keymap": "VSCode",
+	"theme": {
+		"mode": "dark",
+		"light": "Catppuccin Iced Latte (Blur)",
+		"dark": "Catppuccin Macchiato (Blur) [Heavy]",
+	},
+	"buffer_font_size": 14.5,
+	// Finder model width
+	"file_finder": {
+		"modal_max_width": "medium",
+	},
+	// NOTE: Change the font family to your preference
+	"buffer_font_family": "Maple Mono NF",
+	// Vim mode settings
+	"vim_mode": true,
+	"vim": {},
+	"which_key": {
+		"enabled": true,
+	},
+	// use relative line numbers
+	"relative_line_numbers": "enabled",
+	"tab_bar": {
+		"show": true,
+	},
+	"scrollbar": {
+		"show": "never",
+	},
+	// Only show error on tab
+	"tabs": {
+		"show_diagnostics": "errors",
+	},
+	// Indentation, rainbow indentation
+	"indent_guides": {
+		"enabled": true,
+		"coloring": "indent_aware",
+	},
+	// NOTE: Zen mode, refer https://github.com/zed-industries/zed/issues/4382 when it's resolved
+	"centered_layout": {
+		"left_padding": 0.15,
+		"right_padding": 0.15,
+	},
+	// Use Copilot Chat AI as default
+	"agent": {
+		"flexible": true,
+		"default_profile": "write",
+		"tool_permissions": {
+			"tools": {
+				"mcp:mcp-server-gitlab:create_label": {
+					"default": "allow",
+				},
+				"fetch": {
+					"always_allow": [
+						{
+							"pattern": "^https?://www\\.radix-ui\\.com",
+						},
+					],
+				},
+				"mcp:mcp-server-sequential-thinking:sequentialthinking": {
+					"default": "allow",
+				},
+				"create_directory": {
+					"always_allow": [
+						{
+							"pattern": "^erp-admin/apps/hr/src/shared/",
+						},
+					],
+				},
+				"skill": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-gitlab:get_merge_request_diffs": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-gitlab:list_merge_request_changed_files": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-gitlab:get_merge_request": {
+					"default": "allow",
+				},
+				"write_file": {
+					"always_allow": [
+						{
+							"pattern": "^erp-admin/\\.agents/skills/pr-to-branch/",
+						},
+						{
+							"pattern": "^erp-admin/\\.agents/skills/auto-push/",
+						},
+						{
+							"pattern": "^packages/shared/src/hooks/",
+						},
+					],
+				},
+				"edit_file": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-context7:query-docs": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-gitlab:list_merge_requests": {
+					"default": "allow",
+				},
+				"terminal": {
+					"default": "allow",
+					"always_allow": [
+						{
+							"pattern": "^cd\\s+/c/Users/luukhoahoc/Dev-Work/Hilo/erp-admin(\\s|$)",
+						},
+						{
+							"pattern": "^pnpm\\b",
+						},
+						{
+							"pattern": "^head\\b",
+						},
+						{
+							"pattern": "^rtk\\s+git(\\s|$)",
+						},
+						{
+							"pattern": "^git\\s+status(\\s|$)",
+						},
+						{
+							"pattern": "^echo\\b",
+						},
+						{
+							"pattern": "^git\\s+diff(\\s|$)",
+						},
+						{
+							"pattern": "^git\\s+commit(\\s|$)",
+						},
+					],
+				},
+			},
+		},
+		"dock": "left",
+		"sidebar_side": null,
+		"favorite_models": [
+			{
+				"provider": "9router",
+				"model": "zed-custom",
+				"enable_thinking": false,
+			},
+		],
+		"inline_assistant_model": {
+			"provider": "opencode",
+			"model": "free/big-pickle",
+		},
+		"default_model": {
+			"enable_thinking": false,
+			"provider": "9router",
+			"model": "zed-custom",
+		},
+	},
+	// Uncomment below to use local AI with Ollama, refer https://zed.dev/docs/language-model-integration?highlight=ollama#using-ollama-on-macos
+	// "assistant": {
+	//   "default_model": {
+	//     "provider": "ollama",
+	//     "model": "llama3.1:latest"
+	//   },
+	//   "version": "2",
+	//   "provider": null
+	// },
+	"language_models": {
+		"openai_compatible": {
+			"9router": {
+				"api_url": "http://localhost:20128/v1",
+				"available_models": [
+					{
+						"name": "zed-custom",
+						"max_tokens": 200000,
+						"max_output_tokens": 32000,
+						"max_completion_tokens": 200000,
+						"capabilities": {
+							"tools": true,
+							"images": true,
+							"parallel_tool_calls": true,
+							"prompt_cache_key": true,
+							"chat_completions": true,
+							"interleaved_reasoning": false,
+						},
+					},
+				],
+			},
+		},
+		"ollama": {
+			"api_url": "http://localhost:11434",
+		},
+	},
+	// Inlay hints preconfigured by Zed: Go, Rust, Typescript and Svelte
+	"inlay_hints": {
+		"enabled": true,
+	},
+	// LSP
+	"lsp": {
+		"tailwindcss-language-server": {
+			"settings": {
+				"classAttributes": ["class", "className", "ngClass", "styles"],
+			},
+		},
+	},
+	"languages": {
+		// Refer https://zed.dev/docs/languages/javascript and https://zed.dev/docs/languages/typescript for more info
+		"TypeScript": {
+			// Refer https://github.com/jellydn/ts-inlay-hints for how to setup for Neovim and VSCode
+			"show_whitespaces": "all",
+			"show_edit_predictions": true,
+			"hard_tabs": true,
+			"inlay_hints": {
+				"enabled": true,
+				"show_parameter_hints": false,
+				"show_other_hints": true,
+				"show_type_hints": true,
+			},
+		},
+		"Python": {
+			"show_whitespaces": "all",
+			"show_edit_predictions": true,
+			"hard_tabs": true,
+			"format_on_save": "on",
+			"formatter": {
+				"language_server": {
+					"name": "ruff",
+				},
+			},
+			"language_servers": [
+				"ty",
+				"ruff",
+				"!basedpyright",
+				"!pyrefly",
+				"!pyright",
+				"!pylsp",
+			],
+		},
+	},
+	// Use zed commit editor
+	"terminal": {
+		"font_size": 15.0,
+		"font_family": "Maple Mono NF",
+		"env": {
+			"EDITOR": "zed --wait",
+		},
+	},
+	// File syntax highlighting
+	"file_types": {
+		"Dockerfile": ["Dockerfile", "Dockerfile.*"],
+		"JSON": ["json", "jsonc", "*.code-snippets"],
+	},
+	// File scan exclusions, hide on the file explorer and search
+	"file_scan_exclusions": [
+		"**/.git",
+		"**/.svn",
+		"**/.hg",
+		"**/CVS",
+		"**/.DS_Store",
+		"**/Thumbs.db",
+		"**/.classpath",
+		"**/.settings",
+		// above is default from Zed
+		"**/out",
+		"**/dist",
+		"**/.husky",
+		"**/.turbo",
+		"**/.vscode-test",
+		"**/.vscode",
+		"**/.next",
+		"**/.storybook",
+		"**/.tap",
+		"**/.nyc_output",
+		"**/report",
+		"**/node_modules",
+	],
+	// Turn off telemetry
+	"telemetry": {
+		"diagnostics": true,
+		"metrics": false,
+	},
+	// Move all panel to the right
+	"project_panel": {
+		"auto_fold_dirs": false,
+		"button": true,
+		"dock": "right",
+		"git_status": true,
+	},
+	"outline_panel": {
+		"dock": "right",
+	},
+	"collaboration_panel": {
+		"dock": "right",
+	},
 }
