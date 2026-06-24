@@ -1,164 +1,283 @@
-# PowerShell Profile Configuration
-# This file customizes the PowerShell environment with tools, aliases, and path configurations
+### Chris Titus Tech's PowerShell profile
 
-# =============================================================================
-# ENVIRONMENT PATH CONFIGURATION
-# =============================================================================
-# Add custom tools and applications to PATH
-$env:Path += ";C:\msys64\mingw64\bin"                         # MSYS2 MinGW tools
-$env:Path += ";C:\Program Files\ImageMagick-7.1.1-Q16-HDRI"  # ImageMagick image processing
-$env:Path += ";C:\Users\$env:USERNAME\AppData\Roaming\npm"          # Node.js global packages
-$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\lazygit"  # LazyGit TUI
-$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\ripgrep"  # ripgrep search tool
-$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\fd"       # fd file finder
-$env:Path += ";C:\Users\$env:USERNAME\AppData\Local\Programs\bun"      # Bun JavaScript runtime
-
-
-# =============================================================================
-# ZOXIDE SETUP
-# =============================================================================
-# Add zoxide to PATH if installed via winget
-$zoxidePath = "$env:LOCALAPPDATA\Microsoft\WinGet\Packages\ajeetdsouza.zoxide_Microsoft.Winget.Source_8wekyb3d8bbwe"
-if (Test-Path $zoxidePath) {
-    $env:PATH = "$zoxidePath;$env:PATH"
+$poshTheme = if (-not [string]::IsNullOrWhiteSpace($env:POSH_THEME))
+{
+	$env:POSH_THEME
+} else
+{
+	Join-Path $Home 'Documents\PowerShell\cobalt2.omp.json'
 }
 
-# Initialize zoxide if available
-if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-    Invoke-Expression (& {(zoxide init powershell) -join "`n"})
-} else {
-    Write-Host "Warning: zoxide not found. Install it with: winget install ajeetdsouza.zoxide" -ForegroundColor Yellow
+if (Get-Module -ListAvailable -Name Terminal-Icons)
+{
+	Import-Module -Name Terminal-Icons
+} else
+{
+	Write-Warning "Terminal-Icons module not found."
 }
 
-# =============================================================================
-# PROMPT AND THEME CONFIGURATION
-# =============================================================================
-# Initialize Oh My Posh with custom theme
-$themePath = "C:/Users/$env:USERNAME/dotfiles/ohmyposh/EDM115-newline.omp.json"
-if (Test-Path $themePath) {
-    oh-my-posh init pwsh --config $themePath | Invoke-Expression
-} elseif ($env:POSH_THEMES_PATH) {
-    $fallbackTheme = "$env:POSH_THEMES_PATH\catppuccin.omp.json"
-    if (Test-Path $fallbackTheme) {
-        oh-my-posh init pwsh --config $fallbackTheme | Invoke-Expression
-    }
+# Context-Aware Completion for Git
+if (Get-Module -ListAvailable -Name posh-git)
+{
+	Import-Module -Name posh-git
+} else
+{
+	Write-Warning "posh-git module not found. Hãy chạy lệnh 'Install-Module posh-git -Scope CurrentUser' để kích hoạt Autocomplete Git nâng cao."
 }
 
-# Enable command history-based predictions
-Set-PSReadLineOption -PredictionSource History
+Write-Host "Use 'Show-Help' to list all available functions" -ForegroundColor Yellow
 
-# =============================================================================
-# FILE SYSTEM ALIASES
-# =============================================================================
-# Enhanced directory listing commands
-Set-Alias -Name ll -Value dir
-function ls { Get-ChildItem -Force | Format-Table -AutoSize }
+# History & Colors
+Set-PSReadLineOption -PredictionViewStyle ListView -Colors @{
+	Command   = '#87CEEB'
+	Parameter = '#98FB98'
+	Operator  = '#FFB6C1'
+	Variable  = '#DDA0DD'
+	String    = '#FFDAB9'
+	Number    = '#B0E0E6'
+	Type      = '#F0E68C'
+	Comment   = '#D3D3D3'
+	Keyword   = '#8367c7'
+	Error     = '#FF6347'
+}
 
-# =============================================================================
-# GIT ALIASES AND FUNCTIONS
-# =============================================================================
+#KeyBinds
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+Set-PSReadLineKeyHandler -Chord 'Ctrl+d' -Function DeleteChar
+Set-PSReadLineKeyHandler -Chord 'Ctrl+w' -Function BackwardDeleteWord
+Set-PSReadLineKeyHandler -Chord 'Alt+d' -Function DeleteWord
+Set-PSReadLineKeyHandler -Chord 'Ctrl+LeftArrow' -Function BackwardWord
+Set-PSReadLineKeyHandler -Chord 'Ctrl+RightArrow' -Function ForwardWord
+Set-PSReadLineKeyHandler -Chord 'Ctrl+z' -Function Undo
+Set-PSReadLineKeyHandler -Chord 'Ctrl+y' -Function Redo
 
-# Status and basic operations
-Set-Alias -Name gst -Value git_status
-function git_status { git status }
+# Functions
+function Update-Profile
+{
+	Invoke-WebRequest -Uri https://github.com/ChrisTitusTech/powershell-profile/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $Profile
+	Write-Host "Updated PowerShell Profile" -ForegroundColor Green
+}
 
-Set-Alias -Name ga -Value git_add
-function git_add { git add $args }
+# File / Directory Utilities
+function touch ($File)
+{
+	if (Test-Path $File)
+	{
+		(Get-Item $File).LastWriteTime = Get-Date
+	} else
+	{
+		New-Item $File -ItemType File | Out-Null
+	}
+}
 
-Set-Alias -Name gitc -Value git_commit
-function git_commit { git commit $args }
+function mkcd ($Path)
+{
+	New-Item -Path $Path -ItemType Directory -Force | Out-Null
+	Set-Location -Path $Path
+}
 
-Set-Alias -Name gcmsg -Value git_commit_message
-function git_commit_message { git commit -m $args }
+function trash ($Path)
+{
+	if (Test-Path $Path -PathType Container)
+	{
+		[Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($Path,'OnlyErrorDialogs','SendToRecycleBin')
+	} else
+	{
+		[Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile($Path,'OnlyErrorDialogs','SendToRecycleBin')
+	}
+}
 
-# Branch operations
-Set-Alias -Name gco -Value git_checkout
-function git_checkout { git checkout $args }
+function ff ($Name)
+{
+	Get-ChildItem -Recurse -Filter $Name -File | Select-Object -ExpandProperty FullName
+}
 
-Set-Alias -Name gcb -Value git_checkout_branch
-function git_checkout_branch { git checkout -b $args }
+function head ($Path)
+{
+	Get-Content $Path -Head 10
+}
 
-Set-Alias -Name gb -Value git_branch
-function git_branch { git branch $args }
+function sed ($File, $Find, $Replace)
+{
+	(Get-Content $File).replace("$Find", $Replace) | Set-Content $file
+}
 
-# Diff and log operations
-Set-Alias -Name gd -Value git_diff
-function git_diff { git diff --word-diff $args }
+function which ($Name)
+{
+	(Get-Command $Name).Source
+}
 
-Set-Alias -Name glog -Value git_log
-function git_log { git log --oneline $args }
+function pgrep ($Name)
+{
+	Get-Process -Name $Name -ErrorAction SilentlyContinue
+}
 
-# Remote operations
-Set-Alias -Name gitp -Value git_push
-function git_push { git push $args }
+function pkill ($Name)
+{
+	Get-Process -Name $Name -ErrorAction SilentlyContinue | Stop-Process -Force
+}
 
-Set-Alias -Name gpsup -Value git_push_origin
-function git_push_origin { git push --set-upstream origin $args }
+function k9 ($Name)
+{
+	pkill $Name
+}
 
-Set-Alias -Name gitl -Value git_pull
-function git_pull { git pull $args }
+# System Utilities
+function uptime
+{
+	(Get-Date) - (Get-CimInstance -ClassName Win32_OperatingSystem).LastBootUpTime | Select-Object Days, Hours, Minutes, Seconds
+}
 
-Set-Alias -Name gcl -Value git_clone
-function git_clone { git clone $args }
+function winutil
+{
+	Invoke-RestMethod https://christitus.com/win | Invoke-Expression
+}
 
-# Advanced operations
-Set-Alias -Name grb -Value git_rebase
-function git_rebase { git rebase $args }
+function winutildev
+{
+	Invoke-RestMethod https://christitus.com/windev | Invoke-Expression
+}
 
-Set-Alias -Name gitm -Value git_merge
-function git_merge { git merge $args }
+# Git Shortcuts
+function gst
+{ git status
+}
+function gaa
+{ git add .
+}
+function gp
+{ git push
+}
+function gpush
+{ git push
+}
+function gpull
+{ git pull
+}
+function gcl
+{ git clone $args
+}
+function g
+{ __zoxide_z github
+}
 
-Set-Alias -Name gcp -Value git_cherry_pick
-function git_cherry_pick { git cherry-pick $args }
+function gcom
+{
+	git add .
+	git commit -m "$args"
+}
 
-Set-Alias -Name grh -Value git_reset
-function git_reset { git reset $args }
+function lazyg
+{
+	git add .
+	git commit -m "$args"
+	git push
+}
 
-# Stash operations
-Set-Alias -Name gstl -Value git_stash_list
-function git_stash_list { git stash list $args }
+function docs
+{
+	Set-Location -Path ([Environment]::GetFolderPath("MyDocuments"))
+}
 
-Set-Alias -Name gsta -Value git_stash_apply
-function git_stash_apply { git stash apply $args }
+# Listing / Viewing
+function la
+{
+	Get-ChildItem | Format-Table -AutoSize
+}
 
-Set-Alias -Name gstp -Value git_stash_pop
-function git_stash_pop { git stash pop $args }
+function ll
+{
+	Get-ChildItem -Force | Format-Table -AutoSize
+}
 
-Set-Alias -Name gsts -Value git_stash_save
-function git_stash_save { git stash save $args }
+# Aliases
+Set-Alias -Name unzip -Value Expand-Archive
+Set-Alias -Name grep -Value Select-String
 
-Set-Alias -Name gstu -Value git_stash_untracked
-function git_stash_untracked { git stash -u $args }
+# Help Function
+function Show-Help
+{
+	$title    = $PSStyle.Foreground.BrightMagenta
+	$section  = $PSStyle.Foreground.BrightBlue
+	$command  = $PSStyle.Foreground.BrightGreen
+	$desc     = $PSStyle.Foreground.BrightWhite
+	$accent   = $PSStyle.Foreground.BrightYellow
+	$dim      = $PSStyle.Foreground.BrightBlack
+	$reset    = $PSStyle.Reset
 
-# Yarn operations
-Set-Alias -Name yd -Value yarn_dev
-function yarn_dev { yarn dev $args }
+	Write-Host @"
+${title}󰘳 PowerShell Profile Help${reset}
+${dim}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${reset}
 
-Set-Alias -Name yb -Value yarn_build
-function yarn_build { yarn build $args }
+${section}󰊢 Update${reset}
+  ${command}Update-Profile${reset}  ${accent}→${reset} ${desc}Updates the profile from a remote repository.${reset}
 
-Set-Alias -Name ya -Value yarn_add
-function yarn_add { yarn add $args }
+${section}󰊢 Git Shortcuts${reset}
+${dim}────────────────────────────────────────────────────${reset}
+  ${command}g${reset}                  ${accent}→${reset} ${desc}Changes to the GitHub directory${reset}
+  ${command}gaa${reset}                 ${accent}→${reset} ${desc}git add .${reset}
+  ${command}gcl <repo>${reset}         ${accent}→${reset} ${desc}git clone${reset}
+  ${command}gcom <message>${reset}     ${accent}→${reset} ${desc}add + commit${reset}
+  ${command}gp / gpush${reset}         ${accent}→${reset} ${desc}git push${reset}
+  ${command}gpull${reset}              ${accent}→${reset} ${desc}git pull${reset}
+  ${command}gst${reset}                 ${accent}→${reset} ${desc}git status${reset}
+  ${command}lazyg <message>${reset}    ${accent}→${reset} ${desc}add + commit + push${reset}
 
-Set-Alias -Name yrm -Value yarn_remove
-function yarn_remove { yarn remove $args }
+${section}󰘴 System Shortcuts${reset}
+${dim}────────────────────────────────────────────────────${reset}
+  ${command}docs${reset}               ${accent}→${reset} ${desc}Documents folder${reset}
+  ${command}ff <name>${reset}          ${accent}→${reset} ${desc}Search files${reset}
+    ${command}grep <pattern> [path]${reset} ${accent}→${reset} ${desc}Search text${reset}
+  ${command}head <file>${reset}        ${accent}→${reset} ${desc}First lines${reset}
+    ${command}k9 <name>${reset}          ${accent}→${reset} ${desc}Kill process by name${reset}
+  ${command}ll${reset}                 ${accent}→${reset} ${desc}List files${reset}
+  ${command}mkcd <dir>${reset}         ${accent}→${reset} ${desc}Create + enter dir${reset}
+    ${command}pgrep <name>${reset}       ${accent}→${reset} ${desc}Find process by name${reset}
+    ${command}pkill <name>${reset}       ${accent}→${reset} ${desc}Stop process by name${reset}
+  ${command}sed <file> <find> <replace>${reset} ${accent}→${reset} ${desc}Replace text${reset}
+  ${command}touch <file>${reset}       ${accent}→${reset} ${desc}Create file${reset}
+  ${command}unzip <file>${reset}       ${accent}→${reset} ${desc}Extract zip${reset}
+  ${command}uptime${reset}             ${accent}→${reset} ${desc}System uptime${reset}
+  ${command}which <name>${reset}       ${accent}→${reset} ${desc}Locate command${reset}
+  ${command}winutil${reset}            ${accent}→${reset} ${desc}Run WinUtil${reset}
+  ${command}winutildev${reset}         ${accent}→${reset} ${desc}Run WinUtil Dev${reset}
 
-Set-Alias -Name yf -Value yarn_format
-function yarn_format { yarn format $args }
+${dim}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${reset}
+"@
+}
 
-Set-Alias -Name yln -Value yarn_lint
-function yarn_lint { yarn lint $args }
+$shouldInitPosh = $false
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue)
+{
+	if (Test-Path $poshTheme)
+	{
+		$shouldInitPosh = $true
+	} else
+	{
+		Write-Warning "oh-my-posh theme not found at $poshTheme."
+	}
+} else
+{
+	Write-Warning "oh-my-posh is not installed."
+}
 
-# =============================================================================
-# SMART BRANCH SCRIPT ALIAS
-# =============================================================================
-# Unified Smart Branch Creator
+$shouldInitZoxide = $false
+if (Get-Command zoxide -ErrorAction SilentlyContinue)
+{
+	$shouldInitZoxide = $true
+} else
+{
+	Write-Warning "zoxide is not installed."
+}
 
-Set-Alias -Name sb -Value smart_branch
-function smart_branch { & "C:/Users/$env:USERNAME/dotfiles/smart-branch/src/smart-branch.ps1" $args }
-
-Set-Alias -Name qb -Value quick_branch
-function quick_branch { & "C:/Users/$env:USERNAME/dotfiles/smart-branch/src/quick-branch.bat" $args }
-
-Set-Alias -Name sbdemo -Value smart_branch_demo
-function smart_branch_demo { & "C:/Users/$env:USERNAME/dotfiles/smart-branch/examples/demo.sh" $args }
+# init commands should be at the end of the profile
+if ($shouldInitPosh)
+{
+	Invoke-Expression (& { (oh-my-posh init pwsh --config $poshTheme | Out-String) })
+}
+if ($shouldInitZoxide)
+{
+	Invoke-Expression (& { (zoxide init --cmd z powershell | Out-String) })
+}

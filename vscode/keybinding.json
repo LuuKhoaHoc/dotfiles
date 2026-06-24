@@ -1,10 +1,15 @@
 [
   {
+    "when": "!editorTextFocus",
     "command": "vscode.openFolder",
-    "key": "ctrl+r",
-    "when": "!inQuickOpen && !inputFocus"
+    "key": "ctrl+r"
   },
   // Folding
+  {
+    "command": "editor.toggleFold",
+    "key": "z a",
+    "when": "editorTextFocus && neovim.mode == normal"
+  },
   {
     "command": "editor.fold",
     "key": "z c",
@@ -40,6 +45,33 @@
     "command": "workbench.view.extension.github-pull-requests",
     "key": "alt+k g"
   },
+  // VSCode Surround
+  {
+    "key": "g s",
+    "command": "extension.surroundSelection",
+    "when": "editorTextFocus && vim.mode == 'Visual'"
+  },
+  // Terminal
+  {
+    "key": "ctrl+shift+a",
+    "command": "workbench.action.terminal.focusNext",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+b",
+    "command": "workbench.action.terminal.focusPrevious",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+n",
+    "command": "workbench.action.terminal.new",
+    "when": "terminalFocus"
+  },
+  {
+    "key": "ctrl+shift+w",
+    "command": "workbench.action.terminal.kill",
+    "when": "terminalFocus"
+  },
   // Navigation
   {
     "command": "workbench.action.navigateLeft",
@@ -56,57 +88,6 @@
   {
     "command": "workbench.action.navigateDown",
     "key": "ctrl-j"
-  },
-  // Vim/Normal mode navigation
-  {
-    "key": "ctrl+j",
-    "command": "workbench.action.quickOpenSelectNext",
-    "when": "inQuickOpen"
-  },
-  {
-    "key": "ctrl+k",
-    "command": "workbench.action.quickOpenSelectPrevious",
-    "when": "inQuickOpen"
-  },
-  {
-    "key": "ctrl+j",
-    "command": "list.focusDown",
-    "when": "listFocus && !inputFocus"
-  },
-  {
-    "key": "ctrl+k",
-    "command": "list.focusUp",
-    "when": "listFocus && !inputFocus"
-  },
-  {
-    "key": "ctrl+j",
-    "command": "selectNextCodeAction",
-    "when": "codeActionMenuVisible"
-  },
-  {
-    "key": "ctrl+k",
-    "command": "selectPrevCodeAction",
-    "when": "codeActionMenuVisible"
-  },
-  {
-    "key": "ctrl+j",
-    "command": "selectNextSuggestion",
-    "when": "suggestWidgetVisible"
-  },
-  {
-    "key": "ctrl+k",
-    "command": "selectPrevSuggestion",
-    "when": "suggestWidgetVisible"
-  },
-  {
-    "key": "ctrl-n",
-    "command": "editor.action.addSelectionToNextFindMatch",
-    "when": "(vim.mode == 'Visual') && (editorTextFocus || !inputFocus)"
-  },
-  {
-    "key": "ctrl-p",
-    "command": "editor.action.addSelectionToPreviousFindMatch",
-    "when": "(vim.mode == 'Visual') && (editorTextFocus || !inputFocus)"
   },
   // File Explorer
   {
@@ -170,5 +151,43 @@
     "command": "list.toggleExpand",
     "key": "enter",
     "when": "filesExplorerFocus && foldersViewVisible && !explorerResourceIsRoot && explorerResourceIsFolder && !inputFocus"
+  },
+  // Extensions
+  {
+    "key": "shift+alt+l",
+    "command": "turboConsoleLog.displayLogMessage"
+  },
+  {
+    "key": "ctrl+alt+l",
+    "command": "-turboConsoleLog.displayLogMessage"
+  },
+  {
+    "key": "alt+v t",
+    "command": "toggleVim"
+  },
+  // EXTRA
+  {
+    "key": "ctrl+shift+5",
+    "command": "editor.emmet.action.matchTag"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-codeium.openCodeiumCommand",
+    "when": "codeium.commandEnabled && editorTextFocus && !inlineSuggestionsVisible"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-kilo-code.ghost.promptCodeSuggestion",
+    "when": "editorTextFocus && kilocode.ghost.enableQuickInlineTaskKeybinding && !editorTabMovesFocus && !github.copilot.completions.enabled && !inSnippetMode"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-vscode-neovim.send",
+    "when": "editorTextFocus && neovim.ctrlKeysNormal.i && neovim.init && neovim.mode != 'insert' && editorLangId not in 'neovim.editorLangIdExclusions'"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-vscode-neovim.send",
+    "when": "editorTextFocus && neovim.ctrlKeysInsert.i && neovim.init && neovim.mode == 'insert' && editorLangId not in 'neovim.editorLangIdExclusions'"
   }
 ]

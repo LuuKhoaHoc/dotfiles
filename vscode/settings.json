@@ -1,19 +1,15 @@
 {
-  "workbench.settings.editor": "json",
+  "workbench.settings.editor": "ui",
   // Editor settings
-  "breadcrumbs.enabled": false,
-
-  // Chat / Copilot Chat
-  "chat.agentSessionsViewLocation": "showChatsMenu",
-  "chat.agent.maxRequests": 50,
-  "chat.mcp.autostart": "newAndOutdated",
+  // "breadcrumbs.enabled": false,
 
   "editor.autoIndent": "full",
   "editor.codeLensFontFamily": "JetBrainsMono NF",
-  "editor.cursorBlinking": "solid",
+  "editor.cursorBlinking": "smooth",
   "editor.cursorStyle": "line",
   "editor.cursorSurroundingLines": 4,
   "editor.cursorWidth": 3,
+  "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontFamily": "Maple Mono NF, JetBrainsMono Nerd Font, Menlo, Monaco, 'Courier New', monospacere",
   "editor.fontLigatures": true,
@@ -24,9 +20,8 @@
   "editor.inlayHints.padding": true,
   "editor.inlineSuggest.enabled": true,
   "editor.insertSpaces": false,
-  "editor.largeFileOptimizations": false,
   "editor.letterSpacing": 0.5,
-  "editor.lineNumbers": "relative",
+  // "editor.lineNumbers": "relative",
   "editor.minimap.enabled": false,
   "editor.renderWhitespace": "all",
   "editor.suggestSelection": "first",
@@ -40,13 +35,10 @@
   "errorLens.excludeBySource": ["cSpell"],
 
   // Extensions / Performance
-  "extensions.experimental.affinity": {
-    "vscodevim.vim": 1
-  },
 
   // Files
   "files.associations": {
-    "*.css": "tailwindcss"
+    "*.css": "tailwindcss",
   },
   "files.trimTrailingWhitespace": true,
 
@@ -54,23 +46,45 @@
   "git.autofetch": true,
   "git.confirmSync": false,
   "git.openRepositoryInParentFolders": "always",
-  "gitlens.launchpad.indicator.enabled": false,
 
-  // GitHub Copilot
-  "github.copilot.chat.agent.thinkingTool": true,
+  // AI features
+  "chat.agent.maxRequests": 50,
+  "chat.tools.edits.autoApprove": {
+    "**/*": true,
+    "**/.vscode/*.json": false,
+    "**/.git/**": false,
+    "**/{package.json,package-lock.json,server.xml,build.rs,web.config,.gitattributes,.env}": false,
+    "**/*.{csproj,fsproj,vbproj}": false,
+  },
+  "chat.tools.terminal.enableAutoApprove": true,
+  "inlineChat.enableV2": true,
+  "chat.mcp.autostart": "newAndOutdated",
+  "chat.agent.enabled": true,
+  "chat.agent.thinkingStyle": "collapsedPreview",
+  "chat.extensionTools.enabled": true,
+  "chat.mcp.access": "all",
   "github.copilot.chat.codesearch.enabled": true,
+  "github.copilot.chat.newWorkspace.useContext7": true,
+  "github.copilot.chat.agent.autoFix": true,
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "github.copilot.chat.reviewAgent.enabled": true,
+  "github.copilot.chat.languageContext.typescript.enabled": true,
   "github.copilot.chat.commitMessageGeneration.instructions": [
     {
-      "text": "Analyze staged changes and generate a conventional commit message: type(scope): description\n\nTypes: feat, fix, etc.\nFocus on WHAT and WHY."
-    }
+      "text": "Analyze staged changes and generate a conventional commit message: type(scope): description\n\nTypes: feat, fix, etc.\nFocus on WHAT and WHY.",
+    },
+    {
+      "text": "Use an icon at the beginning of the commit message to increase recognition and make the commit history easier to read. For example: 🚀 feat(auth): Add Google login feature.",
+    },
   ],
   "github.copilot.enable": {
     "*": true,
-    "plaintext": false,
+    "plaintext": true,
     "markdown": true,
     "scminput": false,
     "properties": false,
-    "shellscript": false
+    "shellscript": false,
+    "dotenv": false,
   },
   "github.copilot.nextEditSuggestions.enabled": true,
 
@@ -82,24 +96,15 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "javascript.validate.enable": false,
 
-  // Kilo-code
-  "kilo-code.allowedCommands": [
-    "npm test",
-    "npm install",
-    "tsc",
-    "git log",
-    "git diff",
-    "git show"
-  ],
-
   // Material / UI
   "material-icon-theme.activeIconPack": "react_redux",
 
   // Terminal & Debug
   "terminal.integrated.env.linux": {},
-  "terminal.integrated.fontFamily": "Maple Mono NF CN",
+  "terminal.integrated.fontFamily": "Maple Mono NF",
   "terminal.integrated.fontLigatures.enabled": true,
   "debug.console.fontFamily": "JetBrainsMono NF",
+  // "terminal.integrated.suggest.enabled": true,
 
   // TypeScript language settings
   "typescript.enablePromptUseWorkspaceTsdk": true,
@@ -110,199 +115,105 @@
   "typescript.referencesCodeLens.enabled": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
 
-  // Vim settings
-  "vim.autoindent": false,
-  "vim.easymotion": true,
-  "vim.handleKeys": {
-    "<C-f>": false,
-    "<C-c>": false,
-    "<C-v>": false,
-    "<C-i>": false
-  },
-  "vim.highlightedyank.color": "#40a02b",
-  "vim.highlightedyank.duration": 250,
-  "vim.highlightedyank.enable": true,
-  "vim.incsearch": true,
-  "vim.insertModeKeyBindings": [
-    {
-      "before": ["j", "j"],
-      "after": ["<Esc>"]
-    },
-    {
-      "before": ["j", "k"],
-      "after": ["<Esc>"]
-    },
-    {
-      "before": ["k", "j"],
-      "after": ["<Esc>"]
-    },
-    {
-      "before": ["k", "k"],
-      "after": ["<Esc>"]
-    }
-  ],
-  "vim.leader": "<space>",
-  "vim.normalModeKeyBindingsNonRecursive": [
-    // NAVIGATION
-    // switch b/w buffers
-    { "before": ["<S-h>"], "commands": [":bprevious"] },
-    { "before": ["<S-l>"], "commands": [":bnext"] },
-
-    // splits
-    { "before": ["leader", "v"], "commands": [":vsplit"] },
-    { "before": ["leader", "s"], "commands": [":split"] },
-
-    // panes
-    {
-      "before": ["leader", "h"],
-      "commands": ["workbench.action.focusLeftGroup"]
-    },
-    {
-      "before": ["leader", "j"],
-      "commands": ["workbench.action.focusBelowGroup"]
-    },
-    {
-      "before": ["leader", "k"],
-      "commands": ["workbench.action.focusAboveGroup"]
-    },
-    {
-      "before": ["leader", "l"],
-      "commands": ["workbench.action.focusRightGroup"]
-    },
-    // Explorer
-    {
-      "before": ["leader", "e"],
-      "commands": ["workbench.action.toggleSidebarVisibility"]
-    },
-
-    // NICE TO HAVE
-    { "before": ["leader", "w"], "commands": [":w!"] },
-    { "before": ["leader", "q"], "commands": [":q!"] },
-    { "before": ["leader", "x"], "commands": [":x!"] },
-    { "before": ["<S-q>"], "commands": [":q!"] },
-    {
-      "before": ["leader", "q"],
-      "commands": ["workbench.action.quickOpen"]
-    },
-    {
-      "before": ["g", "h"],
-      "commands": ["editor.action.showDefinitionPreviewHover"]
-    },
-    {
-      "before": ["g", "r"],
-      "commands": ["editor.action.referenceSearch.trigger"]
-    },
-    // Search/Git
-    {
-      "before": ["leader", "F"],
-      "commands": ["workbench.action.findInFiles"]
-    },
-    {
-      "commands": [
-        {
-          "command": "runCommands",
-          "args": {
-            "commands": ["workbench.view.scm", "workbench.scm.focus"]
-          }
-        }
-      ],
-      "before": ["leader", "G"]
-    },
-
-    // CODING
-    {
-      "before": ["<leader>", "c", "a"],
-      "commands": ["editor.action.quickFix"]
-    },
-    {
-      "before": ["<leader>", "c", "f"],
-      "commands": ["editor.action.formatDocument"]
-    },
-    {
-      "before": ["<leader>", "c", "o"],
-      "commands": ["editor.action.organizeImports"]
-    },
-    {
-      "before": ["<leader>", "c", "r"],
-      "commands": ["editor.action.rename"]
-    },
-    {
-      "before": ["<leader>", "c", "m"],
-      "commands": [
-        {
-          "command": "editor.action.sourceAction",
-          "args": {
-            "apply": "first",
-            "kind": "source.addMissingImports"
-          }
-        }
-      ]
-    },
-    // Buffer/Editor
-    {
-      "before": ["leader", "b", "o"],
-      "commands": ["workbench.action.closeOtherEditors"]
-    },
-    // Search/Git
-    {
-      "before": ["leader", "leader"],
-      "commands": ["workbench.action.quickOpen"]
-    },
-    {
-      "before": ["leader", "s", "g"],
-      "commands": ["workbench.action.findInFiles"]
-    },
-    {
-      "commands": [
-        {
-          "command": "runCommands",
-          "args": {
-            "commands": ["workbench.view.scm", "workbench.scm.focus"]
-          }
-        }
-      ],
-      "before": ["leader", "g", "g"]
-    },
-    // Command palette
-    {
-      "before": [":"],
-      "commands": ["workbench.action.showCommands"]
-    }
-  ],
-  "vim.sneak": true,
-  "vim.smartRelativeLine": true,
-  "vim.useCtrlKeys": true,
-  "vim.useSystemClipboard": true,
-  "vim.visualModeKeyBindings": [
-    // Stay in visual mode while indenting
-    { "before": ["<"], "commands": ["editor.action.outdentLines"] },
-    { "before": [">"], "commands": ["editor.action.indentLines"] },
-    // Move selected lines while staying in visual mode
-    { "before": ["J"], "commands": ["editor.action.moveLinesDownAction"] },
-    { "before": ["K"], "commands": ["editor.action.moveLinesUpAction"] },
-    // toggle comment selection
-    { "before": ["leader", "c"], "commands": ["editor.action.commentLine"] },
-    // Smart select expand in visual mode
-    {
-      "before": ["<space>"],
-      "commands": ["editor.action.smartSelect.expand"]
-    },
-    {
-      "before": ["<BS>"],
-      "commands": ["editor.action.smartSelect.shrink"]
-    }
-  ],
-
   // UI / Workbench
-  "workbench.activityBar.location": "bottom",
+  "explorer.confirmDragAndDrop": false,
   "workbench.colorCustomizations": {
     "editorCursor.foreground": "#ffc600",
-    "tab.activeBorder": "#ffc600"
+    "tab.activeBorder": "#ffc600",
   },
-  "workbench.colorTheme": "Kanagawa",
+  "workbench.colorTheme": "Catppuccin Mocha",
   "workbench.iconTheme": "catppuccin-mocha",
   "workbench.statusBar.visible": true,
 
   // Window
-  "window.newWindowProfile": "Default"
+  "window.newWindowProfile": "Default",
+  "editor.aiStats.enabled": true,
+  "settingsSync.ignoredSettings": ["vscode-neovim.useWSL"],
+  "settingsSync.ignoredExtensions": ["ms-vscode-remote.remote-wsl"],
+  "cSpell.language": "en",
+  "chat.tools.terminal.autoApprove": {
+    "pnpm": true,
+    "mkdir": true,
+    "mv": true,
+    "touch": true,
+    "git branch": true,
+    "git commit": true,
+    "git ls-files": true,
+    "true": true,
+    "jobs": true,
+    "tee": true,
+  },
+  "chat.mcp.serverSampling": {
+    "Global in Code: context7": {
+      "allowedModels": ["copilot/gpt-4.1"],
+    },
+  },
+  "security.workspace.trust.untrustedFiles": "open",
+  "chat.mcp.gallery.enabled": true,
+
+  // Language specific settings
+  "[csharp]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode",
+    "editor.formatOnSave": true,
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode",
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma",
+  },
+  "remote.autoForwardPortsSource": "hybrid",
+  "claudeCode.environmentVariables": [
+    {
+      "name": "ANTHROPIC_BASE_URL",
+      "value": " http://localhost:20128/v1",
+    },
+    {
+      "name": "ANTHROPIC_API_KEY",
+      "value": "sk-b9ff74bada541c81-fkh2x8-c4879c51",
+    },
+    {
+      "name": "ANTHROPIC_DEFAULT_OPUS_MODEL",
+      "value": "opencode-premium",
+    },
+    {
+      "name": "ANTHROPIC_DEFAULT_SONNET_MODEL",
+      "value": "cx/gpt-5.3-codex",
+    },
+    {
+      "name": "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+      "value": "cx/gpt-5.4-mini",
+    },
+  ],
+  "claudeCode.preferredLocation": "panel",
+  "terminal.integrated.commandsToSkipShell": [
+    "kilo-code.new.agentManagerOpen",
+    "kilo-code.new.agentManager.showTerminal",
+  ],
+  "kilo-code.new.autocomplete.enableAutoTrigger": false,
+  "kilo-code.new.autocomplete.enableSmartInlineTaskKeybinding": false,
+  "kilo-code.new.autocomplete.enableChatAutocomplete": true,
+  "explorer.confirmDelete": false,
+  "tailwindCSS.emmetCompletions": true,
+  "gitlens.ai.model": "vscode",
+  "gitlens.ai.vscode.model": "copilot:gpt-4.1",
+  "chatgpt.runCodexInWindowsSubsystemForLinux": true,
+  "chatgpt.composerEnterBehavior": "cmdIfMultiline",
+  "workbench.browser.enableChatTools": true,
+  "chat.agent.sandbox.enabled": "on",
+  "terminal.external.linuxExec": "zsh",
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "chatgpt.localeOverride": "vi-VN",
+  "kilo-code.new.browserAutomation.enabled": true,
+  "kilo-code.new.browserAutomation.headless": true,
+  "kilo-code.new.claudeCodeCompat": true,
+  "chat.plugins.marketplaces": [
+    "github/copilot-plugins",
+    "github/awesome-copilot",
+    "EveryInc/compound-engineering-plugin",
+  ],
+  "workbench.secondarySideBar.showLabels": false,
+  "claudeCode.useTerminal": true,
+  "chat.viewSessions.orientation": "stacked",
+  "workbench.activityBar.compact": true,
 }

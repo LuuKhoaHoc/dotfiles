@@ -8,6 +8,12 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+	"diagnostics": {
+		"inline": {
+			"enabled": true,
+		},
+	},
+	"code_lens": "off",
 	"diff_view_style": "unified",
 	"agent_buffer_font_size": 13.5,
 	"ui_font_size": 14.0,
@@ -29,22 +35,66 @@
 		},
 	],
 	"context_servers": {
+		"mcp-server-sonarqube": {
+   "enabled": true,
+			"remote": false,
+			"settings": {
+				"sonarqube_token": "__REDACTED__",
+				"sonarqube_url": "https://sonar.vppos.vn",
+				"sonarqube_org": "SONARQUBE_ORGANIZATION_KEY",
+				"docker_path": "/usr/bin/docker",
+			},
+		},
+		"chrome-devtools-mcp-zed": {
+   "enabled": true,
+			"remote": false,
+			"settings": {
+				"browser_url": null,
+				"ws_endpoint": null,
+				"ws_headers": null,
+				"auto_connect": null,
+				"channel": null,
+				"headless": null,
+				"isolated": null,
+				"user_data_dir": null,
+				"viewport": null,
+				"executable_path": null,
+				"chrome_arg": [],
+				"proxy_server": null,
+				"accept_insecure_certs": null,
+				"category_emulation": null,
+				"category_performance": null,
+				"category_network": null,
+				"log_file": null,
+				"extra_args": [],
+			},
+		},
+		"agentmemory": {
+   "enabled": true,
+			"remote": false,
+			"command": "npx",
+			"args": ["-y", "@agentmemory/mcp"],
+			"env": {
+				"AGENTMEMORY_URL": "${AGENTMEMORY_URL}",
+				"AGENTMEMORY_SECRET": "${AGENTMEMORY_SECRET}",
+			},
+		},
 		"mcp-server-notion": {
-			"enabled": true,
+   "enabled": true,
 			"remote": false,
 			"settings": {
 				"notion_token": "__REDACTED__",
 			},
 		},
 		"mcp-server-figma": {
-			"enabled": true,
+   "enabled": true,
 			"remote": false,
 			"settings": {
 				"figma_api_key": "__REDACTED__",
 			},
 		},
 		"mcp-server-gitlab": {
-			"enabled": true,
+   "enabled": true,
 			"remote": false,
 			"settings": {
 				"gitlab_personal_access_token": "__REDACTED__",
@@ -52,7 +102,7 @@
 			},
 		},
 		"mcp-server-context7": {
-			"enabled": true,
+   "enabled": true,
 			"remote": false,
 			"settings": {
 				"context7_api_key": "__REDACTED__",
@@ -60,12 +110,16 @@
 		},
 	},
 	"edit_predictions": {
+		"allow_data_collection": "no",
 		"provider": "zed",
 	},
 	"agent_servers": {
+		"pi-acp": {
+			"type": "registry",
+		},
 		"codex-acp": {
 			"default_config_options": {
-				"model": "gpt-5.5",
+				"model": "gpt-5.4-mini",
 			},
 			"type": "registry",
 		},
@@ -73,6 +127,7 @@
 			"type": "registry",
 		},
 		"gemini": {
+			"default_mode": "yolo",
 			"type": "registry",
 		},
 		"factory-droid": {
@@ -83,8 +138,8 @@
 		},
 		"opencode": {
 			"default_config_options": {
-				"effort": "xhigh",
-				"model": "openai/gpt-5.5",
+				"effort": "high",
+				"model": "9router/opencode-premium",
 				"mode": "plan",
 			},
 			"type": "registry",
@@ -109,10 +164,7 @@
 	"use_system_window_tabs": true,
 	"buffer_font_fallbacks": [
 		"Maple Mono NF",
-		"OperatorMonoLig Nerd Font",
 		"JetBrainsMono Nerd Font Mono",
-		"Menlo",
-		"Monaco",
 		"Courier New",
 	],
 	"show_whitespaces": "all",
@@ -123,15 +175,15 @@
 		"dock": "right",
 	},
 	"icon_theme": {
-		"mode": "dark",
-		"light": "Catppuccin Mocha",
+		"mode": "light",
+		"light": "Material Icon Theme",
 		"dark": "Material Icon Theme",
 	},
 	"base_keymap": "VSCode",
 	"theme": {
 		"mode": "dark",
 		"light": "Catppuccin Iced Latte (Blur)",
-		"dark": "Catppuccin Macchiato (Blur) [Heavy]",
+		"dark": "One Dark",
 	},
 	"buffer_font_size": 14.5,
 	// Finder model width
@@ -170,10 +222,34 @@
 	},
 	// Use Copilot Chat AI as default
 	"agent": {
+		"show_turn_stats": true,
 		"flexible": true,
 		"default_profile": "write",
 		"tool_permissions": {
+			"default": "allow",
 			"tools": {
+				"mcp:mcp-server-gitlab:search_repositories": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-gitlab:list_events": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-gitlab:whoami": {
+					"default": "allow",
+				},
+				"delete_path": {
+					"always_allow": [
+						{
+							"pattern": "^erp-admin/\\.agents/skills/",
+						},
+					],
+				},
+				"mcp:mcp-server-gitlab:update_merge_request": {
+					"default": "allow",
+				},
+				"mcp:mcp-server-context7:resolve-library-id": {
+					"default": "allow",
+				},
 				"mcp:mcp-server-gitlab:create_label": {
 					"default": "allow",
 				},
@@ -188,11 +264,7 @@
 					"default": "allow",
 				},
 				"create_directory": {
-					"always_allow": [
-						{
-							"pattern": "^erp-admin/apps/hr/src/shared/",
-						},
-					],
+					"always_allow": [],
 				},
 				"skill": {
 					"default": "allow",
@@ -216,6 +288,12 @@
 						},
 						{
 							"pattern": "^packages/shared/src/hooks/",
+						},
+						{
+							"pattern": "^packages/ui/src/components/customs/",
+						},
+						{
+							"pattern": "^erp-admin/\\.agents/skills/",
 						},
 					],
 				},
@@ -265,17 +343,21 @@
 			{
 				"provider": "9router",
 				"model": "zed-custom",
-				"enable_thinking": false,
+				"enable_thinking": true,
+				"effort": "high",
+				"speed": "fast",
 			},
 		],
 		"inline_assistant_model": {
-			"provider": "opencode",
-			"model": "free/big-pickle",
-		},
-		"default_model": {
-			"enable_thinking": false,
 			"provider": "9router",
 			"model": "zed-custom",
+		},
+		"default_model": {
+			"enable_thinking": true,
+			"provider": "opencode",
+			"model": "go/mimo-v2.5",
+			"effort": "high",
+			"speed": "fast",
 		},
 	},
 	// Uncomment below to use local AI with Ollama, refer https://zed.dev/docs/language-model-integration?highlight=ollama#using-ollama-on-macos
@@ -294,7 +376,7 @@
 				"available_models": [
 					{
 						"name": "zed-custom",
-						"max_tokens": 200000,
+						"max_tokens": 256000,
 						"max_output_tokens": 32000,
 						"max_completion_tokens": 200000,
 						"capabilities": {
@@ -303,7 +385,7 @@
 							"parallel_tool_calls": true,
 							"prompt_cache_key": true,
 							"chat_completions": true,
-							"interleaved_reasoning": false,
+							"interleaved_reasoning": true,
 						},
 					},
 				],
