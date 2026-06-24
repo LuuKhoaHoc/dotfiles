@@ -40,3 +40,9 @@ luac.out
 *.hex
 
 .omx/
+
+# Environments and Secrets
+.env
+*.env
+.env.*
+
