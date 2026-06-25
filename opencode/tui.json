@@ -1,0 +1,6 @@
+{
+  "plugin": [
+    "oh-my-openagent/tui",
+    "oh-my-opencode-slim"
+  ]
+}
