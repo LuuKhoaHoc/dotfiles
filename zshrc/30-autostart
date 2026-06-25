@@ -11,7 +11,9 @@ eval "$(zoxide init zsh)"
 # fi
 
 # mise
-eval "$(/home/khoahoc/.local/bin/mise activate zsh)"
+if [ -f "$HOME/.local/bin/mise" ]; then
+    eval "$($HOME/.local/bin/mise activate zsh)"
+fi
 
 # eval $(gnome-keyring-daemon --start)
 
