@@ -146,6 +146,16 @@ If template exists, ask choose or use `default`. Read + merge into description:
   - Want checklist kept: read template → merge → use `--description`
   - Want raw template only: use `--template`
 
+> [!WARNING]
+> **Windows & PowerShell Encoding Issue**:
+> Trên Windows, PowerShell 5.1 mặc định sử dụng mã hóa hệ thống (ANSI/UTF-16) khi đọc file bằng `Get-Content`. Nếu file mô tả (ví dụ `mr-description.md`) chứa tiếng Việt hoặc biểu tượng cảm xúc (emoji), lệnh `Get-Content mr-description.md` sẽ bị lỗi hiển thị (Mojibake) trên GitLab/GitHub.
+>
+> **Giải pháp**: Luôn chỉ định mã hóa `-Encoding utf8` khi đọc file bằng `Get-Content` trong PowerShell và gán vào biến trước khi truyền:
+> ```powershell
+> $desc = Get-Content mr-description.md -Raw -Encoding utf8
+> glab mr create --title "..." -d $desc
+> ```
+
 ## 6. Tạo MR/PR
 
 Required: pass self assignee + at least 1 valid label.
