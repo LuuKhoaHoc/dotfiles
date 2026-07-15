@@ -1,88 +1,61 @@
 ---
 name: plan-first
-description: Stop and think before coding. Restate the goal, inspect the codebase, produce a plan with verification steps, then execute. Use when user asks to build a feature, implement a change, or tackle a non-trivial task — especially when the scope is ambiguous or the approach is unclear.
+description: Stop and think before coding. Restate the goal, inspect the codebase, produce a plan as a file in docs/plans/, then execute. Use when user asks to build a feature, implement a change, or tackle a non-trivial task — especially when the scope is ambiguous or the approach is unclear.
 ---
 
 # Plan First
 
-**Don't assume. Don't hide confusion. Surface tradeoffs before writing code.**
+**Không giả định. Không che giấu sự mơ hồ. Trình bày tradeoffs trước khi viết code.**
 
-This skill enforces a think-before-you-code discipline for non-trivial tasks.
+Skill này áp dụng quy trình lập kế hoạch nghiêm túc cho các tác vụ không tầm thường (non-trivial).
 
-**Tradeoff:** For trivial tasks (typo fixes, obvious one-liners, simple config changes), skip the plan and just do it. Use judgment.
+---
 
 ## When to Use
 
-- User asks to build a feature, add a capability, or implement a change
-- The scope is ambiguous or multiple approaches exist
-- The change touches multiple files or systems
-- You're unsure about the existing architecture or patterns
+- User yêu cầu thêm tính năng, thay đổi cấu trúc hoặc sửa đổi hành vi codebase.
+- Phạm vi công việc mơ hồ hoặc có nhiều hướng tiếp cận khác nhau.
+- Thay đổi chạm tới nhiều tệp tin hoặc hệ thống.
 
-## Before Editing
+---
 
-### 1. Restate the Goal
+## Workflows
 
-Summarize what the user wants in your own words. If the request is ambiguous:
-- Present multiple interpretations — don't pick silently
-- Ask specific clarifying questions rather than making assumptions
-- Push back if a simpler approach would serve the goal better
+### 1. Khảo sát thực địa (Inspect the Terrain)
+Trước khi lập kế hoạch, hãy tìm hiểu kỹ hiện trạng:
+- Đọc các tệp tin liên quan và bối cảnh xung quanh chúng.
+- Tìm kiếm các giải pháp tương tự đã có sẵn trong `docs/solutions/` hoặc `AGENTS.md` (institutional learnings) để đảm bảo tính nhất quán.
 
-### 2. Inspect the Codebase
+### 2. Xác định cấu trúc file kế hoạch (Identify Deliverable Name)
+Xác định tên tệp kế hoạch theo định dạng:
+`docs/plans/<YYYY-MM-DD>-<seq>-<type>-<slug>-plan.md`
 
-**Understand the terrain before you move.**
+Trong đó:
+- `<YYYY-MM-DD>`: Ngày hiện tại (Local time: 2026-07-03).
+- `<seq>`: Số thứ tự 3 chữ số bắt đầu từ `001`. Quét thư mục `docs/plans/` để tìm file có số thứ tự lớn nhất trong ngày hôm nay, tăng lên 1 (ví dụ `002`).
+- `<type>`: Loại kế hoạch (`feat`, `refactor`, `fix`, `chore`).
+- `<slug>`: Tên ngắn gọn nối bằng dấu gạch ngang (ví dụ `add-auth-flow`).
 
-- Read the relevant files and their surrounding context
-- Identify existing patterns, conventions, and abstractions to follow
-- Check for related tests, configs, or documentation
-- Look for prior art — has something similar been done before?
+*Ví dụ:* `docs/plans/2026-07-03-001-feat-add-auth-flow-plan.md`
 
-### 3. Produce a Plan
+### 3. Tạo Kế hoạch (Write the Deliverable)
+Tạo tệp tin kế hoạch mới dựa trên cấu trúc của [TEMPLATE.md](TEMPLATE.md).
 
-**A brief, numbered plan with verification at each step.**
+**Completion Criteria:**
+- File plan được ghi thành công vào đúng đường dẫn trong `docs/plans/`.
+- File plan chứa đầy đủ các phần: `Summary`, `Requirements`, `Scope Boundaries`, `Context & Research`, `Key Technical Decisions`, `Implementation Units`.
+- Các bước thực thi (`U1`, `U2`, ...) ghi rõ tệp tin cần sửa/tạo và cách kiểm tra xác minh (`Verification`).
 
-```
-1. [Step] → verify: [how you'll confirm it worked]
-2. [Step] → verify: [how you'll confirm it worked]
-3. [Step] → verify: [how you'll confirm it worked]
-```
+### 4. Đợi phê duyệt (Checkpoint Approval)
+Trình bày liên kết markdown trực tiếp tới file plan vừa tạo cho người dùng click xem và duyệt.
+*Ví dụ:* `Tôi đã tạo kế hoạch chi tiết tại [tên-file.md](file:///path/to/docs/plans/tên-file.md). Vui lòng duyệt qua để tôi tiếp tục.`
 
-Keep it short — 3-7 steps for most tasks. The plan is a tool, not a deliverable.
+**Completion Criteria:**
+- **Dừng lại ngay lập tức** (Stop and end turn). KHÔNG ĐƯỢC phép sửa code trước khi User duyệt kế hoạch (phản hồi trực tiếp hoặc bấm nút duyệt).
+- Nếu User có feedback, cập nhật trực tiếp file plan đó rồi trình bày link mới để xin phê duyệt lại.
 
-### 4. Confirm or Proceed
-
-- If the plan is straightforward and low-risk: proceed
-- If the change is risky, irreversible, or ambiguous: ask for confirmation
-- If you discover something that changes the plan mid-execution: stop and re-plan
-
-## During Editing
-
-- **Make small, reviewable changes** — each step should be independently understandable
-- **Prefer existing patterns** — match the codebase's style, even if you'd do it differently
-- **Run the narrowest relevant checks** after each meaningful step (typecheck, lint, tests)
-- **Don't gold-plate** — solve the stated problem, not hypothetical future ones
-
-### Simplicity Check
-
-After implementing each step, ask:
-- Did I add anything beyond what was asked?
-- Could this be simpler?
-- Would a senior engineer say this is overcomplicated?
-
-If yes to any, simplify before moving on.
-
-## After Editing
-
-Summarize:
-1. **What changed**: list modified files with a one-line description each
-2. **Verification**: what tests/checks were run and their results
-3. **Risks or follow-ups**: anything the user should know about
-
-## Anti-Patterns
-
-| Don't | Do instead |
-|-------|------------|
-| Pick an interpretation silently | Present options and ask |
-| Start coding immediately | Inspect first, plan second |
-| Add features "for the future" | Solve only what was asked |
-| Ignore existing patterns | Match the codebase style |
-| Skip verification | Run checks after each step |
+### 5. Thực thi và Kiểm thử (Execute & Verify)
+Sau khi kế hoạch được phê duyệt:
+- Thực hiện từng bước nhỏ, có thể kiểm thử độc lập.
+- Chạy các lệnh kiểm tra hẹp nhất có thể (lint, typecheck, tests) sau mỗi bước.
+- Cập nhật trạng thái `status: completed` trong frontmatter của file plan khi hoàn thành.
