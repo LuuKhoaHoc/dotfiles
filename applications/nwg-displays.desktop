@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=nwg-displays
+Comment=nwg-displays
+Exec=xdg-terminal-exec --app-id=TUI.float -e nwg-displays
+Terminal=false
+Type=Application
+Icon=/home/luukhoahoc/.local/share/applications/icons/nwg-displays.png
+StartupNotify=true

@@ -14,20 +14,30 @@ return {
     "svelte",
     "astro",
   },
-  root_markers = {
-    ".eslintrc",
-    ".eslintrc.js",
-    ".eslintrc.cjs",
-    ".eslintrc.yaml",
-    ".eslintrc.yml",
-    ".eslintrc.json",
-    "eslint.config.js",
-    "eslint.config.mjs",
-    "eslint.config.cjs",
-    "eslint.config.ts",
-    "eslint.config.mts",
-    "eslint.config.cts",
-  },
+  -- Check monorepo root first so ESLint picks up the correct
+  -- eslint.config.* from the workspace root, not a sub-package
+  root_dir = function(fname)
+    local monorepo_markers = { "turbo.json", "pnpm-workspace.yaml", "nx.json", "lerna.json" }
+    local root = vim.fs.root(fname, monorepo_markers)
+    if root then
+      -- Also check if eslint config exists at monorepo root
+      local eslint_markers = {
+        ".eslintrc", ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml",
+        ".eslintrc.yml", ".eslintrc.json",
+        "eslint.config.js", "eslint.config.mjs", "eslint.config.cjs",
+        "eslint.config.ts", "eslint.config.mts", "eslint.config.cts",
+      }
+      local eslint_root = vim.fs.root(fname, eslint_markers)
+      if eslint_root then return eslint_root end
+      return root
+    end
+    return vim.fs.root(fname, {
+      ".eslintrc", ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml",
+      ".eslintrc.yml", ".eslintrc.json",
+      "eslint.config.js", "eslint.config.mjs", "eslint.config.cjs",
+      "eslint.config.ts", "eslint.config.mts", "eslint.config.cts",
+    })
+  end,
   -- Refer to https://github.com/Microsoft/vscode-eslint#settings-options for documentation.
   settings = {
     validate = "on",

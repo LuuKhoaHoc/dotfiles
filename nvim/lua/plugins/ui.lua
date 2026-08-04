@@ -163,7 +163,32 @@ return {
       },
     },
     config = function(_, opts)
-      require("mini.files").setup(opts)
+      -- Gitignored files dimming
+      local gitignored_cache = {}
+      local function is_gitignored(path)
+        if gitignored_cache[path] ~= nil then
+          return gitignored_cache[path]
+        end
+        local dir = vim.fn.fnamemodify(path, ":h")
+        local file = vim.fn.fnamemodify(path, ":t")
+        local out = vim.fn.systemlist({ "git", "check-ignore", file }, dir)
+        local ignored = #out > 0
+        gitignored_cache[path] = ignored
+        return ignored
+      end
+
+      local function mini_files_highlight(fs_entry)
+        if is_gitignored(fs_entry.path) then
+          return "Comment"
+        end
+        return MiniFiles.default_highlight(fs_entry)
+      end
+
+      require("mini.files").setup(vim.tbl_deep_extend("force", opts or {}, {
+        content = {
+          highlight = mini_files_highlight,
+        },
+      }))
 
       local show_dotfiles = true
       local filter_show = function(_)

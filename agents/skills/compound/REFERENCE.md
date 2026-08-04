@@ -1,6 +1,6 @@
 # Compound Skill - Reference Guide
 
-Tài liệu này cung cấp hướng dẫn chi tiết cho AI Agent về cách phân loại, đặt tên và viết nội dung tài liệu tri thức trong thư mục `docs/solutions/`.
+Tài liệu này cung cấp hướng dẫn chi tiết cho AI Agent về cách phân loại, đặt tên và điền metadata cho tài liệu tri thức trong thư mục `docs/solutions/`.
 
 ---
 
@@ -15,6 +15,7 @@ Chọn 1 trong các thư mục con trong `docs/solutions/` để lưu trữ file
 | `conventions` | Quy định đặt tên, cấu trúc thư mục, quy ước giao tiếp API, i18n, router. |
 | `integration-issues` | Các vấn đề liên quan tới tích hợp Micro-Frontend (remotes, shell), CI/CD, docker, hoặc môi trường dev. |
 | `architecture-patterns` | Các quyết định kiến trúc lớn, cấu trúc feature boundaries, dùng Zustand, React Query. |
+| `ui-patterns` | Tùy chỉnh UI/UX, Design Tokens, Tailwind utility patterns, Layout responsiveness. |
 
 ---
 
@@ -29,7 +30,7 @@ Chọn 1 trong các thư mục con trong `docs/solutions/` để lưu trữ file
 
 ### `severity`
 - `low`: Ảnh hưởng nhỏ, code smell hoặc cải thiện hiệu năng nhỏ.
-- `medium`: Ảnh hưởng tới độ duy trì (maintainability) hoặc code chất lượng của một module.
+- `medium`: Ảnh hưởng tới độ duy trì (maintainability) hoặc chất lượng của một module.
 - `high`: Gây lỗi chạy ứng dụng hoặc vi phạm nghiêm trọng quy chuẩn codebase.
 - `critical`: Gây sập ứng dụng, chặn đứng luồng build, lỗi bảo mật.
 
@@ -38,8 +39,8 @@ Chọn 1 trong các thư mục con trong `docs/solutions/` để lưu trữ file
 *Ví dụ tốt:*
 ```yaml
 applies_when:
-  - UI renders backend response fields directly
-  - A feature is tempted to add generic pickers
+  - Khi làm việc với HR Dashboard Carousel Stat Cards, icon mapping và i18n foot keys
+  - Khi tùy chỉnh UI/UX cho DateRangePicker và Calendar range selection trong @hilo/ui
 ```
 
 ### `tags`
@@ -57,7 +58,14 @@ Sử dụng các tag chung về công nghệ (`react`, `typescript`, `vite`, `ta
 
 ---
 
-## 4. Checklist khi viết giải pháp (Compound Checklist)
+## 4. Kiến trúc lưu trữ tri thức (Generic Skill vs Local Store)
+
+- **Generic Skill**: Quy trình `/compound` và bộ template là công cụ tổng quát, dùng chung được cho bất kỳ dự án nào.
+- **Local Knowledge Repository**: Mỗi dự án (repository) sở hữu thư mục `docs/solutions/` riêng. Tri thức lưu trong đó là tài sản của dự án đó, giúp bất kỳ Agent AI hoặc Dev nào join dự án đều có thể tra cứu và tuân thủ.
+
+---
+
+## 5. Checklist khi viết giải pháp (Compound Checklist)
 
 Khi Agent tạo tài liệu giải pháp, phải đảm bảo:
 - [ ] Code ví dụ trong `Good` và `Bad` phải là code thực tế hoặc rút gọn tối đa từ code thực tế trong dự án (tránh code lý thuyết suông).

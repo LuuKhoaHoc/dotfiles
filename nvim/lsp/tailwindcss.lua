@@ -83,14 +83,23 @@ return {
       },
     },
   },
-  root_markers = {
-    "tailwind.config.js",
-    "tailwind.config.cjs",
-    "tailwind.config.mjs",
-    "tailwind.config.ts",
-    "postcss.config.js",
-    "postcss.config.cjs",
-    "postcss.config.mjs",
-    "postcss.config.ts",
-  },
+  -- Check monorepo root for tailwind config so LSP works across
+  -- all apps in a Turborepo workspace
+  root_dir = function(fname)
+    local root = vim.fs.root(fname, { "turbo.json", "pnpm-workspace.yaml", "nx.json", "lerna.json" })
+    if root then
+      -- Check if tailwind config exists at monorepo root
+      local tw_markers = {
+        "tailwind.config.js", "tailwind.config.cjs", "tailwind.config.mjs", "tailwind.config.ts",
+        "postcss.config.js", "postcss.config.cjs", "postcss.config.mjs", "postcss.config.ts",
+      }
+      local tw_root = vim.fs.root(fname, tw_markers)
+      if tw_root then return tw_root end
+      return root
+    end
+    return vim.fs.root(fname, {
+      "tailwind.config.js", "tailwind.config.cjs", "tailwind.config.mjs", "tailwind.config.ts",
+      "postcss.config.js", "postcss.config.cjs", "postcss.config.mjs", "postcss.config.ts",
+    })
+  end,
 }

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Hermes
+Comment=Hermes Agent - AI Desktop Assistant
+Exec=hermes desktop
+Terminal=false
+Type=Application
+Icon=/home/luukhoahoc/.local/share/applications/icons/Hermes.png
+StartupNotify=true
+Categories=Development;X-AI;

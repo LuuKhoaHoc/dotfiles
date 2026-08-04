@@ -1,10 +1,10 @@
 ---
 title: '[Tiêu đề ngắn gọn, súc tích về giải pháp/bài học]'
 date: YYYY-MM-DD
-category: [best-practices | build-errors | conventions | integration-issues | architecture-patterns]
-module: [employee | hr | shared | infra | shell]
+category: [best-practices | build-errors | conventions | integration-issues | architecture-patterns | ui-patterns]
+module: [employee | hr | shared | infra | shell | ui]
 problem_type: [best_practice | bug_fix | architecture | convention | integration]
-component: [tên component hoặc tầng code cụ thể, ví dụ: frontend_stimulus, api_client]
+component: [tên component hoặc tầng code cụ thể, ví dụ: frontend_stimulus, api_client, hr_dashboard]
 severity: [low | medium | high | critical]
 applies_when:
   - [Điều kiện 1 khiến bài học này cần áp dụng]

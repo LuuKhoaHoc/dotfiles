@@ -1,0 +1,19 @@
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+[projects."/home/luukhoahoc/Projects/Hilo-Vppos/erp-admin"]
+trust_level = "trusted"
+
+[features]
+memories = true
+
+[memories]
+generate_memories = true
+use_memories = true
+disable_on_external_context = false
+
+[mcp_servers.agentmemory]
+command = "npx"
+args = ["-y", "@agentmemory/mcp"]
+
+[mcp_servers.agentmemory.env]
+AGENTMEMORY_URL = "http://localhost:3111"

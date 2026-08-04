@@ -10,7 +10,13 @@ return {
     "typescript",
     "typescriptreact",
   },
-  root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
+  -- Prefer monorepo root before tsconfig/package.json to avoid
+  -- multiple LSP instances in Turborepo/Nx workspaces
+  root_dir = function(fname)
+    local root = vim.fs.root(fname, { "turbo.json", "pnpm-workspace.yaml", "nx.json", "lerna.json" })
+    if root then return root end
+    return vim.fs.root(fname, { "tsconfig.json", "jsconfig.json", "package.json", ".git" })
+  end,
   settings = {
     typescript = {
       -- Inlay Hints preferences

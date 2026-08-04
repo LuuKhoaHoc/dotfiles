@@ -1,44 +1,39 @@
 ---
 name: compound
-description: Document and compound learnings, code patterns, and bug solutions into the repository's docs/solutions/ structure. Use when the user requests to save a learning, document a solution, run a compound action, or after successfully resolving a bug or completing a refactoring task.
+description: Document and compound learnings, code patterns, architectural decisions, and bug solutions into the repository's docs/solutions/ structure. Use when the user requests to save a learning, document a solution, run a compound action, or after successfully resolving a bug or completing a refactoring task.
 ---
 
 # Compound Learnings Skill
 
-Tự động hóa việc ghi nhận bài học kinh nghiệm, giải pháp sửa lỗi, và các code pattern tốt/xấu vào cấu trúc lưu trữ tri thức `docs/solutions/` của dự án.
+Tự động hóa việc trích xuất bài học kinh nghiệm, giải pháp sửa lỗi và code pattern vào kho tri thức `docs/solutions/` của repository.
 
-## Quick Start
+## Progressive Disclosure & Reference Pointers
 
-Khi nhận thấy có một bài học đắt giá cần ghi lại hoặc khi user yêu cầu:
-1. Đọc [TEMPLATE.md](TEMPLATE.md) để lấy cấu trúc file mẫu.
-2. Xác định các trường frontmatter cần thiết (xem thêm [REFERENCE.md](REFERENCE.md)).
-3. Viết file solution mới vào thư mục tương ứng trong `docs/solutions/`.
+Skill này sử dụng các tài liệu tham chiếu phụ thuộc:
+- Khi cần tạo nội dung file solution: Đọc [TEMPLATE.md](TEMPLATE.md).
+- Khi cần tra cứu Taxonomy (`category`, `problem_type`, `severity`) hoặc quy tắc `applies_when`: Đọc [REFERENCE.md](REFERENCE.md).
 
-## Workflows
+## Execution Steps
 
-### 1. Thu thập thông tin (Fact Gathering)
-- **Vấn đề (Context):** Lỗi là gì? Tại sao cách làm cũ không hoạt động hoặc không tối ưu?
-- **Giải pháp (Guidance):** Cách viết code chuẩn là gì? Đưa ra ví dụ Code cụ thể (Good vs Bad).
-- **Phân loại:**
-  - `category`: `best-practices`, `build-errors`, `conventions`, `integration-issues`, `architecture-patterns`.
-  - `module`: `employee`, `hr`, `shared`, `infra`, `shell`, v.v.
-  - `problem_type`: `best_practice`, `bug_fix`, `architecture`, `convention`, `integration`.
-  - `severity`: `low`, `medium`, `high`, `critical`.
+### Step 1: Fact Gathering (Thu thập thực tế)
+Trích xuất thông tin cốt lõi từ ngữ cảnh làm việc vừa qua:
+1. **Context**: Mô tả bối cảnh, lỗi hoặc rủi ro của cách làm cũ.
+2. **Guidance**: Nguyên tắc/cách làm chuẩn mới.
+3. **Examples**: Tạo cặp mã nguồn **Good vs Bad** bám sát code thực tế trong repo.
 
-### 2. Tạo File Solution
-Tạo file markdown mới tại:
-`docs/solutions/<category>/<YYYY-MM-DD>-<slug>.md`
-Hoặc đặt tên theo format `docs/solutions/<category>/<slug>-<YYYY-MM-DD>.md` tùy theo các file sẵn có trong thư mục đó.
+### Step 2: Formulate Metadata & File Path
+1. Chọn `category` phù hợp từ [REFERENCE.md](REFERENCE.md) (vd: `best-practices`, `build-errors`, `conventions`, `integration-issues`, `architecture-patterns`, `ui-patterns`).
+2. Xác định `module` hiện tại (vd: `hr`, `employee`, `shared`, `ui`, `infra`).
+3. Đặt tên file theo cú pháp: `docs/solutions/<category>/<YYYY-MM-DD>-<slug>.md` (hoặc `<slug>-<YYYY-MM-DD>.md` tùy cấu trúc hiện có trong thư mục mục tiêu).
 
-*Lưu ý:*
-- Tên file viết thường, nối nhau bằng dấu gạch ngang `-`.
-- Ví dụ: `docs/solutions/best-practices/2026-07-03-use-centralized-query-keys.md`.
+### Step 3: Write & Verify Solution File
+1. Đọc mẫu tại [TEMPLATE.md](TEMPLATE.md) và ghi nội dung hoàn chỉnh vào file solution.
+2. Kiểm tra lại Frontmatter YAML, đảm bảo không còn text placeholder và đầy đủ các trường bắt buộc.
+3. Tạo clickable links (`file:///...`) cho các file và mã nguồn liên quan.
 
-### 3. Điền nội dung và định dạng
-- Copy cấu trúc trong [TEMPLATE.md](TEMPLATE.md).
-- Thay thế các placeholder bằng thông tin thực tế.
-- Viết rõ ràng phần lý do tại sao phương án "Good" lại tốt hơn "Bad".
+## Completion Criteria
 
-## Advanced Guidelines
-
-Xem hướng dẫn chi tiết cách viết frontmatter hiệu quả và các ví dụ nâng cao tại [REFERENCE.md](REFERENCE.md).
+Việc thực thi `/compound` hoàn tất khi:
+- [ ] File solution đã được tạo tại `docs/solutions/<category>/...`.
+- [ ] Frontmatter YAML chứa đầy đủ các trường bắt buộc và đúng taxonomy trong `REFERENCE.md`.
+- [ ] Cung cấp clickable link dẫn tới file solution vừa tạo cho User.

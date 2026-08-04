@@ -111,18 +111,21 @@ Title:
 - Mixed types: dominant type + summary
 - Always conventional commits. No `[FEAT]`, `[FIX]`
 
-Description:
+Description (raw content for merging with template in step 5):
 
 1. Use commit body if useful
 2. List changes:
    ```
-   ## Changes
    - feat(scope): description
    - fix(scope): description
    ```
-3. Merge with repo template in step 5
 
-## 5. Đọc template MR/PR trong repo
+## 5. Đọc và sử dụng repo MR template (BẮT BUỘC)
+
+> [!IMPORTANT]
+> **Luôn ưu tiên dùng template có sẵn của repo.** Không bao giờ tạo MR với description freeform khi repo có template.
+
+### 5.1. Phát hiện template
 
 **GitLab:**
 
@@ -130,21 +133,41 @@ Description:
 ls .gitlab/merge_request_templates/ 2>/dev/null
 ```
 
-Repo may have: `default.md`, `hotfix.md`.
-
 **GitHub:**
 
 ```bash
 ls .github/PULL_REQUEST_TEMPLATE.md 2>/dev/null || ls .github/pull_request_template.md 2>/dev/null
 ```
 
-If template exists, ask choose or use `default`. Read + merge into description:
+Nếu không có template → skip step 5, dùng description freeform từ step 4.
 
-- Replace `## 📝 Mô tả` section with git-log changes
-- Keep checklist
-- Do not use both `--template` and `--description`
-  - Want checklist kept: read template → merge → use `--description`
-  - Want raw template only: use `--template`
+### 5.2. Chọn template phù hợp
+
+GitLab repos thường có nhiều template. Auto-chọn theo branch prefix:
+
+| Branch prefix | Template ưu tiên | Fallback |
+|---|---|---|
+| `feat/*` | `feature.md` | `default.md` |
+| `fix/*` | `bugfix.md` | `default.md` |
+| `hotfix/*` | `hotfix.md` | `bugfix.md` → `default.md` |
+| `refactor/*` | `refactor.md` | `default.md` |
+| `release/*` | `release.md` | `default.md` |
+| Khác | `default.md` | — |
+
+Nếu template ưu tiên không tồn tại → dùng fallback. Nếu không có template nào match → ask user chọn.
+
+### 5.3. Đọc template và merge
+
+Đọc nội dung template đã chọn. Merge với content từ step 4:
+
+1. **Giữ nguyên** các section checklist, verification, conventions của template (đánh dấu `[x]` nếu đã làm, `[ ]` nếu chưa)
+2. **Thay thế** section mô tả (`## 📝 Mô tả` hoặc `## What`) bằng nội dung từ git log (step 4)
+3. **Thêm** link Issue/Ticket nếu có (từ branch name hoặc user cung cấp)
+4. **Giữ nguyên** các section UI/UX, Testing, Checklist — chỉ tick `[x]` cho các mục đã hoàn thành
+
+> [!WARNING]
+> **KHÔNG dùng `--template` flag của glab** — nó chỉ insert raw template mà không fill nội dung.
+> **Luôn dùng `--description`** với merged content.
 
 > [!WARNING]
 > **Windows & PowerShell Encoding Issue**:
@@ -173,18 +196,6 @@ glab mr create \
   <additional-flags>
 ```
 
-**GitLab template direct:**
-
-```bash
-glab mr create \
-  --title="<title>" \
-  --source-branch="<source-branch>" \
-  --target-branch="<target-branch>" \
-  --assignee="<current-username>" \
-  --label="<label1>" \
-  --template="<template-name>" \
-  <additional-flags>
-```
 
 **GitHub (gh):**
 

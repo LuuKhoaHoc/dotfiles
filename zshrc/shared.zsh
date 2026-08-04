@@ -1,7 +1,7 @@
 # Generated from shell/profile.py. Do not edit manually.
 
 export EDITOR='nvim'
-export BUN_INSTALL='/home/khoahoc/.bun'
+export BUN_INSTALL="$HOME/.bun"
 
 function path_prepend() {
     case :$PATH: in
