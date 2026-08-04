@@ -28,6 +28,10 @@
 
 ## MCP Servers Config
 
+> **Trạng thái 2026-08**: chỉ ENABLE `mcp-server-gitlab`, `mcp-server-notion`, `mcp-server-context7`.
+> Đã DISABLE (giảm token — mỗi MCP server expose toàn bộ tool schemas vào agent system prompt, gitlab ~115 tools ≈ 35-40k tokens): `agentmemory`, `mcp-server-sonarqube`, `mcp-server-figma`, `mcp-server-markitdown`, `chrome-devtools-mcp-zed`.
+> Lưu ý: `settings.json` là JSONC — Python `json.loads` fail (pre-existing), Zed vẫn đọc được; sửa bằng regex có kiểm soát + backup trước.
+
 ```json
 "context_servers": {
     "mcp-server-gitlab": {

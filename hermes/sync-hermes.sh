@@ -4,8 +4,8 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
-HERMES_DIR="$HOME/.hermes"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+HERMES_DIR="${HERMES_HOME:-$HOME/.hermes}"
 HERMES_DOTFILES="$DOTFILES_DIR/hermes"
 
 # Files/dirs cần sync

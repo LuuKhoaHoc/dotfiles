@@ -9,6 +9,9 @@ triggers:
   - "~/.hermes/skills"
   - "skill library"
   - "share skills across agents"
+  - "upstream sync"
+  - "mattpocock skills"
+  - "update skills from upstream"
 tags: [skills, sync, symlink, hermes, agents]
 category: workflow
 ---
@@ -81,3 +84,4 @@ Check each skill file:
 If user later wants every CLI to share same skill source, point each CLI at canonical tree or generate symlinks from it.
 
 See references/claude-code-plugin-migration.md for a concrete session pattern.
+See references/upstream-sync-comparison.md for mattpocock/skills sync workflow with keep-list.
