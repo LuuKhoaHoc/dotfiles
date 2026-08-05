@@ -162,7 +162,7 @@ Nếu template ưu tiên không tồn tại → dùng fallback. Nếu không có
 
 1. **Giữ nguyên** các section checklist, verification, conventions của template (đánh dấu `[x]` nếu đã làm, `[ ]` nếu chưa)
 2. **Thay thế** section mô tả (`## 📝 Mô tả` hoặc `## What`) bằng nội dung từ git log (step 4)
-3. **Thêm** link Issue/Ticket nếu có (từ branch name hoặc user cung cấp)
+3. **Thêm** link Issue/Ticket nếu có (từ branch name hoặc user cung cấp) — dùng `**Issue / Ticket**: #<iid>` hoặc `Implements #<iid>`. **KHÔNG BAO GIỜ dùng `Closes #<iid>` / `Fixes #<iid>`** (xem warning ở step 6)
 4. **Giữ nguyên** các section UI/UX, Testing, Checklist — chỉ tick `[x]` cho các mục đã hoàn thành
 
 > [!WARNING]
@@ -180,6 +180,11 @@ Nếu template ưu tiên không tồn tại → dùng fallback. Nếu không có
 > ```
 
 ## 6. Tạo MR/PR
+
+> [!WARNING]
+> **KHÔNG dùng `Closes #<iid>` / `Fixes #<iid>` trong title hoặc description.**
+> GitLab/GitHub sẽ **auto-close issue ngay khi MR merge vào develop** — phá vỡ strict UAT lifecycle (issue phải sống tới khi release lên prod mới đóng).
+> Chỉ dùng reference **không đóng**: `**Issue / Ticket**: #<iid>` (đủ cho CI automation issue-lifecycle), `Implements #<iid>`, hoặc `Related to #<iid>`.
 
 Required: pass self assignee + at least 1 valid label.
 
