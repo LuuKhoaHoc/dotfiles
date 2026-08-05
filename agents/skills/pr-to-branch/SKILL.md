@@ -1,6 +1,6 @@
 ---
 name: pr-to-branch
-description: Tạo MR/PR vào nhánh target bằng glab/gh, tự phát hiện platform, đọc template repo, sinh title và description từ git log.
+description: Tạo MR/PR vào nhánh target bằng glab/gh, tự phát hiện platform, đọc template repo, sinh title và description từ git log. Kiểm tra theo issue và gắn milestone theo issue (nếu có).
 ---
 
 # Workflow: Tạo MR/PR bằng glab/gh với title/description tự động
@@ -98,6 +98,47 @@ Priority:
 
 Before create, verify label exists. If inferred label missing, fallback to nearest generic repo label. If no valid label, ask user.
 
+## 3.6. Resolve issue và gắn milestone theo issue (BẮT BUỘC khi branch có ref issue)
+
+### 3.6.1. Tìm issue iid
+
+1. Parse iid từ branch name: `feat/123-slug`, `feature/ABC-123`, `fix/#123-slug` → `123`
+2. Không có iid trong branch → hỏi user. User xác nhận không có issue → skip cả bước 3.6 (không gắn milestone)
+
+### 3.6.2. Fetch issue và check theo issue
+
+**GitLab:**
+
+```bash
+glab issue view <iid> --output json | jq '{title, labels: [.labels[].name], milestone: .milestone.title}'
+```
+
+Nếu `--output json` không khả dụng → `glab issue view <iid>` đọc trực tiếp phần Milestone/Labels.
+
+**GitHub:**
+
+```bash
+gh issue view <iid> --json title,labels,milestone
+```
+
+Check trước khi tạo MR:
+
+- **Scope khớp issue**: title + description của issue phải tương ứng nội dung branch/commits. Lệch rõ ràng → hỏi user, không tự tạo MR
+- **Label**: label từ issue ưu tiên hơn suy luận branch prefix ở 3.5 (vẫn đảm bảo ≥1 label)
+- **Issue ref**: description phải có `**Issue / Ticket**: #<iid>` (KHÔNG `Closes #` — xem warning step 6)
+
+### 3.6.3. Gắn milestone theo issue
+
+- Issue **CÓ** milestone → gắn **đúng tên milestone đó** vào MR:
+  - **GitLab**: thêm `--milestone="<milestone-title>"` vào lệnh `glab mr create` (step 6)
+  - **GitHub**: `gh pr create` không có flag milestone → tạo PR trước, rồi set qua API:
+    ```bash
+    MS=$(gh api repos/{owner}/{repo}/milestones --jq '.[] | select(.title=="<milestone-title>") | .number')
+    gh api repos/{owner}/{repo}/issues/<pr-number> -f milestone="$MS"
+    ```
+- Issue **KHÔNG** có milestone → KHÔNG gắn milestone cho MR (không tự suy milestone khác)
+- Luôn dùng đúng tên milestone lấy từ issue output, không đoán (thực tế Hilo ERP: `vX.Y.Z`)
+
 ## 4. Sinh title và description từ git log
 
 ```bash
@@ -162,7 +203,7 @@ Nếu template ưu tiên không tồn tại → dùng fallback. Nếu không có
 
 1. **Giữ nguyên** các section checklist, verification, conventions của template (đánh dấu `[x]` nếu đã làm, `[ ]` nếu chưa)
 2. **Thay thế** section mô tả (`## 📝 Mô tả` hoặc `## What`) bằng nội dung từ git log (step 4)
-3. **Thêm** link Issue/Ticket nếu có (từ branch name hoặc user cung cấp) — dùng `**Issue / Ticket**: #<iid>` hoặc `Implements #<iid>`. **KHÔNG BAO GIỜ dùng `Closes #<iid>` / `Fixes #<iid>`** (xem warning ở step 6)
+3. **Thêm** link Issue/Ticket từ iid đã resolve ở step 3.6 — dùng `**Issue / Ticket**: #<iid>` hoặc `Implements #<iid>`. **KHÔNG BAO GIỜ dùng `Closes #<iid>` / `Fixes #<iid>`** (xem warning ở step 6)
 4. **Giữ nguyên** các section UI/UX, Testing, Checklist — chỉ tick `[x]` cho các mục đã hoàn thành
 
 > [!WARNING]
@@ -198,6 +239,7 @@ glab mr create \
   --target-branch="<target-branch>" \
   --assignee="<current-username>" \
   --label="<label1>" \
+  --milestone="<milestone-title>" \  # CHỈ khi issue có milestone (step 3.6)
   <additional-flags>
 ```
 
@@ -227,6 +269,7 @@ After create, confirm:
 
 - assignee = self
 - label attached correctly
+- milestone khớp milestone của issue (nếu issue có)
 - MR/PR URL created
 
 If assignee/label missing, update via CLI/API before report done.
