@@ -9,3 +9,4 @@ config.yaml
 mcp-tokens/
 mcp-tokens
 *.client.json
+__pycache__/
