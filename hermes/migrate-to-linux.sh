@@ -20,41 +20,14 @@ else
 fi
 
 # 2) Script re-auth OAuth (hermes mcp login không chạy được với Google MCP)
+#    Bản mới nhất đã nằm trong repo (hermes/gws_mcp_oauth.py) — copy phòng hờ
 if [ -f "$HOME/gws_mcp_oauth.py" ]; then
   cp "$HOME/gws_mcp_oauth.py" "$DEST/"
   echo "  ✓ gws_mcp_oauth.py"
 fi
 
-# 2b) Trích block 8 Google MCP servers từ config Windows (có client_secret —
-#     KHÔNG đẩy lên GitHub, chỉ nằm trong bundle). Merge vào config Linux khi sang.
-FRAGMENT="$DEST/gws-mcp-servers.yaml"
-PY="$HERMES_DIR/hermes-agent/venv/Scripts/python.exe"
-if [ -f "$HERMES_DIR/config.yaml" ]; then
-  SRC_W="$(cygpath -w "$HERMES_DIR/config.yaml" 2>/dev/null || echo "$HERMES_DIR/config.yaml")"
-  DST_W="$(cygpath -w "$FRAGMENT" 2>/dev/null || echo "$FRAGMENT")"
-  "$PY" - "$SRC_W" "$DST_W" <<'PYEOF'
-import sys, re
-text = open(sys.argv[1], encoding="utf-8").read()
-m = re.search(r"(?ms)^  gmail:\n.*?^  people:\n(?:    .*\n)*", text)
-if not m:
-    sys.exit("KHONG TIM THAY block gmail..people trong config")
-lines = m.group(0).splitlines()
-# Điểm kết thúc: hết block '  people:' (dòng kế tiếp không phải con của people)
-end = None
-for idx, line in enumerate(lines):
-    if line.startswith("  people:"):
-        end = idx
-        break
-for idx in range(end + 1, len(lines)):
-    if lines[idx] and not lines[idx].startswith("    "):
-        end = idx - 1
-        break
-else:
-    end = len(lines) - 1
-open(sys.argv[2], "w", encoding="utf-8").write("\n".join(lines[:end + 1]) + "\n")
-print(f"  ✓ gws-mcp-servers.yaml ({end + 1} dòng)")
-PYEOF
-fi
+# LƯU Ý: config.yaml KHÔNG nằm trong bundle — sync qua repo (config.windows.yaml / config.linux.yaml).
+# Secrets nằm trong .env per-OS — bạn tự mang qua kênh bảo mật.
 
 # 3) gcloud credentials + config (giữ login + project đã chọn)
 if [ -d "$HOME/.config/gcloud" ]; then
@@ -77,11 +50,10 @@ cat <<'EOF'
  DONE. Mang thư mục này sang Linux (USB/scp).
  TRÊN LINUX (sau khi cài Hermes):
 =====================================================
-1. hermes-sync pull                       # skills + memories + config (từ GitHub)
-2. Merge Google MCP servers vào config:
-   mở ~/.hermes/config.yaml (hoặc HERMES_HOME), dán nội dung gws-mcp-servers.yaml
-   vào cuối khối mcp_servers: (trước plugins:)
-3. cp -r mcp-tokens/* ~/.hermes/mcp-tokens/   # token Google MCP
+1. hermes-sync pull                       # config (config.linux.yaml) + skills + memories + SOUL
+2. Nhập secrets vào ~/.hermes/.env (qua kênh bảo mật):
+   GITLAB_PAT=...   GWS_MCP_CLIENT_SECRET=...
+3. cp -r mcp-tokens/* ~/.hermes/mcp-tokens/   # token Google MCP (hoặc chạy gws_mcp_oauth.py để re-auth mới)
 4. cp gws_mcp_oauth.py ~/                  # re-auth sau này nếu cần
 5. gcloud: cài google-cloud-sdk (pacman -S google-cloud-sdk)
    cp -r gcloud/* ~/.config/gcloud/        # giữ login + project
@@ -89,10 +61,10 @@ cat <<'EOF'
 7. Restart Hermes → kiểm tra mcp_gmail_* etc.
 =====================================================
  LƯU Ý:
- - client_secret bị GitHub push protection chặn → KHÔNG commit nó vào repo.
-   gws-mcp-servers.yaml chỉ tồn tại trong bundle này.
- - ĐỪNG chạy 'hermes-sync push' từ Windows — nó ghi đè config.yaml
-   (Windows paths) lên bản Linux trong repo. Giữ config per-OS.
+ - Repo công khai → secret KHÔNG bao giờ commit (config dùng ${VAR}, giá trị
+   thật nằm trong .env per-OS). GitHub push protection sẽ chặn nếu lỡ.
+ - config.yaml per-OS: sync-hermes.sh tự chọn config.windows.yaml /
+   config.linux.yaml — không ghi đè chéo.
  - Redirect URI 127.0.0.1:8765/callback hoạt động cả 2 OS — không cần
    sửa gì trên Google Cloud Console.
 EOF

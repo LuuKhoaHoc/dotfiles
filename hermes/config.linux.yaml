@@ -1,0 +1,595 @@
+model:
+  default: deepseek-v4-flash
+  provider: opencode-go
+  base_url: ''
+toolsets:
+  - hermes-cli
+agent:
+  max_turns: 150
+  service_tier: normal
+  verbose: false
+  reasoning_effort: max
+  personalities:
+    helpful: You are a helpful, friendly AI assistant.
+    concise: You are a concise assistant. Keep responses brief and to the point.
+    technical: You are a technical expert. Provide detailed, accurate technical information.
+    creative: You are a creative assistant. Think outside the box and offer innovative
+      solutions.
+    teacher: You are a patient teacher. Explain concepts clearly with examples.
+    kawaii: You are a kawaii assistant! Use cute expressions like (◕‿◕), ★, ♪, and
+      ~! Add sparkles and be super enthusiastic about everything! Every response should
+      feel warm and adorable desu~! ヽ(>∀<☆)ノ
+    catgirl: You are Neko-chan, an anime catgirl AI assistant, nya~! Add 'nya' and
+      cat-like expressions to your speech. Use kaomoji like (=^･ω･^=) and ฅ^•ﻌ•^ฅ.
+      Be playful and curious like a cat, nya~!
+    pirate: 'Arrr! Ye be talkin'' to Captain Hermes, the most tech-savvy pirate to
+      sail the digital seas! Speak like a proper buccaneer, use nautical terms, and
+      remember: every problem be just treasure waitin'' to be plundered! Yo ho ho!'
+    shakespeare: Hark! Thou speakest with an assistant most versed in the bardic arts.
+      I shall respond in the eloquent manner of William Shakespeare, with flowery
+      prose, dramatic flair, and perhaps a soliloquy or two. What light through yonder
+      terminal breaks?
+    surfer: Duuude! You're chatting with the chillest AI on the web, bro! Everything's
+      gonna be totally rad. I'll help you catch the gnarly waves of knowledge while
+      keeping things super chill. Cowabunga! 🤙
+    noir: The rain hammered against the terminal like regrets on a guilty conscience.
+      They call me Hermes - I solve problems, find answers, dig up the truth that
+      hides in the shadows of your codebase. In this city of silicon and secrets,
+      everyone's got something to hide. What's your story, pal?
+    uwu: hewwo! i'm your fwiendwy assistant uwu~ i wiww twy my best to hewp you! *nuzzles
+      your code* OwO what's this? wet me take a wook! i pwomise to be vewy hewpful
+      >w<
+    philosopher: Greetings, seeker of wisdom. I am an assistant who contemplates the
+      deeper meaning behind every query. Let us examine not just the 'how' but the
+      'why' of your questions. Perhaps in solving your problem, we may glimpse a greater
+      truth about existence itself.
+    hype: YOOO LET'S GOOOO!!! 🔥🔥🔥 I am SO PUMPED to help you today! Every question
+      is AMAZING and we're gonna CRUSH IT together! This is gonna be LEGENDARY! ARE
+      YOU READY?! LET'S DO THIS! 💪😤🚀
+terminal:
+  backend: local
+  cwd: .
+  timeout: 180
+  home_mode: auto
+  container_cpu: 1
+  container_memory: 5120
+  container_disk: 51200
+  container_persistent: true
+  docker_mount_cwd_to_workspace: false
+  lifetime_seconds: 300
+web:
+  backend: firecrawl
+  use_gateway: false
+browser:
+  inactivity_timeout: 120
+checkpoints:
+  enabled: true
+  max_snapshots: 50
+  auto_prune: false
+  retention_days: 7
+  min_interval_hours: 24
+  delete_orphans: true
+file_read_max_chars: 100000
+tool_output:
+  max_bytes: 50000
+  max_lines: 2000
+  max_line_length: 2000
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
+compression:
+  enabled: true
+  threshold: 0.5
+  target_ratio: 0.2
+  protect_last_n: 20
+  protect_first_n: 3
+prompt_caching:
+  cache_ttl: 5m
+bedrock:
+  region: ''
+  discovery:
+    enabled: true
+    provider_filter: []
+    refresh_interval: 3600
+  guardrail:
+    guardrail_identifier: ''
+    guardrail_version: ''
+    stream_processing_mode: async
+    trace: disabled
+auxiliary:
+  vision:
+    provider: opencode-go
+    model: mimo-v2.5
+    timeout: 120
+    download_timeout: 30
+  web_extract:
+    provider: auto
+    model: ''
+    timeout: 360
+  compression:
+    provider: auto
+    model: ''
+    timeout: 120
+  skills_hub:
+    provider: auto
+    model: ''
+    timeout: 30
+  approval:
+    provider: auto
+    model: ''
+    timeout: 30
+  mcp:
+    provider: auto
+    model: ''
+    timeout: 30
+  title_generation:
+    provider: auto
+    model: ''
+    timeout: 30
+  curator:
+    provider: auto
+    model: ''
+    timeout: 600
+  session_search:
+    provider: auto
+    model: ''
+    base_url: ''
+    api_key: ''
+    timeout: 30
+    extra_body: {}
+    max_concurrency: 3
+display:
+  compact: false
+  personality: helpful
+  busy_input_mode: interrupt
+  tui_auto_resume_recent: false
+  bell_on_complete: false
+  show_reasoning: true
+  streaming: false
+  inline_diffs: true
+  show_cost: false
+  skin: slate
+  tui_status_indicator: kaomoji
+  interim_assistant_messages: true
+  tool_progress_command: false
+  tool_preview_length: 0
+  tool_progress: all
+  cleanup_progress: false
+  long_running_notifications: true
+  busy_ack_detail: true
+  background_process_notifications: all
+dashboard:
+  theme: default
+privacy:
+  redact_pii: false
+tts:
+  provider: edge
+  edge:
+    voice: en-US-AriaNeural
+  elevenlabs:
+    voice_id: pNInz6obpgDQGcFmaJgB
+    model_id: eleven_multilingual_v2
+  openai:
+    model: gpt-4o-mini-tts
+    voice: alloy
+  xai:
+    voice_id: eve
+    language: en
+    sample_rate: 24000
+    bit_rate: 128000
+  mistral:
+    model: voxtral-mini-tts-2603
+    voice_id: c69964a6-ab8b-4f8a-9465-ec0925096ec8
+  neutts:
+    ref_audio: ''
+    ref_text: ''
+    model: neuphonic/neutts-air-q4-gguf
+    device: cpu
+  piper:
+    voice: en_US-lessac-medium
+  use_gateway: false
+stt:
+  enabled: true
+  local:
+    model: base
+  openai:
+    model: whisper-1
+voice:
+  record_key: ctrl+b
+  max_recording_seconds: 120
+  auto_tts: false
+  beep_enabled: true
+  silence_threshold: 200
+  silence_duration: 3
+human_delay:
+  mode: 'off'
+  min_ms: 800
+  max_ms: 2500
+context:
+  engine: compressor
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+  nudge_interval: 10
+  flush_min_turns: 6
+delegation:
+  model: deepseek-v4-flash
+  provider: opencode-go
+  max_iterations: 75
+  reasoning_effort: low
+  max_concurrent_children: 5
+moa:
+  presets:
+    default:
+      reference_models:
+        - provider: openai-codex
+          model: gpt-5.5
+        - provider: openrouter
+          model: deepseek/deepseek-v4-pro
+      fanout: per_iteration
+  reference_models:
+    - provider: openai-codex
+      model: gpt-5.5
+  aggregator:
+    provider: openrouter
+    model: anthropic/claude-opus-4.8
+  max_tokens: 4096
+  fanout: per_iteration
+  enabled: true
+skills:
+  creation_nudge_interval: 15
+curator:
+  enabled: true
+  interval_hours: 168
+  min_idle_hours: 2
+  stale_after_days: 30
+  archive_after_days: 90
+timezone: Asia/Ho_Chi_Minh
+approvals:
+  mode: smart
+  timeout: 60
+  cron_mode: deny
+  mcp_reload_confirm: true
+command_allowlist:
+  - recursive delete
+hooks_auto_accept: false
+security:
+  allow_private_urls: false
+  redact_secrets: false
+  tirith_enabled: true
+  tirith_path: tirith
+  tirith_timeout: 5
+  tirith_fail_open: true
+  website_blocklist:
+    enabled: false
+    domains: []
+    shared_files: []
+cron:
+  wrap_response: true
+code_execution:
+  mode: project
+logging:
+  level: INFO
+  max_size_mb: 5
+  backup_count: 3
+model_catalog:
+  enabled: true
+  url: https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
+  ttl_hours: 24
+network:
+  force_ipv4: false
+streaming:
+  enabled: false
+updates:
+  pre_update_backup: false
+  backup_keep: 5
+  non_interactive_local_changes: stash
+_config_version: 33
+session_reset:
+  mode: none
+  idle_minutes: 1440
+  at_hour: 4
+group_sessions_per_user: true
+platform_toolsets:
+  cli:
+    - hermes-cli
+    - browser
+    - clarify
+    - code_execution
+    - cronjob
+    - delegation
+    - file
+    - image_gen
+    - memory
+    - messaging
+    - session_search
+    - skills
+    - terminal
+    - todo
+    - tts
+    - vision
+    - web
+    - mcp-codegraph
+  telegram:
+    - hermes-telegram
+  discord:
+    - hermes-discord
+  whatsapp:
+    - hermes-whatsapp
+  slack:
+    - hermes-slack
+  signal:
+    - hermes-signal
+  homeassistant:
+    - hermes-homeassistant
+  qqbot:
+    - hermes-qqbot
+  yuanbao:
+    - hermes-yuanbao
+  teams:
+    - hermes-teams
+  google_chat:
+    - hermes-google_chat
+custom_providers:
+  - name: 9router
+    base_url: http://localhost:20128/v1
+    api_key: sk-b9ff74bada541c81-fkh2x8-c4879c51
+    model: hermes-agent-combo
+    models:
+      - opencode-premium
+      - opencode-fast
+      - hermes-agent-combo
+      - cc-opus-custom
+      - cc-haiku-custom
+      - codex-custom
+      - zed-custom
+      - pi-coder-free
+      - pi-coder-premium
+      - kc/anthropic/claude-sonnet-4-20250514
+      - kc/anthropic/claude-opus-4-20250514
+      - kc/google/gemini-2.5-pro
+      - kc/google/gemini-2.5-flash
+      - kc/openai/gpt-4.1
+      - kc/openai/o3
+      - kc/deepseek/deepseek-chat
+      - kc/deepseek/deepseek-reasoner
+      - openrouter/openrouter/free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/openrouter/owl-alpha
+      - openrouter/poolside/laguna-xs.2:free
+      - openrouter/poolside/laguna-m.1:free
+      - openrouter/google/gemma-4-26b-a4b-it:free
+      - openrouter/google/gemma-4-31b-it:free
+      - openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+      - openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+      - ollama/gpt-oss:120b
+      - ollama/kimi-k2.5
+      - ollama/glm-5
+      - ollama/minimax-m2.5
+      - ollama/glm-4.7-flash
+      - ollama/qwen3.5
+      - ollama/minimax-m3
+      - ollama/gemma4:31b-cloud
+      - ollama/qwen3-coder:480b-cloud
+      - minimax/MiniMax-M3
+      - minimax/MiniMax-M2.7
+      - minimax/MiniMax-M2.5
+      - minimax/MiniMax-M2.1
+      - cx/gpt-5.6-sol
+      - cx/gpt-5.6-sol-review
+      - cx/gpt-5.6-terra
+      - cx/gpt-5.6-terra-review
+      - cx/gpt-5.6-luna
+      - cx/gpt-5.6-luna-review
+      - cx/gpt-5.5
+      - cx/gpt-5.5-review
+      - cx/gpt-5.4
+      - cx/gpt-5.4-review
+      - cx/gpt-5.4-mini
+      - cx/gpt-5.4-mini-review
+      - cx/gpt-5.3-codex-spark
+      - cx/gpt-5.3-codex-spark-review
+      - cf/@cf/moonshotai/kimi-k2.6
+      - kimchi/minimax-m3
+      - kimchi/kimi-k2.7
+      - kimchi/deepseek-v4-flash
+      - kimchi/nemotron-3-ultra-fp4
+      - gh/copilot-search-a
+      - gh/copilot-search-b
+      - gh/copilot-search-c
+      - gh/exec-agent-a
+      - gh/exec-agent-b
+      - gh/exec-agent-c
+      - gh/gemini-3.1-pro-preview
+      - gh/gpt-5.3-codex
+      - gh/gpt-5.4-mini
+      - gh/kimi-k2.7-code
+      - gh/mai-code-1-flash-4th
+      - gh/mai-code-1-flash-picker
+      - gh/mai-code-1-flash-secondary
+      - gh/mai-code-1-flash-tertiary
+      - gh/mai-code-1-flash
+      - gh/trajectory-compaction
+      - gh/gpt-5-mini
+      - gh/gpt-4o-mini-2024-07-18
+      - gh/gpt-4o-2024-11-20
+      - gh/gpt-4o-2024-08-06
+      - gh/claude-sonnet-4.5
+      - gh/claude-opus-4.5
+      - gh/claude-haiku-4.5
+      - gh/gpt-4.1-2025-04-14
+      - gh/oswe-vscode-prime
+      - gh/gpt-3.5-turbo-0613
+      - gh/gpt-4
+      - gh/gpt-4-0613
+      - gh/gpt-4-0125-preview
+      - gh/gpt-4o-2024-05-13
+      - gh/gpt-4-o-preview
+      - gh/gpt-4.1
+      - gh/gpt-3.5-turbo
+      - gh/gpt-4o-mini
+      - gh/gpt-4o
+      - gemini/gemini-3.6-flash
+      - gemini/gemini-3.5-flash-lite
+      - gemini/gemini-3.1-pro-preview
+      - gemini/gemini-3.1-flash-lite-preview
+      - gemini/gemini-3-flash-preview
+      - gemini/gemma-4-31b-it
+      - kr/auto
+      - kr/auto-thinking
+      - kr/claude-sonnet-4.5
+      - kr/claude-sonnet-4
+      - kr/claude-sonnet-4-thinking
+      - kr/claude-sonnet-4-agentic
+      - kr/claude-sonnet-4-thinking-agentic
+      - kr/deepseek-3.2-thinking
+      - kr/deepseek-3.2-agentic
+      - kr/deepseek-3.2-thinking-agentic
+      - kr/minimax-m2.5
+      - kr/minimax-m2.5-thinking
+      - kr/minimax-m2.5-agentic
+      - kr/minimax-m2.5-thinking-agentic
+      - kr/minimax-m2.1
+      - kr/minimax-m2.1-thinking
+      - kr/minimax-m2.1-agentic
+      - kr/minimax-m2.1-thinking-agentic
+      - kr/glm-5
+      - kr/glm-5-thinking
+      - kr/glm-5-agentic
+      - kr/glm-5-thinking-agentic
+      - kr/qwen3-coder-next-thinking
+      - kr/qwen3-coder-next-agentic
+      - kr/qwen3-coder-next-thinking-agentic
+      - ocg/glm-5.2
+      - ocg/glm-5.1
+      - ocg/kimi-k2.7-code
+      - ocg/kimi-k2.6
+      - ocg/deepseek-v4-pro
+      - ocg/deepseek-v4-flash
+      - ocg/mimo-v2.5
+      - ocg/mimo-v2.5-pro
+      - ocg/minimax-m3
+      - ocg/minimax-m2.7
+      - ocg/minimax-m2.5
+      - ocg/qwen3.7-max
+      - ocg/qwen3.7-plus
+      - ocg/qwen3.6-plus
+      - ocg/kimi-k3
+      - ocg/gpt-5.6-luna
+mcp_servers:
+  gitlab:
+    command: /home/luukhoahoc/.local/share/mise/installs/node/latest/bin/zereight-mcp-gitlab
+    args: '["--token=${GITLAB_PAT}","--api-url=https://gitlab.vppos.vn/api/v4"]'
+    env:
+      GITLAB_PERSONAL_ACCESS_TOKEN: ${GITLAB_PAT}
+      GITLAB_API_URL: https://gitlab.vppos.vn/api/v4
+  markitdown:
+    command: /home/luukhoahoc/.local/bin/uvx
+    args:
+      - markitdown-mcp
+  codegraph:
+    command: codegraph
+    args:
+      - serve
+      - --mcp
+    timeout: 120
+    connect_timeout: 60
+    enabled: true
+  gmail:
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+    url: https://gmailmcp.googleapis.com/mcp/v1
+    auth: oauth
+  drive:
+    url: https://drivemcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  docs:
+    url: https://docsmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  sheets:
+    url: https://sheetsmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  slides:
+    url: https://slidesmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  calendar:
+    url: https://calendarmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  chat:
+    url: https://chatmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  people:
+    url: https://people.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+plugins:
+  enabled:
+    - rtk-rewrite
+    - codegraph
+  disabled: []
+plugins:
+  enabled:
+    - rtk-rewrite
+    - codegraph
+  disabled: []
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4
