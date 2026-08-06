@@ -89,6 +89,27 @@ chmod +x ~/dotfiles/hermes/sync-hermes.sh
 
 After this, `hermes-sync` works from any terminal.
 
+**PITFALL — `ln -sf` on MSYS creates a COPY, not a symlink.** `readlink -f`/`readlink` return nothing (exit 1) on git-bash. So `${BASH_SOURCE[0]}` inside the script resolves to `~/.local/bin/hermes-sync`, and `dirname/..` points to `~/.local` — NOT the dotfiles repo. Fix: resolve `DOTFILES_DIR` with a `.git` fallback:
+
+```bash
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/dev/null && pwd)"
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
+  DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
+fi
+```
+
+**PITFALL — Windows Hermes data lives in `~/AppData/Local/hermes`, NOT `~/.hermes`.** Auto-detect:
+
+```bash
+if [ -z "${HERMES_HOME:-}" ] && [ -d "$HOME/AppData/Local/hermes" ]; then
+  HERMES_DIR="$HOME/AppData/Local/hermes"
+else
+  HERMES_DIR="${HERMES_HOME:-$HOME/.hermes}"
+fi
+```
+
+**PITFALL — GitHub secret scanning rejects pushes containing real tokens** (e.g. `ntn_`, `figd_`, `glpat-`, `ctx7sk-` values in skill references or `config.yaml` MCP servers). Before pushing: `grep -rnE 'glpat-|ntn_|figd_|ctx7sk-|squ_|ghp_' hermes/` and redact real values to `<redacted>`. If a push is rejected, the offending commit stays in local history — squash it: `git reset --soft <good-commit> && git add -A && git commit -m ...` then push.
+
 ### Git identity
 
 Git may not have global identity set on a fresh Windows install. Set locally in the dotfiles repo:
