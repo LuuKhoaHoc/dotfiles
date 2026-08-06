@@ -205,9 +205,28 @@ state, list EVERY param and check each has its prefix — asymmetry hides in pai
 
 **New trap — dead locale keys after removing a filter source (2-half fix):** the same fix
 commit moved `directory.filters.*` to the correct top-level namespace (en+vi) AND removed the
-panel that consumed it → the 9 keys are dead (0 consumers — `git grep "directory\.filters"
+panel that consumed it → the 9 keys are dead (0 consumers — `git grep "directory\\.filters"
 <head> -- apps/` empty). Grep consumer-side before crediting a locale fix: a namespace that is
 now correctly-placed but unreferenced is bloat, not a fix. Half the fix (move keys) landed
 without the other half (delete keys or keep the consumer). Also confirmed fixed: the
 `features.employee.import.actions.settings` hr.json dead key was removed entirely.
+
+## MR !531 round 3 (commit `240f87de` "align requests url state naming and remove dead directory filter keys") — verified fixes + the rename-verification recipe
+
+The author answered the 2 round-2 🟡 with ONE 3-file commit (`useRequestsUrlState.ts` 92±,
+`en/vi employee.json` −11 each) + develop merge (head `240f87de`). Both fixes verified correct:
+
+- **🟡 naming asymmetry → FIXED**: `myFromDate` now in schema + `setDateRange` + `setFilters` +
+  `params` (deps array updated too); **0 hits of `state.fromDate`** remain in the feature.
+- **🟡 dead `directory.filters.*` → FIXED**: keys deleted from en+vi, `git grep "directory\\.filters" <head> -- apps/` empty (0 consumers).
+- **Bonus**: the round-2 nitpick `defaults: {page, pageSize}` no-op in `createSharedListUrlStateSchema` was dropped in the same commit.
+
+**Recipe — verifying a URL-state key rename: remaining hits of the OLD key name are usually NOT violations.** After `fromDate` → `myFromDate`, a repo-wide grep for `fromDate` still shows hits, each classifiable:
+| Hit | Verdict |
+|---|---|
+| `state.fromDate` (state reads) / `setState({ ... fromDate: ... })` writes | 🔴 violation if any — the rename missed a consumer |
+| `{ fromDate: state.myFromDate }` in `params`/`approvalParams` | ✅ CORRECT — API param name follows the BE contract (`OrganizationRequestsQueryParams.fromDate`), the URL key changed, the wire param did NOT |
+| `fromDate: formatDateFilterValue(...)` in table query params | ✅ CORRECT — same API-param reason |
+| form/request schemas, test fixtures (`business-trip-schema`, `*.spec.ts`) | ✅ unrelated — different object |
+Grep the state-accessor forms specifically (`git grep -n "state\\.fromDate\\|myFromDate" <head> -- <feature>/hooks/`) and check the deps array got the rename — don't flag bare-name hits. This is the URL-state sibling of the §9 location-aware re-review rule (a moved/renamed symbol is FIXED when its remaining homes are the right layer).
 

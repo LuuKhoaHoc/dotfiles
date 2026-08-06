@@ -1,0 +1,291 @@
+---
+name: pr-to-branch
+description: Tạo MR/PR vào nhánh target bằng glab/gh, tự phát hiện platform, đọc template repo, sinh title và description từ git log. Kiểm tra theo issue và gắn milestone theo issue (nếu có).
+---
+
+# Workflow: Tạo MR/PR bằng glab/gh với title/description tự động
+
+**Prerequisite:** Chạy `auto-push` trước: code committed + pushed.
+
+## 1. Detect platform
+
+```bash
+git remote get-url origin
+```
+
+Parse output:
+
+- Has `gitlab` or self-hosted GitLab → use `glab`
+- Has `github.com` → use `gh`
+- Both exist → prefer `glab`
+
+## 2. Check CLI
+
+```bash
+which glab 2>/dev/null || which gh 2>/dev/null
+```
+
+Useful flags:
+
+- `glab mr create`: `--title`, `--description`, `--source-branch`, `--target-branch`, `--draft`, `--label`, `--milestone`, `--assignee`, `--reviewer`, `--template`
+- `gh pr create`: `--title`, `--body`, `--base`, `--head`, `--draft`, `--label`, `--assignee`, `--reviewer`, `--template`
+
+Workflow defaults:
+
+- Always assign MR/PR to current CLI user
+- Always attach at least 1 label
+- Ask user only if assignee/label cannot be resolved
+
+Missing CLI:
+
+- `glab`: https://gitlab.com/gitlab-org/cli#installation
+- `gh`: https://cli.github.com/
+
+## 3. Xác định target branch và source branch
+
+```bash
+git branch --show-current
+```
+
+Ask target branch. If absent:
+
+- Detect from `.gitlab-ci.yml` or `CONTRIBUTING.md` if useful
+- Fallback: `develop`
+
+## 3.5. Resolve assignee và label mặc định
+
+### Assignee
+
+Goal: assign MR/PR to self.
+
+**GitLab (`glab`):**
+
+```bash
+glab auth status
+```
+
+Get current username, pass `--assignee`.
+
+**GitHub (`gh`):**
+
+```bash
+gh api user --jq .login
+```
+
+Get current login, pass `--assignee`.
+
+If CLI cannot return username/login, ask user before create.
+
+### Label
+
+Goal: always attach label.
+
+Priority:
+
+1. User-provided label
+2. Branch prefix label:
+   - `feat/*` → `feature`
+   - `fix/*` → `bug`
+   - `refactor/*` → `refactor`
+   - `docs/*` → `documentation`
+   - `test/*` → `test`
+   - `chore/*` → `chore`
+   - `build/*` → `build`
+   - `ci/*` → `ci`
+   - `perf/*` → `performance`
+   - `revert/*` → `revert`
+3. Optional repo convention scope/team label: `hr`, `shell`, `shared`, `ui`
+
+Before create, verify label exists. If inferred label missing, fallback to nearest generic repo label. If no valid label, ask user.
+
+## 3.6. Resolve issue và gắn milestone theo issue (BẮT BUỘC khi branch có ref issue)
+
+### 3.6.1. Tìm issue iid
+
+1. Parse iid từ branch name: `feat/123-slug`, `feature/ABC-123`, `fix/#123-slug` → `123`
+2. Không có iid trong branch → hỏi user. User xác nhận không có issue → skip cả bước 3.6 (không gắn milestone)
+
+### 3.6.2. Fetch issue và check theo issue
+
+**GitLab:**
+
+```bash
+glab issue view <iid> --output json | jq '{title, labels: [.labels[].name], milestone: .milestone.title}'
+```
+
+Nếu `--output json` không khả dụng → `glab issue view <iid>` đọc trực tiếp phần Milestone/Labels.
+
+**GitHub:**
+
+```bash
+gh issue view <iid> --json title,labels,milestone
+```
+
+Check trước khi tạo MR:
+
+- **Scope khớp issue**: title + description của issue phải tương ứng nội dung branch/commits. Lệch rõ ràng → hỏi user, không tự tạo MR
+- **Label**: label từ issue ưu tiên hơn suy luận branch prefix ở 3.5 (vẫn đảm bảo ≥1 label)
+- **Issue ref**: description phải có `**Issue / Ticket**: #<iid>` (KHÔNG `Closes #` — xem warning step 6)
+
+### 3.6.3. Gắn milestone theo issue
+
+- Issue **CÓ** milestone → gắn **đúng tên milestone đó** vào MR:
+  - **GitLab**: thêm `--milestone="<milestone-title>"` vào lệnh `glab mr create` (step 6)
+  - **GitHub**: `gh pr create` không có flag milestone → tạo PR trước, rồi set qua API:
+    ```bash
+    MS=$(gh api repos/{owner}/{repo}/milestones --jq '.[] | select(.title=="<milestone-title>") | .number')
+    gh api repos/{owner}/{repo}/issues/<pr-number> -f milestone="$MS"
+    ```
+- Issue **KHÔNG** có milestone → KHÔNG gắn milestone cho MR (không tự suy milestone khác)
+- Luôn dùng đúng tên milestone lấy từ issue output, không đoán (thực tế Hilo ERP: `vX.Y.Z`)
+
+## 4. Sinh title và description từ git log
+
+```bash
+git log --pretty=format:"%s%n%b%n---" <target-branch>..HEAD
+```
+
+Title:
+
+- 1 commit: use subject
+- Many commits same type + scope: `type(scope): mô tả tổng quát`
+- Mixed types: dominant type + summary
+- Always conventional commits. No `[FEAT]`, `[FIX]`
+
+Description (raw content for merging with template in step 5):
+
+1. Use commit body if useful
+2. List changes:
+   ```
+   - feat(scope): description
+   - fix(scope): description
+   ```
+
+## 5. Đọc và sử dụng repo MR template (BẮT BUỘC)
+
+> [!IMPORTANT]
+> **Luôn ưu tiên dùng template có sẵn của repo.** Không bao giờ tạo MR với description freeform khi repo có template.
+
+### 5.1. Phát hiện template
+
+**GitLab:**
+
+```bash
+ls .gitlab/merge_request_templates/ 2>/dev/null
+```
+
+**GitHub:**
+
+```bash
+ls .github/PULL_REQUEST_TEMPLATE.md 2>/dev/null || ls .github/pull_request_template.md 2>/dev/null
+```
+
+Nếu không có template → skip step 5, dùng description freeform từ step 4.
+
+### 5.2. Chọn template phù hợp
+
+GitLab repos thường có nhiều template. Auto-chọn theo branch prefix:
+
+| Branch prefix | Template ưu tiên | Fallback |
+|---|---|---|
+| `feat/*` | `feature.md` | `default.md` |
+| `fix/*` | `bugfix.md` | `default.md` |
+| `hotfix/*` | `hotfix.md` | `bugfix.md` → `default.md` |
+| `refactor/*` | `refactor.md` | `default.md` |
+| `release/*` | `release.md` | `default.md` |
+| Khác | `default.md` | — |
+
+Nếu template ưu tiên không tồn tại → dùng fallback. Nếu không có template nào match → ask user chọn.
+
+### 5.3. Đọc template và merge
+
+Đọc nội dung template đã chọn. Merge với content từ step 4:
+
+1. **Giữ nguyên** các section checklist, verification, conventions của template (đánh dấu `[x]` nếu đã làm, `[ ]` nếu chưa)
+2. **Thay thế** section mô tả (`## 📝 Mô tả` hoặc `## What`) bằng nội dung từ git log (step 4)
+3. **Thêm** link Issue/Ticket từ iid đã resolve ở step 3.6 — dùng `**Issue / Ticket**: #<iid>` hoặc `Implements #<iid>`. **KHÔNG BAO GIỜ dùng `Closes #<iid>` / `Fixes #<iid>`** (xem warning ở step 6)
+4. **Giữ nguyên** các section UI/UX, Testing, Checklist — chỉ tick `[x]` cho các mục đã hoàn thành
+
+> [!WARNING]
+> **KHÔNG dùng `--template` flag của glab** — nó chỉ insert raw template mà không fill nội dung.
+> **Luôn dùng `--description`** với merged content.
+
+> [!WARNING]
+> **Windows & PowerShell Encoding Issue**:
+> Trên Windows, PowerShell 5.1 mặc định sử dụng mã hóa hệ thống (ANSI/UTF-16) khi đọc file bằng `Get-Content`. Nếu file mô tả (ví dụ `mr-description.md`) chứa tiếng Việt hoặc biểu tượng cảm xúc (emoji), lệnh `Get-Content mr-description.md` sẽ bị lỗi hiển thị (Mojibake) trên GitLab/GitHub.
+>
+> **Giải pháp**: Luôn chỉ định mã hóa `-Encoding utf8` khi đọc file bằng `Get-Content` trong PowerShell và gán vào biến trước khi truyền:
+> ```powershell
+> $desc = Get-Content mr-description.md -Raw -Encoding utf8
+> glab mr create --title "..." -d $desc
+> ```
+
+## 6. Tạo MR/PR
+
+> [!WARNING]
+> **KHÔNG dùng `Closes #<iid>` / `Fixes #<iid>` trong title hoặc description.**
+> GitLab/GitHub sẽ **auto-close issue ngay khi MR merge vào develop** — phá vỡ strict UAT lifecycle (issue phải sống tới khi release lên prod mới đóng).
+> Chỉ dùng reference **không đóng**: `**Issue / Ticket**: #<iid>` (đủ cho CI automation issue-lifecycle), `Implements #<iid>`, hoặc `Related to #<iid>`.
+
+Required: pass self assignee + at least 1 valid label.
+
+**GitLab (glab) — merged description:**
+
+```bash
+glab mr create \
+  --title="<title>" \
+  --description="<description>" \
+  --source-branch="<source-branch>" \
+  --target-branch="<target-branch>" \
+  --assignee="<current-username>" \
+  --label="<label1>" \
+  --milestone="<milestone-title>" \  # CHỈ khi issue có milestone (step 3.6)
+  <additional-flags>
+```
+
+
+**GitHub (gh):**
+
+```bash
+gh pr create \
+  --title="<title>" \
+  --body="<description>" \
+  --base="<target-branch>" \
+  --head="<source-branch>" \
+  --assignee "<current-login>" \
+  --label "<label1>" \
+  <additional-flags>
+```
+
+Optional flags ask user:
+
+- `--draft`
+- `--reviewer`
+- extra labels beyond default
+
+## 7. Xác nhận và mở link
+
+After create, confirm:
+
+- assignee = self
+- label attached correctly
+- milestone khớp milestone của issue (nếu issue có)
+- MR/PR URL created
+
+If assignee/label missing, update via CLI/API before report done.
+
+Then show URL. If browser needed:
+
+```bash
+glab mr view --web   # GitLab
+gh pr view --web     # GitHub
+```
+
+## 8. Kiểm tra pipeline/CI
+
+```bash
+glab pipeline list  # GitLab
+gh pr checks        # GitHub
+```
+
+CI runs: `lint`, `typecheck`, `trivy scan`. If fail, inspect logs + fix.

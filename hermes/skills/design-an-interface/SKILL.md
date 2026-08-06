@@ -1,35 +1,94 @@
 ---
 name: design-an-interface
-description: Turn a requirement into an explicit interface/API contract before implementation — inputs, outputs, errors, callers, and seams to test against. Use when user says "design the interface first", "API contract", "module boundary", "what should this module do", or before building a new feature/handler/service.
+description: Generate multiple radically different interface designs for a module using parallel sub-agents. Use when user wants to design an API, explore interface options, compare module shapes, or mentions "design it twice".
 ---
 
-# Design An Interface
+# Design an Interface
 
-The requirement is already known. Improve it into an explicit interface/API contract before implementation.
+Based on "Design It Twice" from "A Philosophy of Software Design": your first idea is unlikely to be the best. Generate multiple radically different designs, then compare.
 
-## Goal
+## Workflow
 
-Move from "this exists" to "this receives this and returns that, here are the error cases, here is how callers use it."
+### 1. Gather Requirements
 
-## Analyzing inputs
+Before designing, understand:
 
-If the requirement comes from a business flow document (.drawio, flowchart, swimlane diagram), read `references/flow-document-analysis.md` first — it covers mxGraph XML extraction and the workflow: flow → questions → code.
+- [ ] What problem does this module solve?
+- [ ] Who are the callers? (other modules, external users, tests)
+- [ ] What are the key operations?
+- [ ] Any constraints? (performance, compatibility, existing patterns)
+- [ ] What should be hidden inside vs exposed?
 
-## Present this contract
+Ask: "What does this module need to do? Who will use it?"
 
-- **Inputs**: shape, allowed ranges, defaults, invalid handling
-- **Outputs**: success shape, error shape, optional/null behavior
-- **Callers**: who calls it, what they assume, what they must not assume
-- **Errors**: expected failure modes and how they surface
-- **Seams**: where tests would attach; prefer an existing seam if one exists
-- **Dependencies**: what it reaches into, why it can't avoid it
+### 2. Generate Designs (Parallel Sub-Agents)
 
-## After presenting
+Spawn 3+ sub-agents simultaneously using Task tool. Each must produce a **radically different** approach.
 
-Ask the user for feedback on:
+```
+Prompt template for each sub-agent:
 
-- Is any input/output missing or wrong?
-- Is the seam testable in the repo's existing setup?
-- What is the minimal behavioral contract this interface must preserve?
+Design an interface for: [module description]
 
-Once the contract is accepted, implementation is sheriffed by `/implement-plan` or the project's standard workflow.
+Requirements: [gathered requirements]
+
+Constraints for this design: [assign a different constraint to each agent]
+- Agent 1: "Minimize method count - aim for 1-3 methods max"
+- Agent 2: "Maximize flexibility - support many use cases"
+- Agent 3: "Optimize for the most common case"
+- Agent 4: "Take inspiration from [specific paradigm/library]"
+
+Output format:
+1. Interface signature (types/methods)
+2. Usage example (how caller uses it)
+3. What this design hides internally
+4. Trade-offs of this approach
+```
+
+### 3. Present Designs
+
+Show each design with:
+
+1. **Interface signature** - types, methods, params
+2. **Usage examples** - how callers actually use it in practice
+3. **What it hides** - complexity kept internal
+
+Present designs sequentially so user can absorb each approach before comparison.
+
+### 4. Compare Designs
+
+After showing all designs, compare them on:
+
+- **Interface simplicity**: fewer methods, simpler params
+- **General-purpose vs specialized**: flexibility vs focus
+- **Implementation efficiency**: does shape allow efficient internals?
+- **Depth**: small interface hiding significant complexity (good) vs large interface with thin implementation (bad)
+- **Ease of correct use** vs **ease of misuse**
+
+Discuss trade-offs in prose, not tables. Highlight where designs diverge most.
+
+### 5. Synthesize
+
+Often the best design combines insights from multiple options. Ask:
+
+- "Which design best fits your primary use case?"
+- "Any elements from other designs worth incorporating?"
+
+## Evaluation Criteria
+
+From "A Philosophy of Software Design":
+
+**Interface simplicity**: Fewer methods, simpler params = easier to learn and use correctly.
+
+**General-purpose**: Can handle future use cases without changes. But beware over-generalization.
+
+**Implementation efficiency**: Does interface shape allow efficient implementation? Or force awkward internals?
+
+**Depth**: Small interface hiding significant complexity = deep module (good). Large interface with thin implementation = shallow module (avoid).
+
+## Anti-Patterns
+
+- Don't let sub-agents produce similar designs - enforce radical difference
+- Don't skip comparison - the value is in contrast
+- Don't implement - this is purely about interface shape
+- Don't evaluate based on implementation effort

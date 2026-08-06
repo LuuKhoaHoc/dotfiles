@@ -156,6 +156,10 @@ export async function getFeatureListApi(params: ParamsDto) {
 }
 ```
 
+### Cross-MFE Endpoint & DTO-Sharing Audit
+
+Use when the user asks whether an MFE consumes another domain/MFE's endpoints through the correct shared interface (`API_ENDPOINTS` from `@hilo/shared`) and whether response DTOs are shared cross-MFE or duplicated locally. See `references/cross-mfe-endpoint-dto-audit.md` for the recipe: namespace-usage counts, export-chain verification, BE OpenAPI (`/openapi.yaml` — the `/docs` page is a Scalar HTML shell) path/param/schema comparison, dead-type detection (exported with 0 consumers), enum-VALUE diffs (not just field names), and the `*Id`-field-must-be-combobox form-UX corollary.
+
 ### Feature Consolidation Analysis
 
 When comparing two or more features in the same domain for potential merge, split, or boundary realignment, see `references/feature-consolidation-analysis.md`. Covers: mapping public APIs, tracing routes, building an overlap matrix, analyzing shared dependencies, and scoring merge options.

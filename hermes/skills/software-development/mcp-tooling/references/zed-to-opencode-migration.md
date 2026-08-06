@@ -79,6 +79,6 @@ This file uses the VS Code `mcpServers` format (command + args strings, not arra
 
 Zed's config had `"notion_token": "${NOTION_TOKEN}"` — an env var reference. The actual value was:
 ```
-NOTION_TOKEN=<set-in-local-environment>
+NOTION_TOKEN=ntn_<redacted>
 ```
 OpenCode's `env` takes literal values only, so `${NOTION_TOKEN}` in the config passes the literal string `${NOTION_TOKEN}` to the subprocess. It must be resolved before writing.

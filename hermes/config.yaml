@@ -8,7 +8,7 @@ agent:
   max_turns: 150
   service_tier: normal
   verbose: false
-  reasoning_effort: xhigh
+  reasoning_effort: max
   personalities:
     helpful: You are a helpful, friendly AI assistant.
     concise: You are a concise assistant. Keep responses brief and to the point.
@@ -148,7 +148,7 @@ auxiliary:
     max_concurrency: 3
 display:
   compact: false
-  personality: kawaii
+  personality: helpful
   busy_input_mode: interrupt
   tui_auto_resume_recent: false
   bell_on_complete: false
@@ -372,51 +372,6 @@ custom_providers:
       - openrouter/google/gemma-4-31b-it:free
       - openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
       - openrouter/nvidia/nemotron-3-nano-30b-a3b:free
-      - kr/claude-opus-5
-      - kr/claude-opus-5-thinking
-      - kr/claude-opus-5-agentic
-      - kr/claude-opus-5-thinking-agentic
-      - kr/claude-opus-4.8
-      - kr/claude-opus-4.8-thinking
-      - kr/claude-opus-4.8-agentic
-      - kr/claude-opus-4.8-thinking-agentic
-      - kr/claude-opus-4.7
-      - kr/claude-opus-4.7-thinking
-      - kr/claude-opus-4.7-agentic
-      - kr/claude-opus-4.7-thinking-agentic
-      - kr/claude-opus-4.5
-      - kr/claude-opus-4.5-thinking
-      - kr/claude-opus-4.5-agentic
-      - kr/claude-opus-4.5-thinking-agentic
-      - kr/claude-sonnet-5
-      - kr/claude-sonnet-4.5
-      - kr/claude-haiku-4.5
-      - kr/deepseek-3.2
-      - kr/qwen3-coder-next
-      - kr/glm-5
-      - kr/MiniMax-M2.5
-      - kr/gpt-5.6-sol
-      - kr/gpt-5.6-terra
-      - kr/gpt-5.6-luna
-      - kr/claude-sonnet-5-thinking
-      - kr/claude-sonnet-4.5-thinking
-      - kr/claude-haiku-4.5-thinking
-      - kr/gpt-5.6-sol-thinking
-      - kr/gpt-5.6-terra-thinking
-      - kr/gpt-5.6-luna-thinking
-      - kr/claude-sonnet-5-agentic
-      - kr/claude-sonnet-4.5-agentic
-      - kr/claude-haiku-4.5-agentic
-      - kr/gpt-5.6-sol-agentic
-      - kr/gpt-5.6-terra-agentic
-      - kr/gpt-5.6-luna-agentic
-      - kr/claude-sonnet-5-thinking-agentic
-      - kr/claude-sonnet-4.5-thinking-agentic
-      - kr/claude-haiku-4.5-thinking-agentic
-      - kr/gpt-5.6-sol-thinking-agentic
-      - kr/gpt-5.6-terra-thinking-agentic
-      - kr/gpt-5.6-luna-thinking-agentic
-      - kr/auto
       - ollama/gpt-oss:120b
       - ollama/kimi-k2.5
       - ollama/glm-5
@@ -444,23 +399,11 @@ custom_providers:
       - cx/gpt-5.4-mini-review
       - cx/gpt-5.3-codex-spark
       - cx/gpt-5.3-codex-spark-review
-      - cf/@cf/meta/llama-3.2-1b-instruct
-      - cf/@cf/meta/llama-3.2-3b-instruct
-      - cf/@cf/meta/llama-3.1-8b-instruct-fp8-fast
-      - cf/@cf/meta/llama-3.1-8b-instruct-awq
-      - cf/@cf/mistralai/mistral-small-3.1-24b-instruct
-      - cf/@cf/meta/llama-3.1-70b-instruct-fp8-fast
-      - cf/@cf/meta/llama-3.3-70b-instruct-fp8-fast
-      - cf/@cf/deepseek-ai/deepseek-r1-distill-qwen-32b
-      - cf/@cf/moonshotai/kimi-k2.5
       - cf/@cf/moonshotai/kimi-k2.6
-      - cf/@cf/zai-org/glm-4.7-flash
-      - cf/@cf/qwen/qwq-32b
-      - cf/@cf/qwen/qwen2.5-coder-32b-instruct
-      - kimchi/deepseek-v4-flash
       - kimchi/minimax-m3
-      - kimchi/nemotron-3-ultra-fp4
       - kimchi/kimi-k2.7
+      - kimchi/deepseek-v4-flash
+      - kimchi/nemotron-3-ultra-fp4
       - gh/copilot-search-a
       - gh/copilot-search-b
       - gh/copilot-search-c
@@ -502,6 +445,31 @@ custom_providers:
       - gemini/gemini-3.1-flash-lite-preview
       - gemini/gemini-3-flash-preview
       - gemini/gemma-4-31b-it
+      - kr/auto
+      - kr/auto-thinking
+      - kr/claude-sonnet-4.5
+      - kr/claude-sonnet-4
+      - kr/claude-sonnet-4-thinking
+      - kr/claude-sonnet-4-agentic
+      - kr/claude-sonnet-4-thinking-agentic
+      - kr/deepseek-3.2-thinking
+      - kr/deepseek-3.2-agentic
+      - kr/deepseek-3.2-thinking-agentic
+      - kr/minimax-m2.5
+      - kr/minimax-m2.5-thinking
+      - kr/minimax-m2.5-agentic
+      - kr/minimax-m2.5-thinking-agentic
+      - kr/minimax-m2.1
+      - kr/minimax-m2.1-thinking
+      - kr/minimax-m2.1-agentic
+      - kr/minimax-m2.1-thinking-agentic
+      - kr/glm-5
+      - kr/glm-5-thinking
+      - kr/glm-5-agentic
+      - kr/glm-5-thinking-agentic
+      - kr/qwen3-coder-next-thinking
+      - kr/qwen3-coder-next-agentic
+      - kr/qwen3-coder-next-thinking-agentic
       - ocg/glm-5.2
       - ocg/glm-5.1
       - ocg/kimi-k2.7-code

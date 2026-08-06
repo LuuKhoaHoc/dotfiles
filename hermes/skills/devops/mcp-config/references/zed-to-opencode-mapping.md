@@ -4,13 +4,13 @@
 
 | Extension | id | Package | Env Vars / CLI Args |
 |---|---|---|---|
-| SonarQube MCP | `mcp-server-sonarqube` | `sonarqube-mcp-server` | `SONARQUBE_TOKEN=<set-in-local-environment>`, `SONARQUBE_URL=https://sonar.vppos.vn` |
+| SonarQube MCP | `mcp-server-sonarqube` | `sonarqube-mcp-server` | `SONARQUBE_TOKEN=squ_<redacted>`, `SONARQUBE_URL=https://sonar.vppos.vn` |
 | Chrome DevTools MCP | `chrome-devtools-mcp-zed` | `chrome-devtools-mcp` | (none required) |
 | AgentMemory | `agentmemory` | `@agentmemory/mcp` | `AGENTMEMORY_URL=http://localhost:3111` |
-| Notion MCP | `mcp-server-notion` | `@notionhq/notion-mcp-server` | `NOTION_TOKEN=<set-in-local-environment>` |
-| Figma MCP | `mcp-server-figma` | `figma-developer-mcp` | `FIGMA_API_KEY=<set-in-local-environment>` |
-| GitLab MCP | `mcp-server-gitlab` | `@zereight/mcp-gitlab` | CLI: `--token=<set-in-local-environment> --api-url=https://gitlab.vppos.vn/api/v4 --read-only=true` |
-| Context7 MCP | `mcp-server-context7` | `@upstash/context7-mcp` | `CONTEXT7_API_KEY=<set-in-local-environment>` |
+| Notion MCP | `mcp-server-notion` | `@notionhq/notion-mcp-server` | `NOTION_TOKEN=ntn_<redacted>` |
+| Figma MCP | `mcp-server-figma` | `figma-developer-mcp` | `FIGMA_API_KEY=figd_<redacted>` |
+| GitLab MCP | `mcp-server-gitlab` | `@zereight/mcp-gitlab` | CLI: `--token=glpat-<redacted> --api-url=https://gitlab.vppos.vn/api/v4 --read-only=true` |
+| Context7 MCP | `mcp-server-context7` | `@upstash/context7-mcp` | `CONTEXT7_API_KEY=ctx7sk-<redacted>` |
 | MarkItDown | `mcp-server-markitdown` | `markitdown-mcp-npx` | — |
 | Sequential Thinking | `mcp-server-sequential-thinking` | `@modelcontextprotocol/server-sequential-thinking` | (none) |
 

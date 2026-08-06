@@ -89,9 +89,19 @@ head `64d5e06c` — reuse as the reference shape for follow-up fixes:
   clobber each other — both wrap in `MemoryRouter`, use `window.history.pushState` for initial
   URL) and `TableFiltersPanel.test.tsx` (+2: Enter in search applies+closes; Enter in plain
   input does NOT apply). This is the exact coverage pair to request on any URL-state MR.
-- **Verification results** (detached worktree at head, symlinked node_modules): ui panel
-  6/6 pass, sale urlstate 2/2 pass, `tsc -p apps/sale/tsconfig.json` + `-p packages/ui/tsconfig.json`
-  both exit 0. No scope creep (no stray files beyond the 4).
+- **Verification results** (detached worktree at head, symlinked node_modules): sale urlstate
+  2/2 pass, `tsc -p apps/sale/tsconfig.json` + `-p packages/ui/tsconfig.json` both exit 0.
+  No scope creep (no stray files beyond the 4).
+- **CORRECTION (re-verified 2026-08-05 at head `64d5e06c`): ui panel is NOT 6/6** — fresh run:
+  4/6 pass (the 2 new Enter tests pass: "applies and closes on Enter in search", "does not
+  apply on Enter in plain input"), 2 PRE-EXISTING tests fail: `renders checkbox-list as inline
+  checkbox options` (a combobox input renders instead of inline checkboxes) and `renders
+  section header icons as blue linear icons` (multiple buttons named "Keyword"). Same 2 fail at
+  base `da7d501a` — there 3/4 fail (incl. `switches category icon variants`, which passes at
+  head due to test-order/isolation). These are develop-level failures (repo CI has no test
+  stage), NOT MR regressions — do not flag on future MRs; fixing the panel's checkbox-list /
+  header-icon tests is a separate issue. Lesson: prior-round "N/N pass" counts are
+  environment/order-dependent — always re-run at head AND base before trusting or repeating.
 
 ## Validated typecheck recipe (sale app, exact-head verification)
 

@@ -1,29 +1,17 @@
-Helio ERP = dự án CÁ NHÂN (~170 users; Next.js + Supabase + aube + shadcn/ui + Tailwind v4; AI Qwen/DeepSeek).
+BE/PO feature request: tạo issue MỚI thay vì gộp vào issue cũ, trừ khi cùng scope + cùng assignee + follow-up nhỏ. Cùng feature + assignee + file chồng nhau → 1 issue umbrella (user: "tại sao tạo 5 issue"); chỉ tách ready-for-human/BE-decision. Khi gộp issue vừa tạo: DELETE hẳn thay vì close (close = ngụ ý đã release).
 §
-BE/PO feature request: tạo issue MỚI thay vì gộp vào issue cũ, trừ khi cùng scope + cùng assignee + follow-up nhỏ.
+cuongt(id=10, Trần Cường)=Finance + HR employee-scoped specs; QuyCN(id=31, Cao Quý)=Product + HR attendance-sheet-scoped specs.
 §
-Re-verify sau push (ls-remote/fetch).
+ERP: main clone erp-admin dùng chung (verify git status -sb); worktree per-issue ~/Projects/Hilo-Vppos/erp-admin-<iid>; branch-read: git show origin/<branch>:<path>. Documents/ERP không phải git repo.
 §
-cuongt(id=10, Trần Cường)=Finance + HR employee-scoped specs (freeze/unfreeze, delete/restore); QuyCN(id=31, Cao Quý)=Product + HR attendance-sheet-scoped specs (period lock/unlock).
+BE/API mới: gọi curl trước, ghi status/trace vào issue, không lưu token.
 §
-Issue template: `.gitlab/issue_templates/feature_request.md`. Labels: ready-for-agent|ready-for-human + MFE tag.
+ERP API: ApiResponse<T> — T=item|item[] (array ở .data), pagination ở meta.pagination; cấm wrapper/normalize (docs/solutions 2026-08-05).
 §
-erp-admin(id=9): Locale JSON cleanup: dùng Python json module (load→modify→dump), không sed (breaks JSON). Validate bằng `python -m json.tool`.
+search_files(target='files') dùng GLOB pattern, không phải regex — pattern chứa '|' trả 0 match, dễ kết luận sai "file thiếu"; xác minh từng tên bằng glob riêng hoặc dùng target='content'.
 §
-execute_code chạy trong sandbox cô lập KHÔNG có user env vars (GITLAB_TOKEN → KeyError). Muốn dùng env vars: write_file script ra /tmp rồi chạy qua terminal (`python3 /tmp/script.py`).
+Hermes desktop sidebar "worktree/branch" lanes = session groups từ sessions.git_branch trong ~/.hermes/state.db, KHÔNG phải git worktree. Branch xoá remote nhưng session cũ còn → lane dư; cleanup = xoá session dính branch đã xoá (skill: hermes-desktop-state-cleanup).
 §
-ERP i18n: defaultNS='common'; prefix 'common:' redundant nhưng KHÔNG phải bug.
+erp-admin issue-lifecycle CI: merge job DRY_RUN=false từ 2026-08-05 (prod release/* vẫn true). Script gitlab-update-milestone-issues.py: #NNN chỉ count khi keyword liền kề ≤25 chars (ADJACENT_REF_RE) — MR mô tả false-positive cũ (vd !543) tự gây done nhầm; MR/commit fix lifecycle KHÔNG viết số issue kèm # gần keyword issue/ticket/closes/fixes/resolves/implements. Issue không tự done → trace job + resource_label_events. MR desc CẤM 'Closes #N' (auto-close → job skip 'already closed' → phải set tay); close = đã release — issue giữ OPEN + status::done, chỉ close khi deploy prod; ghi 'Issue / Ticket: #N'.
 §
-ERP có 2 checkout: erp-admin (chính) + erp-admin-review (worktree) — review MR hay cd qua erp-admin-review. Documents/ERP không phải git repo.
-§
-BE/API mới: gọi curl trước, ghi status/trace vào issue, không lưu token; khác scope → tách MR/release.
-§
-Trước khi tạo MR mới check MR open cũ — user hay tạo MR v2 thay vì sửa v1 (v1 bị bỏ quên → conflict).
-§
-Zed global AGENTS.md (~/.config/zed/AGENTS.md): rule chung, KHÔNG nhắc project công ty; Zed agent dùng RTK CLI proxy + Caveman Lite (Hermes vẫn normal/verbose).
-§
-erp-admin release: SemVer từ 08/2026 — branch release/vX.Y.Z, tag vX.Y.Z (không trùng tên), bump package.json trước khi tạo branch; git:release script base theo HEAD hiện tại (phải base origin/main).
-§
-ERP API: ApiResponse<T[]> trả array ở `.data` (không `.items`).
-§
-Chốt công/Unlock attendance (erp-admin): BE contract mới bắt buộc attendanceSheetId composite {orgId}:{year}:{month}:{unitId} (bỏ lockYear/lockMonth); FE chưa migrate → HRM-400-1490. FE mapping doc: Documents/ERP/.hermes/desktop-attachments/attendance-sheet-lock-unlock-fe-mapping.md
+omp=oh-my-pi 17.x: bin ~/.bun/bin/omp, config ~/.omp/agent (AGENTS.md persona chung + RULES.md + memory mnemopi); erp-admin/.claude/CLAUDE.md + .opencode/conventions.md = issue conventions project-scope (gitignored); 'pi' mise shim=0.83 cũ hỏng — dùng omp.

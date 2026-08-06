@@ -44,3 +44,24 @@ One refactor commit `11118f1c refactor(product): simplify product catalog api...
 - **N+1 `enrichProducts` gone** — price history only fetched in `useProductDetailQuery` (lazy, `enabled: Boolean(viewingProduct)`).
 
 Remaining 🟡 (not blockers): (1) multi-select category filter — server takes 1 `categoryId` (`length === 1 ? [0] : undefined`), rest filtered client-side on current page → range summary mismatch; (2) i18n keys still surface-nested (`productCatalog.createModal.*`, `detailModal.*`) vs flatten convention.
+
+## Round MR !539 (2026-08-05, head `4eb8f829`) — CRM contract alignment (q→search + empty-cache fix, 4 files)
+
+Quy's follow-up: `search` replaces `q` on product list, price history becomes paged, local `normalizePagedItems`/`resolvePagination` replace shared `normalizeApiCollectionData`, CKS fields preserved in `buildProductPayload`. Verified: typecheck + build pass at head (detached worktree: build needs workspace deps built first — `pnpm --filter product... build`), no develop conflict, no 🔴. Durable findings:
+
+- **`resolvePagination` ignores `payload.pagination`** — local `CrmPagedListResponse<T>` (types/product-catalog.ts) declares `pagination?: ApiPagination` inside `data`, but the helper only reads top-level `total/page/pageSize`; `meta.pagination` (envelope) is checked first, then the helper. If BE returns pagination inside `data.pagination`, `totalItems` falls back to current-page length → wrong footer. Check: read `payload.pagination` before top-level fallback, or confirm BE shape.
+- **Price history silently capped at pageSize 1000** — `buildProductPriceHistoryRequestParams()` = page 1 + `PRODUCT_REFERENCE_PAGE_SIZE` (1000); detail modal counts `priceHistoryRows.length` (≤1000) ignoring `totalItems`. Was unpaged before → products with >1000 price changes truncate silently.
+- **New DTO nested fields unwired** — `CrmPriceHistoryDto` gained `product`/`oldTaxRate`/`newTaxRate` (BE returns them) but `ProductCatalogView.tsx` still shows the product's CURRENT `taxRate?.percentage` in every history row's tax column (`:381`) — wrong for old rows after a tax change. Pre-existing display bug, but the MR touched exactly this DTO/feature.
+- **Partial search migration** — only product list moved to `search`; category list & tax-rate list builders still send `q` (`useProductCatalogQuery.ts:137,155`). If BE switched all list endpoints to `search` uniformly, those searches silently no-op. Verify BE contract per endpoint before flagging 🔴.
+- **`sort`/`order`/`searchFields` added to `ProductListRequestParams`/`ProductPriceHistoryListRequestParams` but never sent** — contract-doc only, 🟢.
+
+## MR !539 (2026-08-05, head `4eb8f829`) — align with latest CRM API contract (issue #133, author QuyCN)
+
+Verdict: no blockers, mergeable; typecheck + build verified at head (via detached worktree, `pnpm --filter product... build`). 4 files: apis + 2 hooks + types.
+
+- **`normalizePagedItems` covers 4 shapes** (array, `data: []`, `items: []`, `data: {data|items: []}`) — fixes the old bug where `{data: {data:[...]}}` went through `normalizeApiCollectionData`'s `Object.values` → garbage → "totalItems > 0 but table empty". The nested-shape support is what the issue's empty-cache fix actually needed.
+- **search mapping done right**: local `omitEmptyProductSearchParams` trims + drops empty `search`; `q` destructured out of `buildSharedListQueryRequest` so it's never sent alongside `search`. Categories/taxRates still send `q` — if BE switched ALL list endpoints to `search`, those search paths silently no-op; verify with BE.
+- **`resolvePagination` ignores `payload.pagination`** 🟡 — `CrmPagedListResponse` declares `pagination?: ApiPagination` but the helper reads only top-level `total/page/pageSize`; if BE returns pagination inside `data.pagination` (not `meta.pagination`), `totalItems` falls back to current-page length → footer shows "1/1 trang, 10 items" for a 48-item/5-page result. Read `payload.pagination` before falling back, or confirm the real shape.
+- **Price history capped at pageSize=1000, page=1** 🟡 — was unpaged (full fetch) before; products with >1000 price changes are now silently truncated, and the modal counts `rows.length` instead of `totalItems`.
+- **`CrmPriceHistoryDto` + `product`/`oldTaxRate`/`newTaxRate` added but unwired** 🟡 — history table still renders CURRENT `product.taxRate?.percentage` for every row (wrong for old rows after a tax change); BE now returns `oldTaxRate` — use it.
+- **CKS preserve correct**: `buildProductPayload(nextForm, { currentProduct })` called with `editingProduct` (update) AND the row `product` (toggle) — 3 CKS fields survive both paths; create sends explicit `null` (out of scope, note if BE requires them on create).

@@ -1,10 +1,11 @@
 ---
 name: hr-salary-patterns
-description: Use when modifying salary grade templates in apps/hr.
+description: Use when modifying salary grade templates or payroll slip branding in apps/hr.
 triggers:
   - modifying salary grade templates or CreateSalaryGradeView in apps/hr
   - changing intern/probation/collaborator/official section behavior
   - adding or editing salary component calculation rows or formula notes
+  - payroll slip (PayrollEmployeeSlipView / PDF export) branding, logo, colors, company info
 ---
 
 # HR Salary Patterns
@@ -20,6 +21,23 @@ Salary-grade builder architecture and rules for the HR MFE (`apps/hr/src/feature
 | `components/salary-grades/CreateSalaryGradeView.tsx` | The view: holds `sections` state; `updateRow`/`addRow`/`removeRow`/`reorderRows`; template-type switching; hydration effect |
 | `constants/salary-grade-scale.ts` | Hard-coded official grade scale (`SALARY_POSITION_GROUPS`, 91 grades) — source: scanned PDF "Thang bang luong bao hiem_2026". Full data + extraction workflow + anomalies: `references/salary-grade-scale.md` |
 | `utils/create-salary-grade-sections.spec.ts` | Unit tests for sections + calculations (build sections, mutate rows, assert formatted amounts like `'2.200.000'`) |
+| `constants/payroll-company.ts` | Per-company payroll slip branding: logo, palette, name/address (build-time `VITE_COMPANY_CODE`). Full pattern: `references/payroll-slip-branding.md` |
+
+## Payroll slip branding (per-company)
+
+Payslip (HTML view `PayrollEmployeeSlipView` + canvas PDF export) shows the deploying company's branding — logo, colors, legal name/address — selected at build time by `VITE_COMPANY_CODE` (`vppos` default, `hilo`). Single source of truth: `constants/payroll-company.ts` (`PAYROLL_COMPANY_BRANDS` with `companyName`/`companyAddress` baked into each brand, `payrollCompanyColors`, `payrollCompanyName/Address` = env override `||` brand value). Old `PAYSLIP_COLORS`/`PDF_COLORS.orange*` hardcodes are gone — both surfaces read the brand config.
+
+Two repo-wide conventions (user-enforced):
+
+- **No magic strings for company identity** — company codes are constants in `@hilo/shared/src/constants/common.ts` (`COMPANY_CODES`, `CompanyCode` type); app code compares against `COMPANY_CODES.HILO`, never `'hilo'` literals.
+- **Every new `VITE_*` build var must be added to `.env.example`** plus the full plumbing chain: `apps/hr/src/vite-env.d.ts`, `Dockerfile` (ARG+ENV), `.gitlab/ci/base.gitlab-ci.yml` `build_job` (branch exports + `--build-arg`), `scripts/deploy-uat.sh`.
+
+Key pitfalls (details + Hilo palette + verification in `references/payroll-slip-branding.md`):
+
+- `import.meta.env` reads only work in **app-layer source** (`apps/*`) — `@hilo/icons`/`@hilo/shared` are pre-built libs (dist, federation singleton), their env reads are neutralized at lib build. Constants go in shared; env reads stay in the app.
+- PNGs in `@hilo/icons` are **inlined as base64 data URLs** in the lib bundle — safe for the canvas PDF export (no CORS taint). Never switch to remote logo URLs without `crossOrigin` + server CORS.
+- BA logo files often have solid black backgrounds — remove before committing (PIL luminance+saturation → alpha heuristic), verify on a white composite.
+
 
 ## Core architecture
 

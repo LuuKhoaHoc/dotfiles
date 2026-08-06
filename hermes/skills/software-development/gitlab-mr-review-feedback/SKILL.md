@@ -26,6 +26,7 @@ Watch for:
 - `fix` used for new features (inline create, new banner, new state) → should be `feat`
 - `[Module]` prefix instead of `type(scope)` → should be `feat(module):`
 - Title too vague to understand what changed
+- **Title under-describes scope** — title names 1 change while the MR ships 2–3 user-visible ones (real case MR !550: title "limit category dialog combobox dropdown height" but the MR also aligned field heights and relocated tax-rate creation into the combobox create-flow; description How section likewise omitted them). Count the MR's behavioral changes and require the title + How to name every one — release notes/audit read the title, and a "fix" title hiding a flow move misleads reviewers too. Same family as the description-template check: both are 🔴-level description hygiene per the rulebook.
 
 ### 2. Branch name must follow convention
 

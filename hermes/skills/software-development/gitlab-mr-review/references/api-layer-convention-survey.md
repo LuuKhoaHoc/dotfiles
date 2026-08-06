@@ -27,6 +27,7 @@ Dumb = ONE call, return `response.data`. No try/catch, no mapping, no extra fetc
 | 8 | **No duplicate logic across layers** | `normalizeDurationForForm` duplicated in `useProductCatalogCrud.ts:32` AND `apis/product-catalog.ts:121` — same normalization in 2 layers with different names = mapping sprawl symptom |
 | 9 | **Dead files removed** | `mocks/product-catalog.mock.ts` left behind with 0 importers after mock→API migration (`git grep -rn "product-catalog.mock"` excluding the file itself = 0 hits) |
 | 10 | **Query keys placement** | ⚠️ NOTE: `PRODUCT_CATALOG_QUERY_KEYS` in apis/ looks wrong but HR does the same (`EMPLOYEE_QUERY_KEYS` in `apis/employee.ts`) — **established pattern, NOT a violation**. Verify against the reference app before flagging (false-positive class, same as the i18n namespace-prefix case). |
+| 11 | **Response envelope typing** | `CrmPagedListResponse` all-optional wrapper + `normalizePagedItems`/`resolvePagination` (MR !539): feature-local wrapper around `ApiResponse` with every field optional → TS can't catch contract drift, pagination guessed client-side from the current page. Canonical: `ApiResponse<T>` with T = item\|item[] (array/item straight in `data`), pagination in `meta.pagination` — see `docs/solutions/conventions/2026-08-05-api-response-envelope-contract.md`; wrapper + normalize helpers = 🔴 contract evasion |
 
 ## Survey workflow
 

@@ -26,7 +26,7 @@ Parent orchestrator + child pipelines, 7 MFE apps.
   include:
     - .gitlab/ci/base.gitlab-ci.yml   # .cache_base .test_base .base_job .build_job .deploy_job (templates)
     - vppos-shared/cicd-library-for-scare-vulubility  # trivy / sonarqube / owasp-zap scanners
-  stages: scan → triggers → dast-scan
+  stages: scan → lifecycle → gate → triggers → post-deploy → dast-scan
   trigger:<app>  (x7: shell, hr, dashboard, employee, finance, product, sale)
       → each triggers .gitlab/ci/child-template.gitlab-ci.yml (strategy: depend)
 
@@ -36,7 +36,7 @@ Parent orchestrator + child pipelines, 7 MFE apps.
   deploy:app (extends .deploy_job, needs: build:app)  # yq update helm image.tag + git push [skip ci]
 ```
 
-- **Branches:** `develop` → UAT (`erp.vppos.vn` / `api-erp.vppos.vn`); `main` → PROD (`erp.hilo.com.vn`).
+- **Branches:** `develop` → UAT (`erp.vppos.vn` / `api-erp.vppos.vn`); `main` AND `release/v*` → PROD (`erp.hilo.com.vn`). Since MR !541, `release/v*` is a first-class prod deploy branch: `.build_job` treats `main || release/v*` as prod env, `trigger:*` get a first rule for `release/v*` with NO `changes:` filter (release = build ALL apps), `.deploy_job` on `release/v*` is `when: manual` + `allow_failure: false`.
 - **Deploy mechanism = GitOps:** `deploy:app` bumps `helm/frontend/values-<app>.yaml` `image.tag` and
   git-pushes with `[skip ci]`; an external ArgoCD/Flux syncs it. CI does NOT `kubectl apply` directly.
 - **Why 7 manual buttons exist:** `deploy:app` inherits `when: manual` from `.deploy_job`, so each of the
@@ -83,6 +83,49 @@ Because `deploy:app` has `needs: [build:app]`: build fail → deploy does NOT ru
 unchanged → nothing git-pushed → GitOps has nothing to sync → **running pods keep the old image.**
 A single app's build failure does not affect the other apps. (Runtime crashes of a *successfully built*
 image are a separate k8s rolling-update / readiness-probe concern, unrelated to CI.)
+
+## Issue lifecycle automation workflow
+
+For this ERP project, separate implementation completion from production release:
+
+- `status::done` = code merged into `develop` and UAT-ready; issue remains `opened`.
+- `closed` = production deployment succeeded; keep `status::done`.
+- Feature MRs targeting `develop` must use non-closing references such as `Issue / Ticket: #N` / `Implements #N` / `Related to #N`, not `Closes #N` (empirically, `Closes #N` on a develop MR auto-closes the issue on merge).
+- Release milestones (`vX.Y.Z`) are the per-release batch source of truth; `issue:lifecycle:prod` closes only `status::done` issues of the milestone.
+
+**Final job layout (MR !542 — do NOT regress to earlier designs):**
+
+- `issue:lifecycle:merge` — stage `lifecycle` (after scan, BEFORE the `deploy:uat` gate), `rules: $CI_COMMIT_BRANCH == "develop"`. Marks `status::done` on issues referenced by MRs found in `CI_COMMIT_MESSAGE` + `git log -n 30` (per-MR, idempotent). **`done` attaches to MERGE, not deploy** — deploy-triggered marking fails when several MRs merge at once, auto pipelines get cancelled and one manual pipeline deploys everything (only the last MR would be seen).
+- `issue:lifecycle:prod` — stage `post-deploy`, `rules: $CI_COMMIT_BRANCH =~ /^release\/v/`. Closes milestone issues already `status::done`; fires only after real deploy because `.deploy_job` on `release/v*` is `when: manual` + `allow_failure: false` (child pipeline doesn't pass until every app deploy succeeded).
+- **Never milestone-wide status flips** — the first design marked ALL opened milestone issues `done` after UAT deploy, force-flipping in-progress issues (real incident: v1.0.0 dry-run listed #133/#132/#128). Only touch issues referenced by the merged MR.
+
+Safe rollout: both jobs default `DRY_RUN=true`; confirm the dry-run log lists exactly the intended issues, then flip `DRY_RUN=false`. **Status 2026-08-05:** merge job is LIVE (`DRY_RUN=false`, commit `e2612b21`); prod job still `DRY_RUN=true`. **Do NOT require manual `RELEASE_MILESTONE` input** — user rejected that friction ("automation rồi mà vẫn phải manual nhập variables"); the script auto-derives the milestone (env override → CI tag `v*` → `release/v*` branch → `package.json` version). Project ID `9` is public configuration — hardcode in YAML, never mask (masked vars need ≥8 chars). Only the GitLab API token is masked/protected. Keep initial user guidance operational and concise: exact next action, click/run location, and expected output; defer architecture details unless requested.
+
+Use `references/issue-lifecycle-automation.md` for the tested API/script/job pattern and the failure history.
+
+## ⚠️ Pitfall: DRY_RUN left on — job "succeeds" but writes nothing (real case 2026-08-05)
+
+`issue:lifecycle:merge` ran with `DRY_RUN: "true"` for weeks (kept from the pilot commit when a88f971d
+switched the job to merge-time). Logs showed `[merge] issue #133 -> {'labels': ...,'status::done'}`
+and `Job succeeded` — but the PUT never fired, because the script `print()`s the payload BEFORE
+`if not DRY_RUN: api("PUT", ...)`. Issues silently stayed `status::review`; nobody noticed until a
+user asked "why isn't my issue done?".
+
+**Detection recipe (cheap, deterministic):**
+1. `curl .../projects/<id>/jobs/<job_id>/trace` — a `[merge] issue #N -> ...` line is a PRINT, not a write.
+2. Cross-check `GET /projects/<id>/issues/<iid>` → `updated_at` MUST be ≥ the job's `finished_at`.
+   Real case: issue updated_at 09:00:18 < job ran 09:01:47 → PUT never happened. (MCP `get_issue` is fine; the "stale" reading was actually the truth.)
+3. Attribution: `GET /projects/<id>/issues/<iid>/resource_label_events` shows WHO changed labels —
+   a human username = manual set, not the CI job.
+4. Fix: flip `DRY_RUN=false` in `.gitlab-ci.yml`, push to develop (rebase first — develop moves fast),
+   and the NEXT develop pipeline re-runs the job idempotently, catching up on all missed issues
+   (script re-queries merged MRs in a 7-day window).
+
+**Verifying a `.gitlab-ci.yml` change is NOT `pnpm typecheck/lint/build`** — it's a YAML file, not app
+code. Correct verification: (a) `python3 -c "import yaml; yaml.safe_load(open('.gitlab-ci.yml'))"` +
+assert the intended variable value; (b) `mcp__gitlab__validate_project_ci_lint` → `valid: true`, 0
+errors, read `merged_yaml` for resolved `rules:`; (c) watch the real pipeline on the pushed commit run
+the changed job and confirm the side effect actually happened (trace + target resource state).
 
 ## MCP edit → lint → MR workflow
 

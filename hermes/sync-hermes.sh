@@ -4,8 +4,17 @@
 
 set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-HERMES_DIR="${HERMES_HOME:-$HOME/.hermes}"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." 2>/dev/null && pwd)"
+# Windows: bản copy ở ~/.local/bin không resolve được — fallback theo repo .git
+if [ ! -d "$DOTFILES_DIR/.git" ]; then
+  DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
+fi
+# Windows: Hermes data ở AppData/Local/hermes; Linux/macOS: ~/.hermes (HERMES_HOME override)
+if [ -z "${HERMES_HOME:-}" ] && [ -d "$HOME/AppData/Local/hermes" ]; then
+  HERMES_DIR="$HOME/AppData/Local/hermes"
+else
+  HERMES_DIR="${HERMES_HOME:-$HOME/.hermes}"
+fi
 HERMES_DOTFILES="$DOTFILES_DIR/hermes"
 
 # Files/dirs cần sync

@@ -13,6 +13,7 @@ Guide for migrating browser-based mock data (localStorage, in-memory arrays) to 
 - Backend API endpoints exist (or are being built)
 - Another feature in the same codebase already uses real APIs and serves as reference
 - User says "connect API", "thay mock bằng real API", "implement API integration"
+- Deciding whether shared code (hook/type) belongs in `@hilo/shared` or duplicated per MFE → see `references/mfe-code-sharing-research.md` (harvest model: duplicate until ≥3 stable consumers)
 
 ## Audit Phase
 
@@ -40,6 +41,13 @@ Compare current DTO fields against the API contract:
 - Structure: flat vs nested (`target: {type, id, name}`)
 - Types: `number` vs `decimal string`
 - ⚠️ Flag any mismatch as a migration task
+
+**Verify the contract from the REAL spec, not from training data or other FE code** (worked example 2026-08-05, sale customers):
+- The BE Swagger UI at `https://api-erp.vppos.vn/docs` is a Scalar HTML shell — the real spec is `curl https://api-erp.vppos.vn/openapi.yaml` (1.4MB YAML). Grep request schemas (`CreateCustomerRequest`, `TransferCustomerPartnerRequest`) for the EXACT field set + `required` + enum values; list endpoints for query params (`search`, `searchFields`, `sort`, `order`, `customerId`...).
+- **Dead/stale shared types**: a DTO in `packages/shared/src/types/` exported via the barrel is NOT proof of correctness — grep the whole repo for consumers (`0 hits` = dead code, likely mock-era). Compare its fields against the OpenAPI schema: abbreviated fields (`ReceivableDto { c, amt, paid, out, due, st }` vs BE `{ amount, paidAmount, outstandingAmount, dueDate, status }`) = stale, must be updated before reuse.
+- **Duplicate local DTOs**: same API entity declared in shared + each consuming MFE (`CustomerReceivableDto` in sale, `ReceivableListItem` in finance, `ReceivableDto` in shared) violates the repo's "❌ Không duplicate types cho cùng API entity". Fix pattern: update the shared DTO to BE contract first, then consumers derive narrow DTOs via `extends`/`Pick` — sequentially dependent, so ship as ONE issue with phases shared → consumers.
+- **Form fields vs request contract**: a `required` form field whose value never reaches the request body (BE schema has no such field) = fake/dead field — needs BE decision (`ready-for-human`), not a silent FE drop.
+- **Endpoint path drift**: shared `API_ENDPOINTS` prefixes can drift from BE (real case: `FINANCE.BANK_TRANSACTIONS = '/finance/bank-transactions'` missing `/crm` vs BE `/api/v1/crm/finance/bank-transactions`). Cross-check shared paths against `openapi.yaml`.
 
 ### 3. Reference Pattern
 

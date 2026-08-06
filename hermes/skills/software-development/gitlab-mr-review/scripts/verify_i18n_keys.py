@@ -138,6 +138,18 @@ def main():
     keys_with_obj_defaults = collect_keys(sha, scan_paths, regex=T_KEY_DEFAULT_OBJ_RE)
 
     def exists_for_language(language: str, key: str) -> bool:
+        # i18next ns:key form (nsSeparator ':') — strip the explicit namespace
+        # prefix before lookup; the bare key is what must exist in some locale
+        # file (real case MR !549: t('sale:customer.messages.validation.*')
+        # false-positived before this fix).
+        if ":" in key:
+            prefix, _, rest = key.partition(":")
+            if prefix and rest:
+                if namespace is not None and prefix != namespace:
+                    # --ns mode: an explicit prefix naming a DIFFERENT ns must
+                    # not be satisfied by the requested ns file.
+                    return False
+                key = rest
         # With --ns=employee, this checks employee.json separately in en/vi.
         # Without --ns, the key may live in any namespace file for that language.
         return any(nested_get(d, key) is not None for d in locales_by_language.get(language, []))

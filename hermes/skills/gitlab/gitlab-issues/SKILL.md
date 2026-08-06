@@ -212,6 +212,31 @@ Verification procedure before moving anything:
 3. For closed issues with no `status::done`: merged → add label only; unmerged → `update_issue(state_event="reopen", labels=[...existing + "status::done"])`. When updating labels, pass the FULL existing label set plus the new one (update replaces the set).
 4. Re-verify after updating: re-list and confirm counts (e.g. all closed+done now carry `status::done`; unmerged ones are open+done).
 
+## Issue lifecycle: milestone + `status::done` vs `closed` (user-corrected, 2026-08)
+
+User's canonical lifecycle (SemVer releases, weekly planning):
+
+- `status::done` = implementation merged into `develop` / UAT-ready — issue stays **opened**.
+- `closed` = successfully **released to production** — happens only after prod deploy succeeds.
+- `status::in-progress` = actively working; `status::todo` = not started. Unfinished statuses are NEVER auto-promoted.
+- Each release gets a **milestone** (`vX.Y.Z`) acting as a release bucket: plan scope → create milestone → assign issues to it. Due date = release day. Milestone = "dự định release gì"; GitLab Release/tag = "đã release gì". On CalVer→SemVer migration, start at `v1.0.0`.
+
+**Feature MRs targeting `develop` must NOT use `Closes #N`** — empirically (MR !537), merging a feature MR with `Closes #131` into `develop` auto-closed the issue: in this repo develop behaves as the closing branch. Use `Implements #N` / `Issue / Ticket: #N` in feature MRs; leave closing to the production flow. When an issue got auto-closed early by an old MR: reopen + set `status::done` + assign the release milestone, keep open until prod.
+
+**Automation exists in-repo (do not hand-label, do NOT re-design):** `scripts/gitlab-update-milestone-issues.py` + CI jobs `issue:lifecycle:merge` and `issue:lifecycle:prod` (see `references/issue-lifecycle-automation.md` for the full design and the failed designs that led to it):
+
+- **merge → done**: `issue:lifecycle:merge` runs on every develop pipeline in the `lifecycle` stage (right after scan, BEFORE the `deploy:uat` gate). It parses `!(\d+)` MR refs from `CI_COMMIT_MESSAGE` AND `git log -n 30 --format=%B` (shallow checkout — a later pipeline re-scans and catches MRs whose pipelines were cancelled), fetches each MR, extracts issue refs from description lines containing `issue|ticket|closes|fixes|resolves|implements` (skipping `blocked` lines), and sets `status::done` on those opened issues only. Idempotent.
+- **prod → close**: `issue:lifecycle:prod` runs in `post-deploy` on `release/v*` branches only. Milestone auto-derived (`RELEASE_MILESTONE` env → CI tag `v*` → `release/v*` branch → `package.json` version). Closes ONLY issues already labelled `status::done` — in-progress/todo/review stay open. It fires after real deploy because `.deploy_job` on `release/v*` is `when: manual` + `allow_failure: false` (child pipeline doesn't pass until every app deploy succeeded).
+- Both jobs default `DRY_RUN=true` until the user confirms the printed list.
+
+**Design pitfalls learned (do not regress):**
+1. **NEVER milestone-wide status flips** — first design marked ALL opened milestone issues done after UAT deploy; the v1.0.0 dry-run listed in-progress #133/#132/#128. Only touch issues referenced by the merged MR.
+2. **`done` must attach to MERGE, not deploy** — when several devs merge at once, auto pipelines get cancelled and one manual pipeline deploys everything; `CI_COMMIT_MESSAGE` then shows only the LAST merge, so deploy-triggered marking misses all other MRs' issues.
+
+**GitLab UI/UX quirks when piloting manual CI jobs:**
+- No "Run with variables" dialog on the pipeline-graph ▶ button — it starts the job instantly. After the job fails, open job detail → **Retry ▾ → Run with variables** → add the variable → run.
+- Masked CI variables require ≥ 8 chars: `GITLAB_PROJECT_ID=9` cannot be masked → hardcode it in `.gitlab-ci.yml` (`variables: GITLAB_PROJECT_ID: "9"`); only the automation token is masked/protected.
+
 ## Attaching Reference Files to Issues
 
 When creating issues grounded in external reference documents (BE API docs, spec PDFs, design files, architecture notes):
@@ -349,6 +374,15 @@ Use this gate when a backend API spec or FE mapping document is being turned int
 
 See `references/spec-to-issue-delivery.md` for the reusable upload fallback and post-create verification checklist.
 
+## Tooling choice: glab CLI first for create/update (user-verified 2026-08)
+
+Repo convention (`docs/agents/issue-tracker.md`) is `glab` CLI. Prefer it over MCP for **create/update** operations, especially with long or Vietnamese descriptions:
+
+- The MCP `tool_call` wrapper has a known JSON serialization failure on long / multi-byte description strings (observed on issue #131 + MR !537 — `Extra data: line 1 column ~43xx`), even when the server is healthy. `glab` reads the description from a file (`--description "$(cat /tmp/issue-desc.md)"`), sidestepping the JSON wrapper entirely.
+- Flow that works: write description to `/tmp/issue-desc.md` → `glab issue create --title '...' --description "$(cat /tmp/issue-desc.md)" --label a,b,c` → verify with `glab issue view <iid> -F json`.
+- Keep the write-to-file step in ALL paths (MCP, glab, REST fallback): it is the single source of truth for the body and is required by the REST fallback script anyway.
+- MCP remains fine for short reads (list/search/get issue) and short ASCII-only bodies; use it there to keep terminal output lean.
+
 ## MCP Failure Fallback
 
 When GitLab MCP tools are unreachable (server down, auth expired, network issue):
@@ -362,6 +396,22 @@ When GitLab MCP tools are unreachable (server down, auth expired, network issue)
    - The subagent runs in a free terminal (no security-consent blocking) and returns the issue URL/IID
 3. **Verify the result** — the subagent returns a self-report; confirm by checking the returned IID or URL
 4. **Template access fallback** — when `mcp__gitlab__get_file_contents` fails for `.gitlab/issue_templates/`, read the template from the local checkout at `~/Projects/Hilo-Vppos/erp-admin/.gitlab/issue_templates/`
+
+### tool_call JSON failure (server UP, wrapper choked) — local Python REST fallback
+
+**Symptom:** `mcp__gitlab__create_issue` / `create_merge_request` returns `tool_call 'arguments' is not valid JSON: Extra data: line 1 column ~43xx (char ~43xx)` — the offset lands roughly inside the description even after shortening it, and every rewritten retry fails the same way. This is NOT the server being down (reads like `list_issues` still work). The `tool_call` wrapper's JSON serialization chokes on long / multi-byte (Vietnamese diacritics) description strings. Do NOT retry the same args (flagged as a loop) — verify with a short probe or same-column error, then switch to REST immediately.
+
+**Working fallback (verified for issue #131 + MR !537):**
+
+1. Write the description to `/tmp/issue-desc.md` first — removes the huge-arg JSON problem entirely.
+2. Small Python script in `/tmp` (`urllib.request`, stdlib) that reads the file + `os.environ["GITLAB_TOKEN"]`:
+   - Base URL: `https://gitlab.vppos.vn/api/v4` — **GitLab's own REST is `/api/v4`; `/api/v1` is the internal ERP BE API** (Bruno collections use v1 for ERP business APIs). Don't mix them up.
+   - Header: `PRIVATE-TOKEN: <token>` (not `Authorization: Bearer`).
+   - Issues: `POST /api/v4/projects/9/issues` body `{title, description, labels: "comma,separated"}`
+   - MRs: `POST /api/v4/projects/9/merge_requests` body `{source_branch, target_branch, title, description, labels, remove_source_branch}`
+3. Run via `terminal` (`python3 /tmp/create-issue.py`) — **terminal has user env (`GITLAB_TOKEN`); `execute_code` sandbox does NOT.**
+4. Print + verify returned `iid` / `web_url` / `state` / `labels`; delete `/tmp` scripts afterwards.
+5. **Ship flow (user requirement):** create the ticket/issue per repo standard FIRST, then ship — feature branch from `develop`, commit, push, MR targeting **develop** (never main). Per the 2026-08 lifecycle convention, use a NON-closing reference (`Implements #NNN` / `Related to #NNN`) in feature MRs — `Closes #NNN` auto-closes the issue on merge into develop (see "Issue lifecycle" section); issues close only after production release. No direct pushes to `main`.
 
 ## Pitfalls
 

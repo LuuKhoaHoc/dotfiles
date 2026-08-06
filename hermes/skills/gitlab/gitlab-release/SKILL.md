@@ -15,7 +15,7 @@ metadata:
 
 Use for weekly releases on `gitlab.vppos.vn` project `vppos-team/erp-admin` (`project_id=9`).
 
-**Naming convention — LUÔN verify thực tế trước khi tạo:** đọc `git ls-remote --tags origin` + `list_releases` (release gần nhất) để xem quy ước đang dùng, bám theo release trước đó. Thực tế đến 2026-08-04: team VẪN dùng `release/YYYY-MM-DD` cho CẢ branch lẫn tag (branch `release/2026-08-04` VÀ tag `release/2026-08-04`), Release name `Release YYYY-MM-DD`. Ghi chú cũ trong skill về SemVer `release/vX.Y.Z` từ 2026-08 chưa từng áp dụng — đừng tự đổi quy ước, kiểm tra rồi mới theo.
+**Naming convention — LUÔN verify thực tế trước khi tạo:** đọc `git ls-remote --tags origin` + `list_releases` (release gần nhất) để xem quy ước đang dùng, bám theo release trước đó. Thực tế đến 2026-08-04: team VẪN dùng `release/YYYY-MM-DD` cho CẢ branch lẫn tag (branch `release/2026-08-04` VÀ tag `release/2026-08-04`), Release name `Release YYYY-MM-DD`. **CHUYỂN SEMVER BẮT ĐẦU 2026-08-05:** user đã tạo milestone `v1.0.0` đầu tiên (release tuần 05→06/08, due thứ 5) và CI đã wire `release/v*` → build prod + deploy manual blocking (MR !541/!542) — từ đây branch/tag/milestone theo `vX.Y.Z` (`release/vX.Y.Z` / tag `vX.Y.Z` / milestone `vX.Y.Z` cùng tên), release đầu tiên từ CalVer là `v1.0.0`. VẪN verify thực tế trước mỗi release.
 
 **Branch trùng tên tag → ambiguous refspec:** `git push origin release/2026-08-04` fail với `src refspec ... matches more than one` vì tag cùng tên tồn tại. Push luôn dùng refspec tường minh:
 ```bash
