@@ -13,11 +13,21 @@ if [ ! -d "$DOTFILES_DIR/.git" ]; then
   DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
 fi
 # Windows: Hermes data ở AppData/Local/hermes; Linux: ~/.hermes
-if [ -z "${HERMES_HOME:-}" ] && [ -d "$HOME/AppData/Local/hermes" ]; then
-  HERMES_DIR="$HOME/AppData/Local/hermes"
-  OS_NAME="windows"
+# Lưu ý: HOME trong git-bash có thể là MSYS (/c/...) HOẶC Windows (C:\) — thử cả 2 dạng
+if [ -z "${HERMES_HOME:-}" ]; then
+  os_windows=""
+  for p in "$HOME/AppData/Local/hermes" "C:/Users/${USERNAME:-}/AppData/Local/hermes" "${LOCALAPPDATA//\\/\/}/hermes"; do
+    [ -d "$p" ] && os_windows=1
+  done
+  if [ -n "$os_windows" ]; then
+    HERMES_DIR="$HOME/AppData/Local/hermes"
+    OS_NAME="windows"
+  else
+    HERMES_DIR="$HOME/.hermes"
+    OS_NAME="linux"
+  fi
 else
-  HERMES_DIR="${HERMES_HOME:-$HOME/.hermes}"
+  HERMES_DIR="$HERMES_HOME"
   OS_NAME="linux"
 fi
 HERMES_DOTFILES="$DOTFILES_DIR/hermes"
