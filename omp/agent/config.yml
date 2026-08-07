@@ -1,0 +1,17 @@
+modelRoles: 
+  vision: github-copilot/gpt-4.1
+  smol: opencode-go/deepseek-v4-flash:high
+  default: 9router/cx/gpt-5.6-luna:max
+  slow: github-copilot/gpt-5
+  advisor: 9router/opencode-premium
+symbolPreset: nerd
+theme: 
+  dark: titanium
+  light: light
+setupVersion: 1
+defaultThinkingLevel: auto
+hideThinkingBlock: false
+memory: 
+  backend: mnemopi
+autolearn: 
+  enabled: true

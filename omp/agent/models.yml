@@ -1,0 +1,31 @@
+providers:
+  9router:
+    baseUrl: http://127.0.0.1:20128/v1
+    auth: apiKey
+    apiKey: sk-<redacted>
+    api: openai-completions
+    discovery:
+      type: openai-models-list
+    models:
+      - id: opencode-premium
+        name: opencode-premium
+        reasoning: false
+        input: [text, image]
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 128000
+        maxTokens: 16384
+      - id: opencode-fast
+        name: opencode-fast
+        reasoning: false
+        input: [text, image]
+        cost:
+          input: 0
+          output: 0
+          cacheRead: 0
+          cacheWrite: 0
+        contextWindow: 128000
+        maxTokens: 16384
