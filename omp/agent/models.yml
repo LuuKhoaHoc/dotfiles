@@ -2,7 +2,7 @@ providers:
   9router:
     baseUrl: http://127.0.0.1:20128/v1
     auth: apiKey
-    apiKey: sk-<redacted>
+    apiKey: <redacted>
     api: openai-completions
     discovery:
       type: openai-models-list

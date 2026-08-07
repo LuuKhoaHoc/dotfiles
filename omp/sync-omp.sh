@@ -38,8 +38,8 @@ sync_copy() {
 }
 
 strip_secrets() {
-  # models.yml: apiKey thật → <redacted>
-  sed -E 's/^(apiKey:[[:space:]]*).+/\1<redacted>/' "$1" > "$1.tmp" && mv "$1.tmp" "$1"
+  # models.yml: apiKey thật → <redacted> (không anchor ^ — YAML có indent)
+  sed -E 's/(apiKey:[[:space:]]*).+/\1<redacted>/' "$1" > "$1.tmp" && mv "$1.tmp" "$1"
   # mcp.json: glpat-* / ctx7sk-* / sk-* tokens → <redacted>
   sed -E 's/(glpat|ctx7sk|sk)-[A-Za-z0-9_.-]+/\1-<redacted>/g' "$1" > "$1.tmp" && mv "$1.tmp" "$1"
 }
