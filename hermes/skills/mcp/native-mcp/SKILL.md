@@ -232,6 +232,19 @@ Your `mcp` package version doesn't include HTTP client support. Upgrade:
 pip install --upgrade mcp
 ```
 
+### Windows: `hermes config set` can't write `args` lists
+
+`hermes config set mcp_servers.<name>.args '["a","b"]'` stores the JSON as a
+STRING, not a list — the MCP server then fails validation. Fix options:
+- Use `hermes mcp remove <name>` + `hermes mcp add <name> --command ... --args ...` (note: `add` drops the old `env` block — re-pass `--env KEY=VALUE`).
+- Or edit `config.yaml` directly (backup first), replacing the `args:` scalar with a proper YAML block list.
+
+Also: on Windows, MCP server commands must be real executables — absolute paths
+to `.exe`/`.cmd` (a `.cmd` shim works; Python subprocess wraps it via `cmd.exe`).
+Linux paths (`/home/.../uvx`, mise node bins) silently fail with WinError 2 or
+ValidationError. After fixing config, RESTART the agent — discovery reads config
+only at startup.
+
 ### Tools not appearing
 
 - Check that the server is listed under `mcp_servers` (not `mcp` or `servers`)

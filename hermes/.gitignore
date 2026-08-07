@@ -3,6 +3,7 @@ skills/.hub/
 skills/.usage.json
 skills/.curator_state
 skills/.skills_prompt_snapshot.json
+skills/.bundled_manifest
 # Secrets — KHÔNG bao giờ push lên GitHub (repo public!)
 .env
 config.yaml

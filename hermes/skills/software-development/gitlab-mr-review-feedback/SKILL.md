@@ -126,7 +126,7 @@ After the review comment is posted, the author may push updates. Handle the life
      curl -s "https://<host>/api/graphql" -H "PRIVATE-TOKEN: $GITLAB_TOKEN" -H "Content-Type: application/json" \
        -d '{"query":"mutation { mergeRequestRequestChanges(input: { projectPath: \"<ns>/<proj>\", iid: \"<iid>\" }) { mergeRequest { state approved } errors } }"}'
      ```
-     No `sha` arg — `MergeRequestRequestChangesInput` rejects it. Confirm `errors: []` and `approved: false`. `$GITLAB_TOKEN` is exported in the terminal env (same token the MCP server uses).
+     No `sha` arg — `MergeRequestRequestChangesInput` rejects it. Confirm `errors: []` and `approved: false`. The token lives in `~/AppData/Local/hermes/.env` as **`GITLAB_PAT`** (NOT `GITLAB_TOKEN` — not exported in the terminal env by default; source it with `export GITLAB_PAT=$(grep -oP '(?<=^GITLAB_PAT=).*' ~/AppData/Local/hermes/.env | tr -d '"')`).
    - **Clearing it / approving after a clean re-review**: `mcp__gitlab__approve_merge_request` — but ASK the user first; "changes requested" is often deliberately left on until the author resolves the threads.
 
 3. **Merge + close issue** — when the user says "merge + kéo issue sang close":

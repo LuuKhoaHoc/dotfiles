@@ -223,10 +223,10 @@ memory:
   nudge_interval: 10
   flush_min_turns: 6
 delegation:
-  model: deepseek-v4-flash
-  provider: opencode-go
+  model: oc/deepseek-v4-flash-free
+  provider: 9router
   max_iterations: 75
-  reasoning_effort: low
+  reasoning_effort: ''
   max_concurrent_children: 5
 moa:
   presets:
@@ -488,17 +488,20 @@ custom_providers:
       - ocg/gpt-5.6-luna
 mcp_servers:
   gitlab:
-    command: /home/luukhoahoc/.local/share/mise/installs/node/latest/bin/zereight-mcp-gitlab
-    args: '["--token=${GITLAB_PAT}","--api-url=https://gitlab.vppos.vn/api/v4"]'
+    command: C:\Users\luukhoahoc\AppData\Local\hermes\node\node.exe
+    args:
+      - C:\Users\luukhoahoc\AppData\Local\hermes\node\node_modules\@zereight\mcp-gitlab\build\index.js
+      - --token=${GITLAB_PAT}
+      - --api-url=https://gitlab.vppos.vn/api/v4
     env:
       GITLAB_PERSONAL_ACCESS_TOKEN: ${GITLAB_PAT}
       GITLAB_API_URL: https://gitlab.vppos.vn/api/v4
   markitdown:
-    command: /home/luukhoahoc/.local/bin/uvx
+    command: C:\Users\luukhoahoc\AppData\Local\hermes\bin\uvx.exe
     args:
       - markitdown-mcp
   codegraph:
-    command: codegraph
+    command: C:\Users\luukhoahoc\AppData\Local\codegraph\current\bin\codegraph.cmd
     args:
       - serve
       - --mcp
@@ -561,11 +564,6 @@ mcp_servers:
       client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
       client_secret: ${GWS_MCP_CLIENT_SECRET}
       redirect_port: 8765
-plugins:
-  enabled:
-    - rtk-rewrite
-    - codegraph
-  disabled: []
 plugins:
   enabled:
     - rtk-rewrite
