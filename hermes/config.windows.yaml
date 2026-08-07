@@ -343,7 +343,7 @@ platform_toolsets:
 custom_providers:
   - name: 9router
     base_url: http://localhost:20128/v1
-    api_key: sk-b9ff74bada541c81-fkh2x8-c4879c51
+    api_key: ${9ROUTER_API_KEY}
     model: hermes-agent-combo
     models:
       - opencode-premium

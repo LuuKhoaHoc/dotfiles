@@ -116,6 +116,8 @@ fi
 
 **PITFALL — hermes backup CLI + MSYS path = silent miss.** `migrate-to-linux.sh` runs `hermes.exe backup -o "$DEST/hermes-backup.zip"` with an MSYS path; the file is NOT created at DEST. Run it manually with a native path: `cd ~ && ~/AppData/Local/hermes/hermes-agent/venv/Scripts/hermes.exe backup -o "C:/Users/<user>/hermes-migration/hermes-backup.zip"`.
 
+**PITFALL — `HERMES_HOME` env is set by the Hermes app even on Windows** (points to `C:\Users\<user>\AppData\Local\hermes`). A sync script that treats non-empty `HERMES_HOME` as "Linux" will silently overwrite `config.linux.yaml` with the Windows config. Fix: detect OS from filesystem probes (`$HOME/AppData/Local/hermes`, `C:/Users/$USERNAME/AppData/Local/hermes`, `$LOCALAPPDATA`) independent of `HERMES_HOME`; use `HERMES_HOME` only for `HERMES_DIR`. Symptom to watch: commit message `hermes: sync (linux)` created from a Windows box.
+
 **PITFALL — `~/.omp/agent` (oh-my-pi) contains real secrets** (apiKey in `models.yml`, `glpat-` in `mcp.json`). Never copy raw. Use `omp/sync-omp.sh` which strips secrets to `<redacted>` on push; on pull you re-paste secrets. mnemopi memory DB (`memories/`) is runtime — carry it outside git (e.g. into the migration bundle).
 
 ### Git identity
