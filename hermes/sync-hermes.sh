@@ -13,22 +13,19 @@ if [ ! -d "$DOTFILES_DIR/.git" ]; then
   DOTFILES_DIR="$HOME/Dev-Work/dotfiles"
 fi
 # Windows: Hermes data ở AppData/Local/hermes; Linux: ~/.hermes
-# Lưu ý: HOME trong git-bash có thể là MSYS (/c/...) HOẶC Windows (C:\) — thử cả 2 dạng
-if [ -z "${HERMES_HOME:-}" ]; then
-  os_windows=""
-  for p in "$HOME/AppData/Local/hermes" "C:/Users/${USERNAME:-}/AppData/Local/hermes" "${LOCALAPPDATA//\\/\/}/hermes"; do
-    [ -d "$p" ] && os_windows=1
-  done
-  if [ -n "$os_windows" ]; then
-    HERMES_DIR="$HOME/AppData/Local/hermes"
-    OS_NAME="windows"
-  else
-    HERMES_DIR="$HOME/.hermes"
-    OS_NAME="linux"
-  fi
-else
+# Lưu ý 1: HOME trong git-bash có thể là MSYS (/c/...) HOẶC Windows (C:\) — thử cả 2 dạng.
+# Lưu ý 2: HERMES_HOME có thể được Hermes app set sẵn TRÊN CẢ WINDOWS (trỏ AppData) —
+#          vì vậy OS_NAME phải detect độc lập, HERMES_HOME chỉ quyết định HERMES_DIR.
+OS_NAME="linux"
+for p in "$HOME/AppData/Local/hermes" "C:/Users/${USERNAME:-}/AppData/Local/hermes" "${LOCALAPPDATA//\\/\/}/hermes"; do
+  [ -d "$p" ] && OS_NAME="windows"
+done
+if [ -n "${HERMES_HOME:-}" ]; then
   HERMES_DIR="$HERMES_HOME"
-  OS_NAME="linux"
+elif [ "$OS_NAME" = "windows" ]; then
+  HERMES_DIR="$HOME/AppData/Local/hermes"
+else
+  HERMES_DIR="$HOME/.hermes"
 fi
 HERMES_DOTFILES="$DOTFILES_DIR/hermes"
 CFG_REPO="$HERMES_DOTFILES/config.$OS_NAME.yaml"
