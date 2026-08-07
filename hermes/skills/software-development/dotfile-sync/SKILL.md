@@ -110,6 +110,14 @@ fi
 
 **PITFALL — GitHub secret scanning rejects pushes containing real tokens** (e.g. `ntn_`, `figd_`, `glpat-`, `ctx7sk-` values in skill references or `config.yaml` MCP servers). Before pushing: `grep -rnE 'glpat-|ntn_|figd_|ctx7sk-|squ_|ghp_' hermes/` and redact real values to `<redacted>`. If a push is rejected, the offending commit stays in local history — squash it: `git reset --soft <good-commit> && git add -A && git commit -m ...` then push.
 
+**PITFALL — sync scripts skip brand-new folders.** Scripts check `git diff --quiet && git diff --cached --quiet` BEFORE `git add`, so a newly added sync folder (e.g. `omp/agent/`) shows "Không có thay đổi" and never commits. Fix: `git add <folder>/` BEFORE the diff check.
+
+**PITFALL — native Windows python3 can't read MSYS paths.** `python3` inside sync scripts fails with FileNotFoundError on `/c/Users/...` paths. Run the script with a Windows-style HOME instead: `HOME="C:/Users/<user>" bash opencode/sync-opencode.sh push`.
+
+**PITFALL — hermes backup CLI + MSYS path = silent miss.** `migrate-to-linux.sh` runs `hermes.exe backup -o "$DEST/hermes-backup.zip"` with an MSYS path; the file is NOT created at DEST. Run it manually with a native path: `cd ~ && ~/AppData/Local/hermes/hermes-agent/venv/Scripts/hermes.exe backup -o "C:/Users/<user>/hermes-migration/hermes-backup.zip"`.
+
+**PITFALL — `~/.omp/agent` (oh-my-pi) contains real secrets** (apiKey in `models.yml`, `glpat-` in `mcp.json`). Never copy raw. Use `omp/sync-omp.sh` which strips secrets to `<redacted>` on push; on pull you re-paste secrets. mnemopi memory DB (`memories/`) is runtime — carry it outside git (e.g. into the migration bundle).
+
 ### Git identity
 
 Git may not have global identity set on a fresh Windows install. Set locally in the dotfiles repo:
