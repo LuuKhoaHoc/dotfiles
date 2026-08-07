@@ -42,7 +42,7 @@
 		},
 		"opencode-go": {
 			"orchestrator": {
-				"model": "opencode-go/glm-5.1",
+				"model": "9router/opencode-premium",
 				"skills": ["*"],
 				"mcps": ["*", "!context7"]
 			},

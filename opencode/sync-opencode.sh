@@ -20,6 +20,7 @@ SYNC_ITEMS=(
   "tui.json"
   "plugins/rtk.ts"
   ".claude/settings.local.json"
+  "AGENTS.md"
 )
 
 sync_copy() {
