@@ -16,10 +16,13 @@ fi
 # Lưu ý 1: HOME trong git-bash có thể là MSYS (/c/...) HOẶC Windows (C:\) — thử cả 2 dạng.
 # Lưu ý 2: HERMES_HOME có thể được Hermes app set sẵn TRÊN CẢ WINDOWS (trỏ AppData) —
 #          vì vậy OS_NAME phải detect độc lập, HERMES_HOME chỉ quyết định HERMES_DIR.
-OS_NAME="linux"
-for p in "$HOME/AppData/Local/hermes" "C:/Users/${USERNAME:-}/AppData/Local/hermes" "${LOCALAPPDATA:-//}/hermes"; do
-  [ -d "$p" ] && OS_NAME="windows"
-done
+# Detect OS: uname -s là nguồn tin cậy nhất (git-bash trả MINGW64/MSYS, Linux trả Linux).
+# KHÔNG probe path — trên Linux có thể tồn tại ~/AppData/Local/hermes (tàn dư migrate)
+# khiến detect nhầm Windows và ghi đè config.yaml bằng bản windows.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*) OS_NAME="windows" ;;
+  *) OS_NAME="linux" ;;
+esac
 if [ -n "${HERMES_HOME:-}" ]; then
   HERMES_DIR="$HERMES_HOME"
 elif [ "$OS_NAME" = "windows" ]; then
