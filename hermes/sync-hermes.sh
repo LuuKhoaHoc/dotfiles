@@ -17,7 +17,7 @@ fi
 # Lưu ý 2: HERMES_HOME có thể được Hermes app set sẵn TRÊN CẢ WINDOWS (trỏ AppData) —
 #          vì vậy OS_NAME phải detect độc lập, HERMES_HOME chỉ quyết định HERMES_DIR.
 OS_NAME="linux"
-for p in "$HOME/AppData/Local/hermes" "C:/Users/${USERNAME:-}/AppData/Local/hermes" "${LOCALAPPDATA//\\/\/}/hermes"; do
+for p in "$HOME/AppData/Local/hermes" "C:/Users/${USERNAME:-}/AppData/Local/hermes" "${LOCALAPPDATA:-//}/hermes"; do
   [ -d "$p" ] && OS_NAME="windows"
 done
 if [ -n "${HERMES_HOME:-}" ]; then
