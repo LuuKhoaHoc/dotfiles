@@ -27,6 +27,17 @@ Worked example: RequestsOverview handled-request tab, 2026-08-06 (filter button 
 5. Reset `filterOpen` when the active tab changes — wrap the tab `onValueChange` handler (panel must not stay open across tab switches).
 6. Update table render tests with the new required props (`filterOpen={false}`, `onFilterOpenChange={vi.fn()}`).
 
+## Filter trigger placement — toolbarExtra is for QUICK filters only
+
+User-confirmed rule (2026-08-10): `toolbarExtra` on DataTable must ONLY carry quick filters (Selects, search shortcuts). The button that opens `TableFiltersPanel`/`*FilterModal` belongs on the list page's **Header** (next to the primary action) — never inside `toolbarExtra`. `TableFiltersPanel` is a portal-based ResponsiveModal, so the trigger can live anywhere without breaking the panel.
+
+Audit technique (find violations across MFEs):
+- `rg -n "setFilterOpen\(true\)" apps/*/src` → every trigger site; check the enclosing JSX is a header component (rendered via an `onOpenFilter`/`onSetFilterOpen`/`onFilter` header prop), not a table's toolbar.
+- `rg -n "toolbarExtra" apps/*/src` → every toolbar slot; contents must be quick filters only.
+- `rg -n "FilterTriggerButton" apps/*/src` → employee MFE's shared trigger component.
+
+Full audit inventory (correct + violating spots per MFE, 2026-08-10): `references/filter-trigger-placement-audit.md`.
+
 ## Duplication extraction threshold (user preference 2026-08-06)
 
 Extract shared components when duplication is SUBSTANTIAL — never for trivial one-liners:
@@ -64,3 +75,15 @@ node ../../node_modules/vite/bin/vite.js build         # vite build only — run
 **Pitfall — piping eslint masks its exit code:** `eslint ... 2>&1 | tail -2 && echo PASS` prints PASS even when eslint reported errors, because the pipeline's exit code is `tail`'s (0). After a piped run, confirm the tail output actually says `0 errors`, or run eslint unpiped to get the real exit code.
 
 Also: always re-verify after `eslint --fix` (formatting-only edits can still be the last edit before the final green run).
+
+## rg / search_files on this Windows host
+
+- `search_files` (ripgrep-backed) can fail with `IO error ... cannot find the path specified` even for paths that exist (`C:\...`, `~/...`, `/c/...` forms all failed) — the tool resolves paths in a context that can't see this filesystem. Fallback: run ripgrep via terminal.
+- Bare `rg` in git-bash can resolve to GNU grep (symptom: `grep: unknown option -- glob`) despite `which rg`/`type rg` showing the real binary. Use the FULL path to the WinGet-installed ripgrep binary and the long `--glob` form:
+
+```bash
+RG=/c/Users/<user>/AppData/Local/Microsoft/WinGet/Packages/BurntSushi.ripgrep*/rg
+"$RG" -l "pattern" apps/ --glob '!**/node_modules/**' | sort   # -l/-n/-A work; -g short flag also breaks
+```
+
+Note: `-g '!**/node_modules/**'` was rejected; `--glob` long form works.

@@ -50,6 +50,10 @@ Two integration types in `settings.json`:
 
 ### Custom agents (full capabilities)
 - `hermes-agent` — Hermes Agent via `hermes acp`
+- `agy` — agy-acp (ACP stdio adapter for Google Antigravity CLI, https://github.com/hicder/agy-acp). Built binary at `~/AppData/Local/agy/bin/agy-acp.exe` (same dir as agy.exe, already in PATH). Zed config:
+  ```json
+  "agy": { "type": "custom", "command": "agy-acp", "args": [], "env": {} }
+  ```
 - Any CLI with ACP support
 
 ## Hermes Agent in Zed

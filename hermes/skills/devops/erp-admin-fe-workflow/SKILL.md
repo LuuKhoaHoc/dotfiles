@@ -23,6 +23,13 @@ Pitfalls:
 - **Patch tool lint báo TS6053 "File not found" kiểu `/c/...`** (MSYS path) = false positive của linter tích hợp; gate thật là `tsc -b`.
 - Sau khi sửa code, chạy đủ 4 gate (tsc + vitest + eslint + build) rồi mới báo "verified".
 
+## Verification sau pull lớn (shared clone, 2026-08-08)
+
+- **`git fetch origin` (TẤT CẢ branches) trước khi tin `git status -sb`** — origin refs bị stale, ahead/behind marker nói dối tới khi fetch. Real case: clone hiện "clean, up-to-date" nhưng thực tế **behind 62 commits** (chỉ fetch `main` trước đó nên `origin/develop` ref cũ).
+- Diff local-vs-`origin/main` có thể là **artifact của checkout cũ** biến mất sau pull (vd: công ty đóng 10,5%/0,5% + code `CONG_DOAN` chung trên develop cũ — sau pull thành 21,5%/2% + `KINH_PHI_CONG_DOAN` đúng chuẩn). Pull trước, phán xét sau; đừng sửa code trên nền cũ.
+- **Sau pull lớn phải rebuild dist libs TRƯỚC typecheck**: `node node_modules/vite/bin/vite.js build && node node_modules/typescript/bin/tsc -p tsconfig.build.json` trong `packages/shared` rồi `packages/ui`. `tsc -b` KHÔNG regenerate dist (dist do vite build + tsc -p tsconfig.build.json tạo) — dist stale gây hàng loạt TS2305 "no exported member" ở feature không liên quan (vd employees) làm lu mờ lỗi thật.
+- Small fix đang dang dở khi cần pull: `git stash push` → `git pull --ff-only` → `git stash pop` (pop 3-way merge sạch nếu vùng code không đổi).
+
 ## FE UI state architecture (user decision 2026-08-06, worked example: requests feature #153)
 
 - **Zustand cho feature-local transient UI state**: dialog open/close, filter panel open, selected rows. Store mỗi feature tại `features/<f>/stores/<f>-ui-store.ts`, `create<Store>()((set) => ...)` (curried form, zustand v5 — zustand đã có sẵn `^5.0.11` trong deps của apps/employee + packages/shared).
@@ -54,6 +61,22 @@ Pitfalls:
 - Khi phát hiện file khác bản mình đã viết (mất column/test, nội dung đổi thiết kế): **KHÔNG vội 'restore' bản cũ** — kiểm tra với user trước. Real case 2026-08-06: `useHandledRequestsColumns.tsx` bị IDE đổi sang design giống `useApprovalInboxColumns`, agent tưởng bị ghi đè hỏng và restore lại bản cũ → user out-of-band sửa "tôi đang muốn UI nó giống useApprovalInboxColumns". Tín hiệu phụ: test vừa 'restore' fail vì UI đã đổi = UI bị đổi CHỦ Ý, không phải file hỏng.
 - Output terminal có thể bị render artifact (vd `head -30`/`grep -c` hiện nội dung lẫn lộn, count 0 dù pattern có trong file) trong khi file thật vẫn nguyên — trước khi kết luận "file hỏng/corrupt", verify lại bằng `read_file` (có line number) hoặc `sed -n 'a,bp'`, và `grep -c` TỪNG pattern riêng.
 
+## Payroll money safety — percent precision → payload (2026-08-09, "đền tiền" lesson)
+
+- **Percent hiển thị bị cắt precision KHÔNG được làm nguồn tính tiền ngược**: UI derive percent từ amount rồi format 4dp (`62,79069767%` → `"62,7907"`) lưu vào `row.percent`; nếu payload gửi `rate = row.percent/100`, BE tính `P1 = round(gross × rate)` sẽ lệch tiền (VD gross 7.000.000 × 81,1714% = 5.681.998 thay vì 5.682.000). **Fix**: payload derive lại `rate = amount/gross` full precision (`getInsuranceSalaryItems` trong `salary-grade-template-utils.ts` — override rate của `LUONG_DONG_BHXH`; gửi kèm cả `amount` để BE dùng amount hay rate đều đúng). Test: `buildPayrollTemplateConfig` → `Math.round(7_000_000 × rate) === 5_682_000` + `rate` toBeCloseTo(amount/gross, 12).
+- Mọi số tiền engine `roundCurrency = Math.round` (đồng nguyên): thuế luỹ tiến từng bậc round riêng, OT round sau khi nhân, NPT floor. Sai số chấp nhận duy nhất: P2/P3 nhiều row % lẻ → Σ(row round) lệch ±1-2đ.
+- **Preview gross clamp**: `min(gross, P1 + allowance + P2 + P3)` — NV bậc thấp P1 cố định 5.400.000 + allowance 1.100.000 > gross 6.000.000 → quỹ P2/P3 âm → clamp; guard `agreedSalary > 0` (intern/collaborator). Áp cả 2 engine (`applyCalculatedAmounts` + `calculateSalaryGradePreview`).
+- i18n key cột phải đúng field BE: `actualWorkday` (thiếu "s") → label "Ngày công thực tế" lặp cột 2; đổi `actualWorkHours` + thêm key vi/en `payrollDetail.table`.
+- Audit đầy đủ + case số: `references/salary-calculation-precision-2026-08-09.md`.
+
+## Shell sidebar — Accordion & UX pitfalls (2026-08-09)
+
+- Repo có `@hilo/ui` Accordion (Radix + `animate-accordion-up/down`) — áp được vào sidebar expandable menu: `type="single" collapsible` + `value={expandedModuleId ?? ''}` / `onValueChange` (thay state thủ công + chevron rotate); NavLink/Popover có thể là children trực tiếp của `Accordion` Root (Radix không ép children là Item).
+- **Pitfall**: class mặc định `[&[data-state=open]>svg]:rotate-180` quay **MỌI svg con trực tiếp** của Trigger — gồm cả icon menu (bị lật ngược). Phải sửa thành `[&[data-state=open]>svg:last-child]:rotate-180` (chỉ chevron). Sửa `packages/ui` → **rebuild dist** (`vite build` + `tsc -p tsconfig.build.json`) vì shell consume dist.
+- Mobile Sheet: giảm khoảng trống giữa header và items bằng `min-h-12 py-2` cho header mobile (desktop giữ `min-h-16`); logo → `Link to={getFirstAllowedPath(user)}` (home theo roles, giống MobileBottomNav); click vùng trống sidebar → toggle collapse: `onClick` trên root div, skip khi `target.closest('a,button,[role="button"],input,[data-prevent-sidebar-toggle]')`.
+
 ## References
 
+- `references/salary-calculation-precision-2026-08-09.md` — audit đầy đủ: từng điểm round trong 2 engine salary, case số (NV-B1, NV-B6), payload rate fix, preview gross clamp, spec pattern.
 - `references/fe-ui-state-management.md` — web research (react.dev React Compiler, developerway 2025, zustand selector conditions) + rationale đầy đủ + worked example.
+- `references/payroll-calculation-rules.md` — payroll math đã HR/BA confirm (rates NLĐ/NSDLĐ, ví dụ chuẩn), percent precision drift fix (option A), data-vs-code bug khi net lệch + repro recipe, hướng multi-company payslip/title runtime.

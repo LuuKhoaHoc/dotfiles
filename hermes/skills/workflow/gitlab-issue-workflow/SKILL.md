@@ -43,7 +43,7 @@ curl -sS -H "PRIVATE-TOKEN: $TOKEN" -F "file=@<path>" "https://gitlab.vppos.vn/a
 
 Response JSON has a `markdown` field — embed that link in the issue's References.
 
-**Fallback khi `create_issue`/`create_merge_request` (tool_call MCP) fail `arguments is not valid JSON: Extra data`** — xảy ra với description dài/tiếng Việt/backtick, lặp lại cả khi đã lọc ký tự đặc biệt → đừng retry MCP, chuyển REST API qua script Python chạy bằng terminal (env có `GITLAB_TOKEN`; execute_code KHÔNG có user env):
+**Fallback khi `create_issue`/`create_merge_request` (tool_call MCP) fail `arguments is not valid JSON: Extra data`** — xảy ra với description dài/tiếng Việt/backtick, lặp lại cả khi đã lọc ký tự đặc biệt → đừng retry MCP, chuyển REST API qua script Python chạy bằng terminal. Token: trên Windows **KHÔNG có env `GITLAB_TOKEN`** — đọc `GITLAB_PAT` từ `~/AppData/Local/hermes/.env` (curl trực tiếp bằng `PRIVATE-TOKEN: $TOKEN`; 404 Project Not Found = token sai/empty, không phải project id sai); glab config `~/.config/glab-cli/config.yml` không tồn tại trên máy này.
 
 ```bash
 # write_file /tmp/create-issue.py (description đọc từ /tmp/issue-description.md), rồi:
