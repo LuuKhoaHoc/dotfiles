@@ -15,12 +15,21 @@ metadata:
 
 Use for milestone lifecycle: tạo/assign issue vào milestone, **cập nhật milestone theo issues `status::done` trước release**, tick release checklist, và quyết định thời điểm close.
 
-Milestone quen thuộc: `v1.0.0` (id=2) — release SemVer tuần 05→06/08/2026, due thứ 5. Policy chuẩn trong description: **issue `status::done` = UAT-ready nhưng vẫn OPEN, chỉ close sau khi prod deploy thành công** (post-production automation).
+Milestone series v1.0.x: v1.0.0 (id=2), v1.0.1 (id=3), v1.0.2 (id=4), v1.0.3 (id=5, tạo 10/08/2026). Policy chuẩn trong description: **issue `status::done` = UAT-ready nhưng vẫn OPEN, chỉ close sau khi prod deploy thành công** (post-production automation).
 
 ## Prerequisites
 
 - Activate milestone tools: `mcp__gitlab__discover_tools category=milestones` → `list_milestones`, `get_milestone`, `edit_milestone`, `get_milestone_merge_requests`.
 - Tools: `list_issues` (milestone filter), `list_merge_requests` (search), git clone dùng chung `~/Dev-Work/Hilo/erp-admin`.
+
+## Tạo milestone patch mới (release trước vừa ship xong)
+
+User yêu cầu "chuẩn bị milestone cho patch version mới" NGAY sau khi deploy xong (real case 10/08/2026: v1.0.2 ship → tạo v1.0.3 cùng ngày):
+
+1. `list_milestones(project_id=9, state=closed)` — xem description release trước (v1.0.1/v1.0.2: hotfix PATCH) làm template.
+2. `create_milestone` title `vX.Y.Z` + description = template: `## Scope` (liệt kê candidate issues — có thể ghi "chưa xác định" + candidate đầu tiên) + `## Lifecycle policy` (done = UAT-ready vẫn OPEN; milestone close sau prod deploy) + `## Release checklist` (toàn bộ `[ ]` unticked — chỉ tick cái verify được).
+3. due_date = ngày deploy dự kiến; user có thể chốt lại sau (vd v1.0.3: tạo due 13/08 → user bảo "due hôm nay" → `edit_milestone` đổi về 10/08). Hỏi nếu không rõ.
+4. Gắn issue vào milestone NGAY lúc tạo issue (`create_issue milestone_id`); gắn milestone cho cả MR sau khi tạo (`update_merge_request milestone_id`) — flow chuẩn từ `gitlab-issue-workflow`.
 
 ## Pre-release milestone update (theo issues đánh done)
 

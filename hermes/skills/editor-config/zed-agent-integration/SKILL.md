@@ -50,7 +50,7 @@ Two integration types in `settings.json`:
 
 ### Custom agents (full capabilities)
 - `hermes-agent` — Hermes Agent via `hermes acp`
-- `agy` — agy-acp (ACP stdio adapter for Google Antigravity CLI, https://github.com/hicder/agy-acp). Built binary at `~/AppData/Local/agy/bin/agy-acp.exe` (same dir as agy.exe, already in PATH). Zed config:
+- `agy` — agy-acp (ACP stdio adapter for Google Antigravity CLI, https://github.com/hicder/agy-acp). Đã gỡ cài đặt 2026-08-10 (Zed không dùng, user dùng agy qua terminal). Cài lại: clone repo + `cargo build --release` (máy Win này: toolchain `stable-x86_64-pc-windows-gnu` + RUSTFLAGS linker=rust-lld + PATH WinLibs mingw64/bin cho dlltool — xem memory) → copy binary vào `~/AppData/Local/agy/bin/`, thêm vào Zed settings:
   ```json
   "agy": { "type": "custom", "command": "agy-acp", "args": [], "env": {} }
   ```

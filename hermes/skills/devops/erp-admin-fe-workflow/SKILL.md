@@ -75,8 +75,26 @@ Pitfalls:
 - **Pitfall**: class mặc định `[&[data-state=open]>svg]:rotate-180` quay **MỌI svg con trực tiếp** của Trigger — gồm cả icon menu (bị lật ngược). Phải sửa thành `[&[data-state=open]>svg:last-child]:rotate-180` (chỉ chevron). Sửa `packages/ui` → **rebuild dist** (`vite build` + `tsc -p tsconfig.build.json`) vì shell consume dist.
 - Mobile Sheet: giảm khoảng trống giữa header và items bằng `min-h-12 py-2` cho header mobile (desktop giữ `min-h-16`); logo → `Link to={getFirstAllowedPath(user)}` (home theo roles, giống MobileBottomNav); click vùng trống sidebar → toggle collapse: `onClick` trên root div, skip khi `target.closest('a,button,[role="button"],input,[data-prevent-sidebar-toggle]')`.
 
+## Placeholder-class audit sweep (placeholder màu đậm dễ nhầm value, 2026-08-10)
+
+Sweep input/textarea/select có class placeholder "màu đậm" (`placeholder:text-text-caption(!)`, `-subtitle`, `-muted`, `-body`, `placeholder:text-subtitle`) — placeholder tối màu gần bằng text value → user tưởng đã nhập. Full recipe: `references/placeholder-class-audit.md`.
+
+- Grep qua terminal (MSYS), không search_files: `grep -rnE "placeholder:text-(text-caption!?|text-subtitle|subtitle|text-muted|text-body)" apps/hr apps/employee apps/shell --include="*.tsx" --include="*.ts" | grep -vE "/dist/|__mf__temp"` — nhớ biến thể `!` (`!?`), `data-placeholder:text-*` (shadcn Select trigger) grep RIÊNG.
+- **Resolve i18n literal bằng recursive JSON walk** (tail-segment match), KHÔNG tra dotted path — keys nằm rải ở `packages/locales/src/translations/vi/{hr,employee,shell,common}.json`, prefix `features.` không nhất quán, lookup theo path trả `{}` âm thầm. Script trong references.
+- Ưu tiên: **P1** = field trong dialog form (nhất là textarea ghi chú / password), placeholder là câu hướng dẫn dài; **P2** = search input, display read-only.
+- `placeholder:` pseudo-class **inert trên div** — div display-only có class `placeholder:text-*` là class chết, xóa được; box như vậy không phải input thật.
+- Class dùng chung qua hằng (`DIALOG_TEXTAREA_CLASS` apps/hr/.../organizations/constants/styles.ts, `textAreaClassName` CreateAttendanceAdjustmentRequestDialog) — sửa 1 chỗ sạch nhiều dialog.
+- `BulkAttendanceCreateDialog.tsx` (kèm tabs/ của nó) đã sửa xong 2026-08-10 — sweep sau BỎ QUA file này.
+
+## Notification eventType → i18n (2026-08-10)
+
+BE notify service gửi eventType raw dotted (`hr.request.approval.approved`...) — FE map **trực tiếp** sang `notification.message.*` / `notification.eventType.*` trong `common.json` (namespace common, vi+en), KHÔNG normalize `.`→`_` (user preference — lớp map cũ đã bỏ). Toast/Bell qua `resolveNotificationText` fallback chain (`message → eventType → errorCodes → raw`). Khi user báo toast hiện raw key → thiếu key i18n hoặc thiếu `EVENT_ROUTES` entry (`packages/shared/src/websocket/event-routing.ts`). Danh sách eventType BE đầy đủ (7/7) + quy tắc thêm mới: `references/notification-eventtype-i18n.md`.
+
 ## References
 
+- `references/notification-eventtype-i18n.md` — notification eventType mapping (raw dotted keys, fallback chain, danh sách eventType BE 7/7, quy tắc thêm eventType mới).
+- `references/placeholder-color-conventions.md` — token placeholder chuẩn + pattern quét (bổ sung cho `placeholder-class-audit.md`; có chồng lấp — curator gộp nếu cần).
+- `references/placeholder-class-audit.md` — recipe đầy đủ + kết quả sweep 2026-08-10 (24 chỗ, 15 P1 / 9 P2, theo file:line).
 - `references/salary-calculation-precision-2026-08-09.md` — audit đầy đủ: từng điểm round trong 2 engine salary, case số (NV-B1, NV-B6), payload rate fix, preview gross clamp, spec pattern.
 - `references/fe-ui-state-management.md` — web research (react.dev React Compiler, developerway 2025, zustand selector conditions) + rationale đầy đủ + worked example.
 - `references/payroll-calculation-rules.md` — payroll math đã HR/BA confirm (rates NLĐ/NSDLĐ, ví dụ chuẩn), percent precision drift fix (option A), data-vs-code bug khi net lệch + repro recipe, hướng multi-company payslip/title runtime.

@@ -42,7 +42,7 @@ glab api "projects/vppos-team%2Ferp-admin/jobs/<job_id>/trace"
 
 - **Changes rules**: child triggers chỉ chạy cho MFE bị đụng (`apps/hr/**/*` → chỉ `trigger:hr`). Deploy 1 fix HR = 1 child pipeline duy nhất — tiết kiệm runner.
 - **Main (prod)**: merge vào main → triggers tự chạy (không gate); child pipeline có job `deploy:app` **manual** → play sau khi build xong.
-- Verify UAT sau deploy: `curl -s -o /dev/null -w "%{http_code}" https://hr-uat-erp.vppos.vn/` — 502 trong vài phút đầu là rollout bình thường, không phải lỗi (pod đang restart).
+- Verify UAT sau deploy: UAT host thật = `https://erp.hilo.com.vn/apps/<mfe>/` (vd `/apps/hr/`, `/apps/employee/`) — ingress host trong `helm/frontend/values-*.yaml`. `hr-uat-erp.vppos.vn` KHÔNG phải domain UAT (sai — 502/000). 502 trong vài phút đầu là rollout bình thường, không phải lỗi (pod đang restart).
 
 ## Pitfall: pipeline fail vì branch bị xóa (VÔ HẠI)
 
@@ -59,6 +59,7 @@ fatal: couldn't find remote ref refs/heads/<branch>
 - `glab mr view <iid> --output json` đôi khi trả state CŨ (cache) ngay sau merge — poll lại sau vài giây hoặc verify qua `git ls-remote`/pipeline SHA.
 - `glab api user --jq .username` KHÔNG chạy trên Windows/MSYS glab — dùng `glab api user` (raw JSON) hoặc hardcode username đã biết (`luukhoahoc`).
 - Merge MR chờ pipeline: `glab mr merge <iid> --when-pipeline-succeeds` — chạy background + `notify_on_complete` (block lâu).
+- **MWPS merges IMMEDIATELY nếu pipeline ĐÃ green** (real case 2026-08-10: `PUT /merge?merge_when_pipeline_succeeds=true` trên MR !576 merged tức thì vì pipeline 14537 đã success — user vừa gửi "khoan merge"). Luôn check pipeline MR trước khi đặt MWPS (`/pipelines` của MR); nếu status đã `success` thì merge là tức thì, KHÔNG có window hủy. Muốn giữ MR mở: đừng đặt MWPS khi pipeline đã xong.
 - Python trên Windows không đọc path MSYS `/tmp/...` — dùng file trong repo (xóa sau) hoặc `$(cygpath -w ...)`.
 
 ## Milestone & issue lifecycle (kèm deploy)
