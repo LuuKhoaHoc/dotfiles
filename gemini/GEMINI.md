@@ -21,8 +21,6 @@
 - Khi người dùng nêu fact/quyết định/ưu tiên bền vững: gọi `add_memory` để lưu.
 <!-- GLOBAL-CONTEXT-END -->
 
-
-
 **Usage**: Token-optimized CLI proxy (60-90% savings on dev operations)
 
 ## Meta Commands (always use rtk directly)

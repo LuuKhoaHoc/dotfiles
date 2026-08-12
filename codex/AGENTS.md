@@ -19,8 +19,6 @@
 - Khi người dùng nêu fact/quyết định/ưu tiên bền vững: gọi `add_memory` để lưu.
 <!-- GLOBAL-CONTEXT-END -->
 
-
-
 @/home/luukhoahoc/.codex/RTK.md
 
 <!-- CODEGRAPH_START -->

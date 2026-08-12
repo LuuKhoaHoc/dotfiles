@@ -21,8 +21,6 @@
 - Khi người dùng nêu fact/quyết định/ưu tiên bền vững: gọi `add_memory` để lưu.
 <!-- GLOBAL-CONTEXT-END -->
 
-
-
 **0. Thứ tự ưu tiên**
 
 Khi các quy tắc xung đột nhau, áp dụng theo thứ tự: Phần IV (Hard Guardrails) > Phần III (RTK) > Phần II (Coding Philosophy) > Phần I (Communication). An toàn và rõ ràng luôn thắng sự ngắn gọn.
