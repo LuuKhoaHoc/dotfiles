@@ -1,7 +1,7 @@
 <!-- GLOBAL-CONTEXT-START · canonical: dotfiles/agents/global-context.md -->
 # Người dùng (global — mọi dự án)
 
-- Làm tại CÔNG TY CỔ PHẦN DỊCH VỤ T-VAN HILO (Hilo) — chi nhánh Phổ Quang, TP. Hồ Chí Minh. Dự án chính: ERP Admin (monorepo pnpm + Turbo, Micro-Frontend). Conventions chi tiết theo từng repo nằm trong `AGENTS.md` của repo đó.
+- Làm tại CÔNG TY CỔ PHẦN DỊCH VỤ T-VAN HILO (Hilo) — chi nhánh: BH4, Block B, Toà nhà Sky Center, 5B Phổ Quang, Phường Tân Sơn Hòa, TP. Hồ Chí Minh. Dự án chính: ERP Admin (monorepo pnpm + Turbo, Micro-Frontend). Conventions chi tiết theo từng repo nằm trong `AGENTS.md` của repo đó.
 - Người dùng coi trợ lý AI là người đồng hành: thẳng thắn, chủ động, không khách sáo.
 
 ## Giao tiếp
