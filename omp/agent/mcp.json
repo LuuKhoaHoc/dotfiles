@@ -1,23 +1,77 @@
 {
   "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
   "mcpServers": {
-    "mcp-server-gitlab": {
+    "mcp-server-sonarqube": {
       "command": "npx",
-      "args": ["-y", "zereight-mcp-gitlab", "--token=glpat-<redacted>", "--api-url=https://gitlab.vppos.vn/api/v4"]
+      "args": [
+        "-y",
+        "sonarqube-mcp-server"
+      ],
+      "env": {
+        "SONARQUBE_TOKEN": "squ_1d6c88e44c41c4428699869a8e0edfdea8abe735",
+        "SONARQUBE_URL": "https://sonar.vppos.vn",
+        "SONARQUBE_ORGANIZATION_KEY": "SONARQUBE_ORGANIZATION_KEY"
+      }
+    },
+    "mcp-server-gitlab": {
+      "command": "/home/luukhoahoc/.local/share/mise/installs/node/latest/bin/zereight-mcp-gitlab",
+      "args": [
+        "--token=glpat-<redacted>",
+        "--api-url=https://gitlab.vppos.vn/api/v4"
+      ]
     },
     "mcp-server-context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
       "env": {
         "CONTEXT7_API_KEY": "ctx7sk-<redacted>"
       }
     },
-    "agentmemory": {
+    "mcp-server-notion": {
       "command": "npx",
-      "args": ["-y", "@agentmemory/mcp"],
+      "args": [
+        "-y",
+        "@notionhq/notion-mcp-server"
+      ],
       "env": {
-        "AGENTMEMORY_URL": "http://localhost:3111"
+        "NOTION_TOKEN": "ntn_<redacted>"
+      }
+    },
+    "mcp-server-figma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "figma-developer-mcp"
+      ],
+      "env": {
+        "FIGMA_API_KEY": "figd_<redacted>"
+      }
+    },
+    "chrome-devtools-mcp-zed": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp"
+      ]
+    },
+    "codegraph": {
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp"
+      ]
+    },
+    "supermemory": {
+      "command": "/home/luukhoahoc/.local/bin/supermemory-mcp",
+      "env": {
+        "SUPERMEMORY_API_KEY": "sm_<redacted>"
       }
     }
-  }
+  },
+  "disabledServers": [
+    "mcp-server-markitdown"
+  ]
 }

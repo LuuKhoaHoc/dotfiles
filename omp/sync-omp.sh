@@ -3,7 +3,7 @@
 # Usage: sync-omp.sh [push|pull]
 #
 # KHÔNG sync: memories/ (mnemopi DB), sessions/, *.db, kimi-device-id — runtime data.
-# Secrets trong models.yml (apiKey) + mcp.json (glpat-/ctx7sk-) được strip → <redacted>
+# Secrets trong models.yml (apiKey) + mcp.json (glpat-/ctx7sk-/sm_) được strip → <redacted>
 # khi push; khi pull user tự dán secret thật qua kênh bảo mật.
 
 set -euo pipefail
@@ -40,8 +40,8 @@ sync_copy() {
 strip_secrets() {
   # models.yml: apiKey thật → <redacted> (không anchor ^ — YAML có indent)
   sed -E 's/(apiKey:[[:space:]]*).+/\1<redacted>/' "$1" > "$1.tmp" && mv "$1.tmp" "$1"
-  # mcp.json: glpat-* / ctx7sk-* / sk-* tokens → <redacted>
-  sed -E 's/(glpat|ctx7sk|sk)-[A-Za-z0-9_.-]+/\1-<redacted>/g' "$1" > "$1.tmp" && mv "$1.tmp" "$1"
+  # mcp.json: glpat-* / ctx7sk-* / sk-* / sm_* / figd_* / ntn_* tokens → <redacted>
+  sed -E 's/(glpat|ctx7sk|sk)-[A-Za-z0-9_.-]+/\1-<redacted>/g; s/(sm|figd|ntn)_[A-Za-z0-9_.-]+/\1_<redacted>/g' "$1" > "$1.tmp" && mv "$1.tmp" "$1"
 }
 
 push() {

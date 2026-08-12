@@ -12,6 +12,6 @@ setupVersion: 1
 defaultThinkingLevel: auto
 hideThinkingBlock: false
 memory: 
-  backend: mnemopi
+  backend: "off"
 autolearn: 
-  enabled: true
+  enabled: false
