@@ -40,7 +40,9 @@ txt = open(path).read()
 start_marker, end_marker = "<!-- GLOBAL-CONTEXT-START", "<!-- GLOBAL-CONTEXT-END -->"
 i, j = txt.find(start_marker), txt.find(end_marker)
 if i != -1 and j != -1:
-    j = txt.find("\n", j) + 1  # giữ newline sau END marker
+    j = txt.find("\n", j)
+    while j < len(txt) and txt[j] == "\n":  # skip ALL newlines after END -> idempotent
+        j += 1
     txt = txt[:i] + block + "\n\n" + txt[j:]
 else:
     txt = block + "\n\n" + txt
