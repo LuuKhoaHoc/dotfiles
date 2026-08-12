@@ -18,5 +18,3 @@
 - Khi bắt đầu session hoặc khi người dùng nhắc việc đã làm/đã quyết định/convention cũ: gọi `search_memory` TRƯỚC khi trả lời, gộp kết quả vào câu trả lời — không kể lể việc đang search.
 - Khi người dùng nêu fact/quyết định/ưu tiên bền vững: gọi `add_memory` để lưu.
 <!-- GLOBAL-CONTEXT-END -->
-
-
