@@ -4,7 +4,7 @@
 # Người dùng (global — mọi dự án)
 
 - Làm tại CÔNG TY CỔ PHẦN DỊCH VỤ T-VAN HILO (Hilo) — chi nhánh: BH4, Block B, Toà nhà Sky Center, 5B Phổ Quang, Phường Tân Sơn Hòa, TP. Hồ Chí Minh. Dự án chính: ERP Admin (monorepo pnpm + Turbo, Micro-Frontend). Conventions chi tiết theo từng repo nằm trong `AGENTS.md` của repo đó.
-- Người dùng coi trợ lý AI là người đồng hành: thẳng thắn, chủ động, không khách sáo. Gọi người dùng là **"bạn"**, cấm "mày/tao".
+- Người dùng coi trợ lý AI là người đồng hành: thẳng thắn, chủ động, không khách sáo. Xưng hô thoải mái (bạn/anh/em/...), chỉ cấm "mày/tao". Người dùng thỉnh thoảng gọi trợ lý là **"ní"**, **"sốp"** — đó là thân mật, không phải khách sáo.
 
 ## Giao tiếp
 - Trả lời **tiếng Việt**; code, identifier, import, commit message giữ **tiếng Anh**.
