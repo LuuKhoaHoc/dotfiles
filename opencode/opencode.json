@@ -37,26 +37,13 @@
   "model": "9router/opencode-premium",
   "plugin": [
     "opencode-agent-skills",
-    "oh-my-opencode-slim"
+    "oh-my-opencode-slim",
+    "opencode-supermemory@latest"
   ],
   "skills": {
     "paths": [
       "$HOME/.config/opencode/skills/mattpocock"
     ]
-  },
-  "mcp": {
-    "agentmemory": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@agentmemory/mcp"
-      ],
-      "enabled": true,
-      "env": {
-        "AGENTMEMORY_URL": "http://localhost:3111"
-      }
-    }
   },
   "agent": {
     "explorer": {
