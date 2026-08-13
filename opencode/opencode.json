@@ -4,7 +4,7 @@
     "9router": {
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "http://127.0.0.1:20128/v1"
+        "baseURL": "https://router.luukhoahoc.me/v1"
       },
       "models": {
         "opencode-premium": {
