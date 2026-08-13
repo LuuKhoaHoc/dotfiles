@@ -1,29 +1,31 @@
-BE/PO feature request: tạo issue MỚI, chỉ tách khi ready-for-human/BE-decision (rule gộp đầy đủ: user profile).
+BE/PO feature request → tạo issue MỚI; chỉ tách khi ready-for-human/BE-decision. BE/API mới: curl trước, ghi status vào issue.
 §
-cuongt(id=10)=Finance + HR employee-scoped specs; QuyCN(id=31)=Product + HR attendance-sheet-scoped specs.
+cuongt(10)=Finance+HR employee-scoped+request-management; QuyCN(31)=Product+HR attendance+shell/apps-dashboard; luukhoahoc shared/arch; PO quyết khi phân bug.
 §
-ERP repo: ~/Dev-Work/Hilo/erp-admin (clone dùng chung) — fetch origin all branches TRƯỚC khi tin status -sb (ref stale); sau pull lớn rebuild dist @hilo/shared+ui trước typecheck; branch-read git show origin/<b>:<path>; worktrees ~/Dev-Work/Hilo/worktrees/; có .codegraph/ (init 08/2026) — codegraph_explore MCP projectPath=repo root trước grep.
+ERP API: ApiResponse<T> — T=item|item[] (.data), pagination meta.pagination; cấm wrapper/normalize.
 §
-BE/API mới: gọi curl trước, ghi status/trace vào issue, không lưu token.
+verify MR: pnpm --filter <pkg> exec vitest (exec --filter sai); worktree: install+build-infra riêng từng cái (thiếu→TS2307 @hilo/*); glab issue create: -R <repo> (--project unknown flag), --milestone nhận title.
 §
-ERP API: ApiResponse<T> — T=item|item[] (array ở .data), pagination ở meta.pagination; cấm wrapper/normalize (docs/solutions 2026-08-05).
+Employee MFE labels: employee,feature,frontend,priority::medium,ready-for-agent (MFE::hr→hr-dashboard).
 §
-search_files(target='files') dùng GLOB — '|' trả 0 match; đôi khi IO error os error 3 trên apps/*/src → fallback grep -r terminal; MCP list_issues đôi khi trả toàn bộ → filter local.
+antigravity chạy song song — file user sửa giữa chừng; diff lạ hỏi user.
 §
-omp=oh-my-pi: ~/.bun/bin/omp, ~/.omp/agent (secret trong models.yml/mcp.json → sync qua dotfiles/omp/sync-omp.sh strip <redacted>); Win 9router :20128.
+dotfiles: ~/Dev-Work/dotfiles PUBLIC — cấm secret; sync sync-*.sh.
 §
-MCP: gitlab=node.exe; GitLab PAT + GWS secret trong .env.
+User kiểm soát merge/commit ('khoan merge'/'khoan commit'=dừng); cấm merge_when_pipeline_succeeds khi pipeline success.
 §
-Hermes: 8 Google Workspace MCP (oauth; re-auth ~/gws_mcp_oauth.py; hermes mcp login KHÔNG chạy).
+Curator patch được khi frontmatter author=hermes-curator (vd erp-admin-ui-mr-review, agent-memory); còn lại user-owned → từ chối, cần 'hermes curator adopt'.
 §
-Employee MFE issue labels: employee,feature,frontend,priority::medium,ready-for-agent (MFE::hr chỉ hr-dashboard).
+Hermes gateway: TG @picoclaw_leo_bot (1082824633); force_ipv4=true (VN IPv6 hỏng).
 §
-pnpm/corepack hỏng → node file JS thật (.bin shim là bash: eslint=eslint/bin/eslint.js, prettier=prettier/bin/prettier.cjs);
+supermemory: store→Notes, entry auto hay hỏng→verify, lưu EN LLM-proof.
 §
-antigravity IDE chạy song song trên erp-admin — file có thể bị user sửa CHỦ Ý giữa chừng; diff lạ đừng restore vội, đọc kỹ + hỏi user.
+AGENTS.md: canonical = dotfiles/agents/global-context.md; ~/.local/bin/agents-sync push|pull (6 harness: opencode, omp, zed, gemini, codex, claude). Skills mirror hermes = copy tay, KHÔNG symlink (agents-sync không sync skills).
 §
-dotfiles repo: ~/Dev-Work/dotfiles (github LuuKhoaHoc/dotfiles, PUBLIC — cấm secret; config per-OS). Sync: hermes/opencode/omp sync-*.sh; migrate: hermes/migrate-to-linux.sh → ~/hermes-migration.
+MR re-review: fetch refs/merge-requests/<iid>/head so head_sha; head không đổi → user muốn MR khác cùng tác giả (list by author_username).
 §
-User kiểm soát merge/commit ('khoan merge'/'khoan commit' = dừng hẳn). Cấm set merge_when_pipeline_succeeds khi pipeline đã success (merge ngay).
+CRM authz (BE chốt 08/2026): /crm/* cần context chọn (403 CRM-403-004); GET /auth/crm/contexts+select-context kể cả 1 context; CRM_SYSTEM_ADMIN clone/assign system/template (docs cũ ghi ngược).
 §
-erp-admin FE: i18n eventType dùng RAW dotted keys (không normalize); placeholder chuẩn = placeholder:text-muted-foreground (placeholder:text-text-* đậm gây nhầm value).
+User định build ERP cá nhân từ kinh nghiệm (không copy code công ty), NDA → tách dữ liệu công ty/cá nhân.
+§
+Azure VM 9router-vm (khoahoc, key ~/Downloads/9router-key.pem, IP DYNAMIC chưa pin): 9router:20128+agentmemory:3111+cloudflared systemd; router/mem.luukhoahoc.me; configs local trỏ cloud; ~/.9router DB clone nguồn provider.

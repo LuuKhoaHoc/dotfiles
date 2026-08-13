@@ -110,6 +110,12 @@ fi
 
 **PITFALL — GitHub secret scanning rejects pushes containing real tokens** (e.g. `ntn_`, `figd_`, `glpat-`, `ctx7sk-` values in skill references or `config.yaml` MCP servers). Before pushing: `grep -rnE 'glpat-|ntn_|figd_|ctx7sk-|squ_|ghp_' hermes/` and redact real values to `<redacted>`. If a push is rejected, the offending commit stays in local history — squash it: `git reset --soft <good-commit> && git add -A && git commit -m ...` then push.
 
+**PITFALL — path-probe OS detection gives false positives on Linux.** `sync-hermes.sh` used to detect Windows by `[ -d "$HOME/AppData/Local/hermes" ]`. On Linux, a leftover `~/AppData/Local/hermes` (from a previous migration/import) makes the script detect `windows`, silently overwrite `config.yaml` with `config.windows.yaml`, and print `Copying → (windows)` on a Linux box. Detect OS with `uname -s` (`MINGW*|MSYS*|CYGWIN*` → windows, else linux) — never probe paths. Also: `"${LOCALAPPDATA//\\\\/\\/}"` (backslash-subst) crashes with `unbound variable` under `set -u` when `LOCALAPPDATA` is unset on Linux — use `"${LOCALAPPDATA:-}"` and guard the loop.
+
+**PITFALL — `git pull` inside the script fails after editing the script itself.** `sync-hermes.sh pull` runs `git pull` while the repo has unstaged changes (e.g. you just fixed the script). Commit the fix first (`git add hermes/ && git commit && git push`), then re-run pull.
+
+**PITFALL — sync pull wipes local-only skills.** `sync_copy` does `rm -rf "$dst"` before copying, so `pull` deletes any skill that exists in `~/.hermes/skills` but not in the repo (locally-created skills). Before pulling: `comm -23 <(find ~/.hermes/skills -name SKILL.md | sed 's|.*/skills/||; s|/SKILL.md||' | sort) <(find $DOTFILES/hermes/skills -name SKILL.md | sed 's|.*/skills/||; s|/SKILL.md||' | sort)` → back those up to /tmp → pull → restore. Same applies to memories/.
+
 **PITFALL — sync scripts skip brand-new folders.** Scripts check `git diff --quiet && git diff --cached --quiet` BEFORE `git add`, so a newly added sync folder (e.g. `omp/agent/`) shows "Không có thay đổi" and never commits. Fix: `git add <folder>/` BEFORE the diff check.
 
 **PITFALL — native Windows python3 can't read MSYS paths.** `python3` inside sync scripts fails with FileNotFoundError on `/c/Users/...` paths. Run the script with a Windows-style HOME instead: `HOME="C:/Users/<user>" bash opencode/sync-opencode.sh push`.

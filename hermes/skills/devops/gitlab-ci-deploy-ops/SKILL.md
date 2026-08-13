@@ -18,6 +18,8 @@ Vận hành pipeline GitLab để deploy UAT/prod cho `vppos-team/erp-admin` (pr
 ## Cấu trúc pipeline
 
 - **Parent pipeline** (branch develop/main): scan jobs (sonarqube:scan `allow_failure: true`, trivy:iac) → gate manual (`deploy:uat` trên develop) → trigger jobs.
+- **main (PROD, từ v1.0.3)**: triggers TỰ chạy (không manual); child pipeline build + `deploy:app` manual blocking (`allow_failure: false`) → sau khi deploy xong, `issue:lifecycle:prod` (stage post-deploy) tự chạy — close issues milestone (milestone suy từ `package.json` version trên main). **KHÔNG còn pipeline build/deploy trên `release/v*`** — release branch chỉ là vehicle merge; main là nơi deploy prod duy nhất.
+- **develop (UAT)**: triggers manual (chạy sau gate `deploy:uat`), child auto-deploy.
 - **Trigger jobs KHÔNG nằm trong `/pipelines/:id/jobs`** — chúng là *bridges*. Phải đọc qua `/pipelines/:id/bridges`; mỗi bridge có `downstream_pipeline.id` (child pipeline). `pipelines?ref=<branch>` để tìm pipeline mới nhất.
 
 ## Thao tác chuẩn (glab API)
@@ -44,15 +46,11 @@ glab api "projects/vppos-team%2Ferp-admin/jobs/<job_id>/trace"
 - **Main (prod)**: merge vào main → triggers tự chạy (không gate); child pipeline có job `deploy:app` **manual** → play sau khi build xong.
 - Verify UAT sau deploy: UAT host thật = `https://erp.hilo.com.vn/apps/<mfe>/` (vd `/apps/hr/`, `/apps/employee/`) — ingress host trong `helm/frontend/values-*.yaml`. `hr-uat-erp.vppos.vn` KHÔNG phải domain UAT (sai — 502/000). 502 trong vài phút đầu là rollout bình thường, không phải lỗi (pod đang restart).
 
-## Pitfall: pipeline fail vì branch bị xóa (VÔ HẠI)
+## Pitfall: pipeline fail vì branch bị xóa (HẾT HIỆU LỰC từ v1.0.3)
 
-MR merge mặc định **xóa source branch** (GitLab delete_source_branch). Pipeline CŨ của branch đó (trigger lúc push, chạy SAU merge) fail ở job đầu với:
+Trước v1.0.3: MR merge xóa source branch → pipeline CŨ của branch đó (trigger lúc push) fail ở job đầu với `fatal: couldn't find remote ref refs/heads/<branch>` → KHÔNG phải lỗi code, KHÔNG tạo lại branch. Case thật: pipeline 14321 release/v1.0.1 fail sau MR !568 merged.
 
-```
-fatal: couldn't find remote ref refs/heads/<branch>
-```
-
-→ KHÔNG phải lỗi code, KHÔNG tạo lại branch. Pipeline branch đã hoàn thành sứ mệnh (MR merged); pipeline main (deploy thật) không dính. Verify: `git ls-remote origin <branch>` rỗng + MR state merged. Trường hợp thật: pipeline 14321 của `release/v1.0.1` fail 2 child (product/sale) sau khi MR !568 merged.
+**Từ v1.0.3**: `issue:lifecycle:prod` chuyển sang pipeline `main` (rule `$CI_COMMIT_BRANCH == "main"`), triggers/deploy trên `release/v*` đã bỏ hẳn → pipeline release branch không còn job nào, hiện tượng fail-vì-branch-xóa không còn ảnh hưởng post-deploy. Nếu thấy pipeline cũ của branch đã xóa fail → cancel cho sạch, không cần xử lý.
 
 ## Pitfall: glab output JSON
 
@@ -66,5 +64,6 @@ fatal: couldn't find remote ref refs/heads/<branch>
 
 - Tạo milestone `vX.Y.Z` (due = deadline trả lương/phát hành) + description chứa scope (issue refs) + release checklist NGAY khi bắt đầu release; gắn issue vào milestone lúc tạo.
 - **Bug mới khi milestone CHƯA release** → gộp vào cùng version (vd v1.0.2), KHÔNG bump thêm. Chỉ bump khi version trước đã có tag + Release record.
-- Issue OPEN khi merge develop (label `status::done` qua job `issue:lifecycle:merge`) → **close SAU prod deploy**; milestone close sau cùng (mọi checklist hoàn tất) — close sớm gây hiểu nhầm "đã release".
+- Issue OPEN khi merge develop (label `status::done` qua job `issue:lifecycle:merge` trên develop) → **close SAU prod deploy**: `issue:lifecycle:prod` chạy trên pipeline MAIN (stage post-deploy, sau khi deploy manual blocking xong), milestone suy từ `package.json` version (không phải branch name). Chỉ close issue `status::done`; milestone close sau cùng (mọi checklist hoàn tất) — close sớm gây hiểu nhầm "đã release".
+- **Chú ý**: post-deploy trên main KHÔNG chạy nếu triggers chưa play hết (stage chờ) → deploy từng app qua bridges rồi tự close. Muốn close sớm/thủ công: run pipeline main + play triggers, hoặc chạy script tay.
 - Closeout release record: GET `/releases/<tag>` → tick checklist bằng python replace (idempotent, giữ CRLF) → PUT với description mới.

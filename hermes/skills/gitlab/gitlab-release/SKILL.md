@@ -24,6 +24,11 @@ git push origin refs/tags/release/YYYY-MM-DD
 ```
 GitLab `create_release(tag_name=...)` không bị ảnh hưởng — API nhận tag name (chuỗi trùng tên branch vẫn OK).
 
+**PROD deploy = pipeline MAIN (từ v1.0.3, case 2026-08-10):** release branch KHÔNG còn build/deploy (bỏ rule `release/v*` ở triggers + `.deploy_job`). Lý do: merge MR xóa source branch → pipeline release/v* chết giữa chừng (`fatal: couldn't find remote ref`) → `issue:lifecycle:prod` (post-deploy) không bao giờ chạy. Thiết kế mới:
+- Merge `release/vX.Y.Z` → `main` → pipeline main: scan → triggers TỰ chạy (child build + `deploy:app` manual blocking `allow_failure: false`) → play deploy từng app → `issue:lifecycle:prod` (stage post-deploy, rule `$CI_COMMIT_BRANCH == "main"`) tự chạy → close issues milestone.
+- Milestone suy từ `package.json` version trên main (`1.0.3` → `v1.0.3`), script `gitlab-update-milestone-issues.py` đã có fallback — KHÔNG cần set biến.
+- Đừng quên push BOTH branch và tag khi retag: `git push origin refs/heads/release/vX.Y.Z` + `refs/tags/vX.Y.Z` (case 2026-08-10: chỉ push tag, branch lỡ thiếu commit disable CRM → MR head cũ).
+
 ## Authoritative flow (user-corrected)
 
 **Do NOT** open MR `develop → main` as the release vehicle.
@@ -232,6 +237,8 @@ App code rarely conflicts if main was only behind develop.
 ### 8. Post-deploy closeout (after production is deployed from `main`)
 
 When the user confirms production deploy, finish release checklist instead of stopping at “deployed”:
+
+0. **`issue:lifecycle:prod` tự chạy trên pipeline main** (từ v1.0.3): sau khi play deploy xong hết, job ở stage post-deploy tự chạy → close issues `status::done` của milestone (suy từ package.json version). Verify trong pipeline main (`/pipelines/:id/jobs` — tìm `issue:lifecycle:prod` status success + log liệt kê issue đã close). Nếu không thấy job (triggers chưa play hết / pipeline cũ) → run pipeline mới trên main hoặc chạy script tay.
 
 1. **Verify merged MR and production commit from GitLab**
    - `get_merge_request(project_id=9, merge_request_iid=<release-MR>)`

@@ -82,8 +82,22 @@ opencode mcp list
 | `mcp-server-context7` | `@upstash/context7-mcp` | `CONTEXT7_API_KEY` |
 | `chrome-devtools-mcp` | `chrome-devtools-mcp` | (none required, or `CHROME_*`) |
 | `agentmemory` | `@agentmemory/mcp` | `AGENTMEMORY_URL`, `AGENTMEMORY_SECRET` |
+| `supermemory` | remote `https://mcp.supermemory.ai/mcp` (OAuth-only, NO API key header works) | `SUPERMEMORY_API_KEY` (REST) |
 | `mcp-server-markitdown` | `markitdown-mcp-npx` | (varies) |
 | `mcp-server-sequential-thinking` | `@modelcontextprotocol/server-sequential-thinking` | (none) |
+
+## Supermemory across agents (no-OAuth recipe)
+
+Hosted MCP endpoint `https://mcp.supermemory.ai/mcp` is **OAuth-only** — Bearer/x-api-key/x-supermemory-api-key headers are all rejected ("Invalid or expired token"/"Unauthorized"). The API key (`sm_*`) only works against the REST API (`https://api.supermemory.ai`). Verified endpoints (2026-08): `POST /v4/memories` body `{memories:[{content}], containerTag}` → `{documentId, memories:[{id,...}]}`; `POST /v4/memories/list` body `{containerTags, limit, order, sort, includeContent}` → `{memoryEntries:[{id,memory,createdAt}]}`; `DELETE /v4/memories` body `{id, containerTag}` → `{forgotten:true}` (query-param id alone FAILS with "containerTag required"). SDK `supermemory@4.25.4` caveat: `search.memories({q, containerTag, threshold, limit, searchMode:"hybrid"})` and `profile({containerTag})` EXIST and work; `memories.add`/`memories.list` do NOT exist in 4.25.4 (docs on main are for a newer version) — use the REST endpoints above instead.
+
+For stdio-only clients (omp, agy/antigravity/gemini CLI, codex) use a local bridge:
+- `~/.local/share/supermemory-mcp/` (package.json deps: `@modelcontextprotocol/sdk` + `supermemory`), bin symlink `~/.local/bin/supermemory-mcp` (ESM, shebang node)
+- Tools: `search_memory`, `add_memory`, `listMemories`, `whoAmI`; default `containerTag` from `SUPERMEMORY_CONTAINER_TAG || "hermes"` (match Hermes provider container)
+- Client entries (literal key in env — no `${VAR}` interpolation in omp/opencode):
+  - omp `~/.omp/agent/mcp.json`: `{"command": "/home/<user>/.local/bin/supermemory-mcp", "env": {"SUPERMEMORY_API_KEY": "sm_..."}}`
+  - gemini/agy `~/.gemini/config/mcp_config.json` + `~/.gemini/antigravity-ide/mcp_config.json`: add `"type": "stdio"` + command + env
+  - codex `~/.codex/config.toml`: `[mcp_servers.supermemory] command = "..." env = { SUPERMEMORY_API_KEY = "..." }`
+  - Zed: remote `{"url": "https://mcp.supermemory.ai/mcp"}` (native OAuth) — do NOT point Zed at the bridge
 
 ## Debugging MCP Connections
 
