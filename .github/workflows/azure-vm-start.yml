@@ -1,0 +1,20 @@
+name: azure-vm-start
+
+on:
+  schedule:
+    # 9:00 AM ICT (UTC+7) daily — VM auto-shuts down at midnight
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  start-vm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start 9router-vm
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: python .github/workflows/azure_vm_start.py
