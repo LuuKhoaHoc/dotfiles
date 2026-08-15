@@ -34,6 +34,13 @@ def get(url, token):
         return json.loads(r.read())
 
 
+def post_action(url, token):
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"}, method="POST")
+    with urllib.request.urlopen(req, timeout=30) as r:
+        data = r.read()
+        return json.loads(data) if data else {}
+
+
 def main():
     cfg = {
         "client_id": os.environ.get("AZURE_CLIENT_ID", ""),
@@ -79,7 +86,7 @@ def main():
                 except Exception:
                     pass
                 try:
-                    get(f"https://management.azure.com{vid}/start?api-version={API}", token)
+                    post_action(f"https://management.azure.com{vid}/start?api-version={API}", token)
                     print("Start command sent")
                 except urllib.error.HTTPError as e:
                     print(f"Start HTTP {e.code}")
