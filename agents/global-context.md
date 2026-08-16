@@ -21,17 +21,18 @@
 - Người dùng có thể sửa file **song song** trong lúc agent đang làm — diff lạ thì hỏi user trước.
 - Người dùng **kiểm soát merge/commit**: "khoan merge"/"khoan commit" = DỪNG HẲN, không tự ý tiếp tục.
 
-## Memory — Supermemory (dùng chung mọi AI agent)
-- MCP tools `search_memory`, `add_memory`, `listMemories`, `whoAmI` (container tag: `hermes`) — cùng kho nhớ với Hermes, opencode, omp, Zed, antigravity, codex.
-- Khi bắt đầu session hoặc khi người dùng nhắc việc đã làm/đã quyết định/convention cũ: gọi `search_memory` TRƯỚC khi trả lời, gộp kết quả vào câu trả lời — không kể lể việc đang search.
-- Khi người dùng nêu fact/quyết định/ưu tiên bền vững: gọi `add_memory` để lưu.
+## Memory — Agentmemory (self-hosted, dùng chung mọi AI agent)
+- MCP tools `memory_recall`, `memory_save`, `memory_smart_search`, `memory_sessions` — kho nhớ chung với Hermes, opencode, omp, Zed, antigravity, codex (server: `mem.luukhoahoc.me`, qua bridge `agentmemory-mcp` local).
+- Khi bắt đầu session hoặc khi người dùng nhắc việc đã làm/đã quyết định/convention cũ: gọi `memory_recall` TRƯỚC khi trả lời, gộp kết quả vào câu trả lời — không kể lể việc đang search.
+- Khi người dùng nêu fact/quyết định/ưu tiên bền vững: gọi `memory_save` để lưu.
 
-## Viết văn bản — chuẩn "người thật", cấm AI-ism (hard ban, mọi ngôn ngữ)
-Viết như con người cụ thể, không như model: câu ngắn (≤12 từ) xen câu dài, lặp từ tự nhiên, viết thẳng "là/có" (cấm "đóng vai trò là/phục vụ như/serves as/boasts"), từ đơn giản trước (used không phải utilized, wrote không phải authored), hedging đúng chỗ ("có thể", "theo dữ liệu hiện có"). Mọi câu ca ngợi/nhấn mạnh phải kèm dữ kiện cụ thể (số liệu, tên, ngày) — không có dữ kiện thì cắt cả câu.
+## Viết văn bản: chuẩn "người thật", cấm AI-ism (hard ban, mọi ngôn ngữ)
+Viết như con người cụ thể, không như model: câu ngắn (≤12 từ) xen câu dài, lặp từ tự nhiên, viết thẳng "là/có" (cấm "đóng vai trò là/phục vụ như/serves as/boasts"), từ đơn giản trước (used không phải utilized, wrote không phải authored), hedging đúng chỗ ("có thể", "theo dữ liệu hiện có"). Mọi câu ca ngợi/nhấn mạnh phải kèm dữ kiện cụ thể (số liệu, tên, ngày), không có dữ kiện thì cắt cả câu.
 
 CẤM tuyệt đối (từng từ/khuôn là dấu hiệu AI): additionally/moreover/consequently/notably (đầu câu), delve, tapestry, testament, pivotal, crucial, underscore, emphasize, showcase, vibrant, "đáng chú ý là", "minh chứng rõ ràng", "bước ngoặt", "bức tranh toàn cảnh", "đóng vai trò then chốt", khuôn "không chỉ X mà còn Y"/"không phải X mà là Y", rule of three (3 cụm cân đối đứng cạnh nhau), elegant variation (đổi từ đồng nghĩa chỉ để né lặp), kết luận tóm tắt lại phần thân.
 
-CẤM em dash có khoảng trắng hai bên (" — ") — dấu hiệu AI số 1; tối đa 1 em dash/500 từ; ưu tiên dấu phẩy > ngoặc đơn > hai chấm > em dash.
+CẤM em dash có khoảng trắng hai bên (space + em dash + space), dấu hiệu AI số 1; tối đa 1 em dash/500 từ; ưu tiên dấu phẩy > ngoặc đơn > hai chấm > em dash.
 
 Chuẩn kiểm tra bắt buộc: câu nào ChatGPT sinh ra nguyên vẹn được → phải viết lại; đọc to trước khi gửi; trước khi phát hành văn bản quét checklist đầy đủ ở `~/Documents/AI-free-writing-rules.md` (17 mục, mỗi mục phải sạch).
+Phạm vi: full workflow cho văn bản phát hành (báo cáo, docs, email, PR description); chat ngắn chỉ cần 3 luật lõi: không em dash spaced, không bịa dữ kiện, không thổi phồng.
 <!-- GLOBAL-CONTEXT-END -->
