@@ -35,7 +35,8 @@ def get(url, token):
 
 
 def post_action(url, token):
-    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"}, method="POST")
+    # data=b"" is REQUIRED to send Content-Length: 0 — without it Azure intermittently returns 405/411
+    req = urllib.request.Request(url, data=b"", headers={"Authorization": f"Bearer {token}"}, method="POST")
     with urllib.request.urlopen(req, timeout=30) as r:
         data = r.read()
         return json.loads(data) if data else {}
@@ -85,12 +86,17 @@ def main():
                     print(f"VM state: {st} — sending start...")
                 except Exception:
                     pass
-                try:
-                    post_action(f"https://management.azure.com{vid}/start?api-version={API}", token)
-                    print("Start command sent")
-                except urllib.error.HTTPError as e:
-                    print(f"Start HTTP {e.code}")
-                    sys.exit(3)
+                for attempt in range(3):
+                    try:
+                        post_action(f"https://management.azure.com{vid}/start?api-version={API}", token)
+                        print("Start command sent")
+                        break
+                    except urllib.error.HTTPError as e:
+                        if attempt == 2:
+                            print(f"Start HTTP {e.code}")
+                            sys.exit(3)
+                        print(f"Start HTTP {e.code} — retrying ({attempt + 1}/3)...")
+                        time.sleep(5)
                 for i in range(6):
                     time.sleep(20)
                     try:
