@@ -1,3 +1,4 @@
+require("config.remote_clipboard").setup()
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 

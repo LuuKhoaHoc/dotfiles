@@ -10,35 +10,22 @@ function path_prepend() {
     esac
 }
 
-path_prepend '/home/khoahoc/.amp/bin'
-path_prepend '/home/linuxbrew/.linuxbrew/bin'
-path_prepend '/home/linuxbrew/.linuxbrew/sbin'
-path_prepend '/home/khoahoc/.local/share/pnpm'
-path_prepend '/home/khoahoc/.cargo/bin'
-path_prepend '/home/khoahoc/.local/bin'
+path_prepend "$HOME/.local/share/pnpm"
+path_prepend "$HOME/.local/bin"
 path_prepend '/usr/lib/cache/bin/'
-
-if [ -x '/home/linuxbrew/.linuxbrew/bin/brew' ]; then
-    eval "$('/home/linuxbrew/.linuxbrew/bin/brew' shellenv)"
-fi
 
 if command -v mise >/dev/null 2>&1; then
     eval "$(mise activate zsh)"
 fi
 
-if [ -d '/home/khoahoc/.local/share/fnm' ]; then
-    path_prepend '/home/khoahoc/.local/share/fnm'
-    eval "$(fnm env)"
+if [ -d "$HOME/Dev-Work/dotfiles/starship" ] && [ -f "$HOME/Dev-Work/dotfiles/starship/starship.toml" ]; then
+    export STARSHIP_CONFIG="$HOME/Dev-Work/dotfiles/starship/starship.toml"
 fi
-
-if [ -f '/home/khoahoc/Dev-Work/dotfiles/starship/starship.toml' ]; then
-    export STARSHIP_CONFIG='/home/khoahoc/Dev-Work/dotfiles/starship/starship.toml'
+if [ -f "$HOME/Dev-Work/dotfiles/fastfetch/config.jsonc" ]; then
+    export FASTFETCH_CONFIG_DEFAULT="$HOME/Dev-Work/dotfiles/fastfetch/config.jsonc"
 fi
-if [ -f '/home/khoahoc/Dev-Work/dotfiles/fastfetch/config.jsonc' ]; then
-    export FASTFETCH_CONFIG_DEFAULT='/home/khoahoc/Dev-Work/dotfiles/fastfetch/config.jsonc'
-fi
-if [ -f '/home/khoahoc/Dev-Work/dotfiles/fastfetch/config-v2.jsonc' ]; then
-    export FASTFETCH_CONFIG_CAELESTIA='/home/khoahoc/Dev-Work/dotfiles/fastfetch/config-v2.jsonc'
+if [ -f "$HOME/Dev-Work/dotfiles/fastfetch/config-v2.jsonc" ]; then
+    export FASTFETCH_CONFIG_CAELESTIA="$HOME/Dev-Work/dotfiles/fastfetch/config-v2.jsonc"
 fi
 
 if command -v starship >/dev/null 2>&1; then

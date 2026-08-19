@@ -15,9 +15,10 @@ export ZSH="$HOME/.oh-my-zsh"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 # Add .NET Core SDK tools
-export PATH="$PATH:/home/khoahoc/.dotnet/tools"
+# (commented out: .dotnet/tools not present on this machine's user path)
+# export PATH="$PATH:$HOME/.dotnet/tools"
 
-export PATH="$PATH:~/.spicetify"
+export PATH="$PATH:$HOME/.spicetify"
 
 # -----------------------------------------------------
 # oh-myzsh themes: https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
