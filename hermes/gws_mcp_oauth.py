@@ -21,7 +21,10 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 import httpx
 
-HERMES_HOME = os.path.join(os.path.expanduser("~"), "AppData", "Local", "hermes")
+HERMES_HOME = os.environ.get(
+    "HERMES_HOME",
+    os.path.join(os.path.expanduser("~"), "AppData", "Local", "hermes"),
+)
 TOKENS_DIR = os.path.join(HERMES_HOME, "mcp-tokens")
 PORT = 8765
 REDIRECT = f"http://127.0.0.1:{PORT}/callback"
@@ -31,6 +34,12 @@ TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 SERVERS = {
     "gmail": ("https://gmailmcp.googleapis.com/mcp/v1",
               "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose"),
+    "gmail-2": ("https://gmailmcp.googleapis.com/mcp/v1",
+                "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose"),
+    "gmail-3": ("https://gmailmcp.googleapis.com/mcp/v1",
+                "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose"),
+    "gmail-4": ("https://gmailmcp.googleapis.com/mcp/v1",
+                "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose"),
     "drive": ("https://drivemcp.googleapis.com/mcp/v1",
               "https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file"),
     "docs": ("https://docsmcp.googleapis.com/mcp/v1",
