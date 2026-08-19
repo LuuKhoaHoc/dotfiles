@@ -126,6 +126,8 @@ fi
 
 **PITFALL — `~/.omp/agent` (oh-my-pi) contains real secrets** (apiKey in `models.yml`, `glpat-` in `mcp.json`). Never copy raw. Use `omp/sync-omp.sh` which strips secrets to `<redacted>` on push; on pull you re-paste secrets. mnemopi memory DB (`memories/`) is runtime — carry it outside git (e.g. into the migration bundle).
 
+**PITFALL — omarchy symlinks inside `agents/skills/`**: omarchy's own tooling drops symlinks into the dotfiles skill dir pointing at `/usr/share/omarchy/default/...` (Linux-only), e.g. `agents/skills/diagnose-crash` and a self-referential `agents/skills/omarchy/omarchy`. Never `git add -A` over them — commit only the real skill dirs / `SKILL.md`, skip the symlinks (dead links on Windows, and the nested self-symlink breaks checkout). Leave them untracked; omarchy recreates/manages them.
+
 ### Git identity
 
 Git may not have global identity set on a fresh Windows install. Set locally in the dotfiles repo:

@@ -78,6 +78,13 @@ push() {
     echo "[hermes-sync] Không có thay đổi."
   else
     git add hermes/
+    # Secret guard — block commit nếu staged có secret thật (chỉ placeholder được vào repo)
+    if git diff --cached | grep -qE 'GOCSPX-[A-Za-z0-9_-]{10,}|glpat-[A-Za-z0-9_-]{15,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}'; then
+      echo "[hermes-sync] ⚠️ PHÁT HIỆN secret thật trong staged changes — huỷ commit." >&2
+      echo "             Thay bằng placeholder (\${VAR}) và đưa giá trị thật vào .env (không sync)." >&2
+      git reset
+      exit 1
+    fi
     git commit -m "hermes: sync ($OS_NAME) $(date '+%Y-%m-%d %H:%M')"
     git push
     echo "[hermes-sync] Đã push lên GitHub."

@@ -287,13 +287,21 @@ Always tell the user: "Note: SUPER+F was previously bound to fullscreen. I've ad
 
 ### Display/Monitors
 
-Edit `~/.config/hypr/monitors.conf`. Format:
-```
-monitor = eDP-1, 1920x1080@60, 0x0, 1
-monitor = HDMI-A-1, 2560x1440@144, 1920x0, 1
-```
+Edit `~/.config/hypr/monitors.lua` (Omarchy 4 = Lua config per `hyprctl systeminfo` → `configProvider: lua`; the old `monitors.conf` is IGNORED).
 
 List monitors: `hyprctl monitors`
+
+**CRITICAL: Omarchy 4 Lua monitor syntax pitfall (v4.0.0):**
+- `omarchy-hyprland-monitor-watch` (autostarted) runs `omarchy-hyprland-monitor-clamshell` on a 2s poll whenever a laptop has an external monitor active.
+- clamshell parses `~/.config/hypr/monitors.lua` with **line-based sed regex** that ONLY matches `hl.monitor({ ... })` on a **single line**.
+- `nwg-displays` writes MULTILINE `hl.monitor({\n output = ...})` - regex fails, scale resolution falls back to default **2** and clamshell re-applies `scale=2` every ~2s, so any scale/position edit looks "pulled back".
+- FIX: write monitors.lua with each `hl.monitor({...})` on ONE line. Verify with: `hyprctl reload; sleep 5; hyprctl monitors -j | jq '.[] | {name, scale, x, y}'`.
+- Do NOT use nwg-displays to apply changes (it rewrites multiline and re-breaks it); edit the .lua by hand or use `omarchy hyprland monitor scaling`.
+
+Format (single-line):
+```
+hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@120.0", position = "0x0", scale = 1 })
+```
 
 ### Window Rules
 

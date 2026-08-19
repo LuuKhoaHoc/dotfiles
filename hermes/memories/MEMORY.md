@@ -1,31 +1,33 @@
-BE/PO feature request → tạo issue MỚI; chỉ tách khi ready-for-human/BE-decision. BE/API mới: curl trước, ghi status vào issue.
+BE/PO request → issue MỚI; chỉ tách khi ready-for-human/BE-decision. BE/API mới: curl trước ghi status.
 §
-cuongt(10)=Finance+HR employee-scoped+request-management; QuyCN(31)=Product+HR attendance+shell/apps-dashboard; luukhoahoc shared/arch; PO quyết khi phân bug.
+cuongt(10)=Finance+HR emp-scoped+req-mgmt; QuyCN(31)=Product+HR attendance+shell/apps-dashboard; PO quyết khi phân bug.
 §
-ERP API: ApiResponse<T> — T=item|item[] (.data), pagination meta.pagination; cấm wrapper/normalize.
+ERP API: ApiResponse<T> — .data=item|item[], meta.pagination; cấm wrapper/normalize.
 §
-verify MR: pnpm --filter <pkg> exec vitest (exec --filter sai); worktree: install+build-infra riêng từng cái (thiếu→TS2307 @hilo/*); glab issue create: -R <repo> (--project unknown flag), --milestone nhận title.
-§
-Employee MFE labels: employee,feature,frontend,priority::medium,ready-for-agent (MFE::hr→hr-dashboard).
+Issue lifecycle: close CHỈ khi milestone close/release deploy main; merge develop/UAT → set label status::done (không close). Delete/close thật → MCP update_issue. glab -R. --milestone=title. Release: bỏ shipped.
 §
 antigravity chạy song song — file user sửa giữa chừng; diff lạ hỏi user.
 §
-dotfiles: ~/Dev-Work/dotfiles PUBLIC — cấm secret; sync sync-*.sh.
+dotfiles PUBLIC — cấm secret.
 §
-User kiểm soát merge/commit ('khoan merge'/'khoan commit'=dừng); cấm merge_when_pipeline_succeeds khi pipeline success.
+User kiểm soát merge/commit ('khoan merge'/'khoan commit'=dừng); cấm merge_when_pipeline_succeeds.
 §
-Curator patch được khi frontmatter author=hermes-curator (vd erp-admin-ui-mr-review, agent-memory); còn lại user-owned → từ chối, cần 'hermes curator adopt'.
+Curator chỉ patch skill có frontmatter author=hermes-curator; user-owned → từ chối, cần 'hermes curator adopt'.
 §
-Hermes gateway: TG @picoclaw_leo_bot (1082824633); force_ipv4=true (VN IPv6 hỏng).
+Hermes gateway: TG @picoclaw_leo_bot (1082824633); force_ipv4=true; cron deliver=all mới gửi TG.
 §
-supermemory: store→Notes, entry auto hay hỏng→verify, lưu EN LLM-proof.
+agentmemory = mem.luukhoahoc.me; MCP ~/.local/bin/agentmemory-mcp; Hermes plugin+skills official; secret AGENTMEMORY_SECRET.
 §
-AGENTS.md: canonical = dotfiles/agents/global-context.md; ~/.local/bin/agents-sync push|pull (6 harness: opencode, omp, zed, gemini, codex, claude). Skills mirror hermes = copy tay, KHÔNG symlink (agents-sync không sync skills).
+AGENTS.md canonical = dotfiles/agents/global-context.md; agents-sync push|pull; skills mirror copy tay.
 §
-MR re-review: fetch refs/merge-requests/<iid>/head so head_sha; head không đổi → user muốn MR khác cùng tác giả (list by author_username).
+MR review: worktree audit (KHÔNG checkout main), fetch head_sha, dev-rules audit script.
 §
-CRM authz (BE chốt 08/2026): /crm/* cần context chọn (403 CRM-403-004); GET /auth/crm/contexts+select-context kể cả 1 context; CRM_SYSTEM_ADMIN clone/assign system/template (docs cũ ghi ngược).
+CRM authz: cần context (403 CRM-403-004); giá trị authz bị redact →*** (đọc hex khi nghi).
 §
-User định build ERP cá nhân từ kinh nghiệm (không copy code công ty), NDA → tách dữ liệu công ty/cá nhân.
+Partner = MFE RIÊNG 'partner' (label MFE::partner, BA chốt 14/08/26); luân chuyển+doanh thu×3 chưa spec; customers: chuyển dịch vụ.
 §
-Azure VM 9router-vm (khoahoc, key ~/Downloads/9router-key.pem, IP DYNAMIC chưa pin): 9router:20128+agentmemory:3111+cloudflared systemd; router/mem.luukhoahoc.me; configs local trỏ cloud; ~/.9router DB clone nguồn provider.
+Hermes projects: 1 project = 1 codebase; ĐÃ BỎ kanban (lag). Branch impl: feat/{issue}-{short}. Implementer: 9router free; default mimo-v2.5. Auto-review cron: MRs → reviewer GitLab.
+§
+hl.unbind≠o.bind → edit tiling.lua. SYNA0001 ≤3-finger. hotcorn → std::process::Command.
+§
+Shell: zsh. Orca = ADE chính Linux (thay Herdr/Zed/antigravity); Hermes brain/issues + Orca workspace; Windows: thử OpenHuman. Shim ~/.config/orca/linux-orca-cli-shim (PATH .zshrc); worktrees ~/orca/workspaces; glab token ở config.yml, env GITLAB_TOKEN override → 401.

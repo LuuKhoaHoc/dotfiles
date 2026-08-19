@@ -48,7 +48,19 @@ If the MR touches 90+ files or crosses multiple unrelated domains (e.g. payroll 
 
 - **Always read changed files from the branch**: `mcp__gitlab__get_file_contents` with `ref=<mr-branch-name>` (e.g. `ref='hotfix/bug'`). Never assume a local `develop`/working-tree checkout matches the branch.
 - **Why it matters (real incident):** A reviewer read the local `develop` copy of `leave-mappers.ts`, saw the old `Number(totalDays)` (no ×8), and posted "this file still uses the old path / inconsistent with the ×8 elsewhere". The branch had *already* been fixed to `Math.round(totalLeaveDays * 8)`. The false claim forced a public correction note and eroded trust.
+- **`search_files` / `read_file` on the local clone are also unsafe for review** — they read the working tree (which may be on `develop` or any other branch), not the MR branch. Use them only for "does the symbol exist anywhere in the repo" questions. For "what does the MR's file X look like", always use `mcp__gitlab__get_file_contents ref=<branch>`. Real case MR !617: local develop still referenced `features.requestManagement.summary.*` (stale, from a previous MR that didn't clean up) — looked like dead-code leftovers in the diff, but the branch had already removed them. Wasted `get_file_contents` calls to confirm.
 - **If you already posted a wrong note:** call `mcp__gitlab__delete_merge_request_note` on the bad note(s), then post the corrected comment. Do not leave a "review" + "correction" + "correction #2" trail.
+
+## Run the test before posting any code-derived finding
+
+A code-reading finding is a *hypothesis* until the test (or a runtime trace) confirms it. For MRs that ship new/modified tests in the branch (most FE MRs do), check out the branch into a worktree and run the focused test file before you post a 🔴. Real case MR !617: reading `useUrlState.setState` (in `packages/shared`) suggested the legacy-key strip wouldn't work because keys not in schema aren't deleted — but the function **rebuilds `newSearchParams = new URLSearchParams()` from scratch**, so undefined-merge values for non-schema keys are simply skipped (not preserved). The shipped spec passed 4/4. The wrong 🔴 would have been posted.
+
+**Rule:** any finding whose root-cause argument depends on multi-function control flow, rebuild semantics, or a custom Zod/`useEffect`/merge quirk → run the test before posting. Use `mr-local-verification` (worktree + `pnpm --filter <pkg> exec vitest run <path>`). Findings grounded in direct, single-function reading (e.g. "this line is missing a null check", "this import is wrong") are safe to post without a test run.
+
+**Cheap verification commands** (run them in this order, stop at first signal):
+1. `pnpm --filter <pkg> exec vitest run <test-path>` — focused test of the new behavior
+2. `pnpm --filter <pkg> typecheck` — does it even compile on the branch
+3. `git show origin/<branch>:<file>` — verify the line you're flagging actually reads the way you think on the branch (cheap, no worktree needed)
 
 ## Publishing: ONE Consolidated Comment
 
@@ -95,8 +107,23 @@ User explicitly asked to "re-write comment to make it more easy to understand" a
 ## Tool Params (GitLab MCP)
 
 - Use **snake_case**: `project_id` (`"9"` or `"vppos-team/erp-admin"`), `merge_request_iid`, `ref`, `file_path`, `note_id`.
-- `list_merge_request_changed_files` returns `new_path`/`old_path`; diff hunks come from `get_merge_request_diffs` (pass `excluded_file_patterns` to skip lockfiles/binary assets — e.g. `["package-lock\\.json", "\\.png$", "\\.svg$", "\\.ico$"]`).
-- Read a full file on the branch: `get_file_contents` with `ref=<branch>` and `file_path=<new_path>`.
+- `list_merge_request_changed_files` returns `new_path`/`old_path`; diff hunks come from `get_merge_request_diffs`. Pass `view: "inline"` (or `"parallel"`) for diff rendering.
+- Read a full file on the branch: `get_file_contents` with `ref=<branch>` and `file_path=<new_path>`. Required: `file_path` (or its alias `path`) — both the project path and the file path are required, `ref` defaults to the default branch if omitted.
+- **`excluded_file_patterns` on `get_merge_request_diffs` is currently flaky** — passing `["^package-lock\\.json$", "\\.png$", "\\.svg$"]` can fail with `Invalid arguments: excluded_file_patterns.0: Expected string, received object` despite the schema declaring `items: string`. Workaround: omit the param, then post-filter the response client-side (`[c for c in changes if not re.match(r"^package-lock\\.json$|\\.png$|\\.svg$", c["new_path"])]`). The diff tool itself returns a manageable size for most MRs; the filter is a nice-to-have.
+
+### Prefer MCP over `glab` CLI for review work
+
+When the project is reachable via `mcp__gitlab__*` (this user's setup for `vppos-team/erp-admin`), prefer MCP tools for review workflow — `get_merge_request`, `list_merge_request_changed_files`, `get_merge_request_diffs`, `get_file_contents`, `mr_discussions`, `create_merge_request_note`, `approve_merge_request`, `merge_merge_request`. Two reasons `glab` CLI is the wrong first tool here:
+
+1. **Stale token in `~/.config/glab-cli/config.yml`** — glab's per-host config file is NOT auto-updated when the user rotates the env var `GITLAB_PAT`. Result: `glab mr view` returns `401 Unauthorized` while the env token works fine. `git fetch` + `curl -H "PRIVATE-TOKEN: $GITLAB_PAT"` would work, but those don't have the same one-call ergonomics as MCP.
+2. **No note-management** — `glab` cannot post review notes, set approval state, or merge with `should_remove_source_branch`. MCP is the only path that does it all.
+
+**MCP tools loading quirk (this profile):** the `mcp__gitlab__*` tools are **deferred** — they don't appear in the active toolset, but they ARE reachable. Discovery + invoke pattern:
+```python
+tool_describe("mcp__gitlab__get_merge_request")   # load schema
+tool_call(name="mcp__gitlab__get_merge_request", arguments={"project_id": "vppos-team/erp-admin", "merge_request_iid": "617"})
+```
+Direct `mcp__gitlab__*` invocations from a fresh turn can fail with "Tool does not exist" — that error means "load the schema via `tool_describe` first", not "the tool is gone". Once loaded in a turn, the same tool stays callable for that turn.
 
 ## Scope Confirmation Before Blocking Findings
 
@@ -143,6 +170,9 @@ After the review comment is posted, the author may push updates. Handle the life
 | Don't | Do instead |
 |-------|------------|
 | Review against local `develop`/main | Read every changed file via `get_file_contents ref=<branch>` |
+| Use `search_files` / `read_file` to verify a symbol's branch state | `mcp__gitlab__get_file_contents ref=<branch>` (local clone may be on a different branch) |
+| Reach for `glab` CLI first | `mcp__gitlab__*` tools (deferred but reachable; `glab` config.yml has stale token) |
+| Post a 🔴 derived from multi-function code reading without running the test | Check out the branch into a worktree and run the focused spec; cite the test output in the finding |
 | Post review, then a correction, then another | Delete old note(s), post ONE corrected comment |
 | "Extract a constant" / "make it configurable" | Give file:line + literal code + justify placement (shared pkg vs MFE-local) |
 | Leave the reader to find the test that breaks | Name the test file + line that needs updating |

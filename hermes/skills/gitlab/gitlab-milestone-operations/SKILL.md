@@ -118,6 +118,8 @@ tool_search("gitlab milestone")  # May return issue tools only
 - **Milestone ID ≠ IID** — `update_issue(milestone_id=...)` takes global ID, not project-scoped IID. Always get from `list_milestones` result.
 - **Large list_issues response** — 100 issues ≈ 250KB. Parse with Python in execute_code, don't load raw into context.
 - **Don't assume all done issues are in milestone** — explicit check required.
+- **MR merged có thể tự CLOSE issue** (case v1.0.4: #185, #170 closed đúng lúc MR merged — GitLab close theo "Closes #N" trong MR description/hook). Trái convention team (issue chỉ close khi prod deploy qua `issue:lifecycle:prod`) → trước release phải reopen những issue này. Khi tổng hợp scope: kiểm tra `state` của từng issue done, không chỉ label.
+- **Issues done nhưng milestone=None** — code merged trong window release nhưng chưa gắn milestone (case: #174 carousel, #170 topbar). Gắn vào milestone release kẻo code vào prod mà snapshot/close tự động bỏ sót.
 - **Status::done ≠ closed** — issue stays open until prod deploy. Milestone snapshot counts by status label, not state.
 
 ## Related Workflows

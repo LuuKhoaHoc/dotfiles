@@ -98,11 +98,19 @@ df -h /
 Total on this machine: **76% → 59%** (~19G freed)
 
 ## Gotchas
+
+- **btrfs: `df`/`btrfs` stats can lag badly after deleting caches + snapshots.** Mid-session measured freed 3G while 23G of caches were gone — the real reclaim only appeared after `sync` (flushes space_cache v2 transaction) once the holding btrfs snapshots were also pruned. Workflow that works:
+  1. Delete caches, prune snapshots, then `sync` and re-read `df -h /`.
+  2. Check for pinning snapshots **before** concluding "deleted but not freed": `btrfs subvolume list / | grep snapshot` and `snapper -c root list` (snap-pac creates `/.snapshots/N/snapshot` around upgrades, type `single`, cleanup `number`).
+  3. Only deleting the newest snapshot(s) releases blocks of recently-deleted big files (whatever existed at snapshot time stays pinned).
+  4. Remote/root-less boxes: `SUDO_PASSWORD` from `~/.hermes/.env` via `echo "$PW" | sudo -S ...` (never print it); smart-approval may still gate the first sudo call — ask user to approve.
 - **paru/yay cache clean** requires sudo on Arch
 - Docker `builder prune -a` can take a while on first run (deleting many layers)
 - Some caches in `~/.cache/` may need elevated permissions — use `sudo rm -rf` for those
 - Always check `docker system df` before and after to confirm impact
 - Volumes (`docker volume ls`) occasionally grow large — check with `docker system df -v`
+- `paccache -rk1` may report "no candidate packages" while `/var/cache/pacman/pkg` stays multi-GB — that means all cached pkgs are the current installed version; run `paccache -rk0` only if you accept re-downloading on next upgrade
+- Recreated-by-running-app caches (e.g. `~/.cache/net.imput.helium`) come back within minutes of the app running — don't be surprised if a just-cleared dir reappears
 
 ## When to Stop
 

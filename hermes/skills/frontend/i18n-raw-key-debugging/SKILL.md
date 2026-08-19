@@ -56,6 +56,15 @@ If the first link exists, the symptom may already be resolved on the latest bran
 against the newest code before filing the fix, and add the missing leaf to the shared map /
 common namespace as hardening against the link being removed.
 
+## Shared status-label util vs inline interpolation (Hilo ERP, 2026-08)
+
+Two render patterns with different failure modes — check BOTH when sweeping "status shows raw":
+
+1. **Inline interpolation without fallback** → FULL raw key in UI (worst): `t(\`features.X.statuses.${status}\`)` — e.g. `useLeaveRequestColumns.tsx` (`timeOffManagement.statuses`), `useChangeManagementColumns.tsx` + filters + change-content section (`changeManagement.statuses`).
+2. **Shared `getStatusLabel` (`packages/shared/src/utils/status.ts`)** → renders the **raw status string** (not the key): `tCommon(\`status.${key}\`, { defaultValue: status })` — i18next 2-arg fallback. Consumers: HR request-management columns, employee requests columns/inbox/handled, `ApprovalListSection` (HR + employee), dashboard summaries.
+
+**BE status-code drift (real case, issue #188):** BE trả `canc` (không phải `cancelled` như `REQUEST_STATUS.CANCELLED`) cho đơn bị hủy → raw key ở pattern 1, "canc" thô ở pattern 2. Fix family: thêm `canc` key vào namespace liên quan (`timeOffManagement.statuses`, `changeManagement.statuses`, `common.status`) en+vi, + `cancelled` hardening, + xác nhận BE canonical value. Sweep cả 2 MFE (HR + employee) khi cùng 1 status enum.
+
 ## Erp-admin worked example
 
 Real case: `requests.actions.*` vs `requests.actionMenu.*` namespace mismatch in the employee

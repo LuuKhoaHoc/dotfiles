@@ -1,6 +1,6 @@
 ---
 name: hyprland-plugin-maintenance
-description: Use when Hyprland plugins break or hyprpm fails.
+description: Use when Hyprland plugins break or hyprpm fails, or to trigger plugin dispatchers (hyprexpo) from the mouse — hot corners/edge zones.
 ---
 
 # Hyprland Plugin Maintenance
@@ -61,5 +61,38 @@ Pattern: stamp file holding `hyprctl version | head -1`; if changed → git pull
 - `hyprctl dispatchers` in 0.56 requires an argument ("Not enough arguments in '/dispatchers'") — verify via `hyprctl dispatch ... toggle` instead
 - hyprexpo specifics: maintained at sandwichfarm/hyprexpo (hyprexpo+, v0.56.x). Classic keys (columns, gaps_in, gaps_out, bg_col, workspace_method, gesture_distance, cancel_key, show_cursor, show_pinned_windows) still valid; removed keys: `gesture_positive`, `enable_gesture`
 
+## Hot corners: trigger plugin dispatchers from the mouse (macOS Mission Control style)
+
+Cursor into a screen corner → run any dispatcher (e.g. `hyprexpo:expo toggle` = overview). Full session detail: `references/hyprland-hot-corners.md`. Summary:
+
+1. Plugin dispatcher must work first: `hyprctl dispatch hyprexpo:expo toggle` → `ok`.
+2. Install **hotcorn** (chernyakoff/hotcorn, Rust, monitor-aware — prefer over ArnoDarkrose/hyprcorners, which hardcodes screen size in config):
+   ```bash
+   git clone --depth 1 https://github.com/chernyakoff/hotcorn /tmp/hotcorn
+   cargo build --release --manifest-path /tmp/hotcorn/Cargo.toml   # ~25s, 54 crates
+   install -m755 /tmp/hotcorn/target/release/hotcorn ~/.local/bin/hotcorn
+   ```
+3. Config `~/.config/hotcorn/config.toml` (confy layout — hand-create):
+   ```toml
+   monitor_name = "HDMI-A-1"   # MUST match hyprctl monitors name (multi-monitor!)
+   timeout_ms = 50
+   sticky_ms = 300
+   [[triggers]]
+   type = "Corner"
+   position = "TopRight"
+   radius = 15
+   action = { dispatcher = "hyprexpo:expo", args = "toggle" }
+   ```
+   `dispatcher` accepts ANY hyprctl dispatcher incl. plugin ones (`DispatchType::Custom`). Trigger types: Corner/Edge/Rect; edge-triggered (fires on ENTER, re-arms on leave); `sticky_ms` = min re-trigger interval.
+4. Autostart: `exec-once = ~/.local/bin/hotcorn` in `~/.config/hypr/autostart.conf`.
+5. Test: Hyprland 0.56 has NO `movecursortocorner` dispatcher → verify with a real mouse; daemon prints `Dispatching <dispatcher> <args>` to stdout per trigger.
+
+Pitfalls:
+- **Multi-monitor**: hotcorn checks global cursor coords against monitor SIZE only, no origin. TopRight (`x > w - radius && y < radius`) matches the outer top edge of any layout; BottomRight triggers across a wide strip below `h - radius` on stacked layouts. Only configure corners on the layout's outer top edge for exact behavior.
+- Daemon exits immediately `Monitor '<name>' not found` if monitor_name is wrong — a running daemon means the monitor resolved.
+- No AUR package for either daemon (checked 2026-08) — build from source (cargo 1.97 present).
+- `hotcorn` has no `--help`/`--version` — `hotcorn --help` just starts the daemon and hangs; a foreground timeout is the expected (good) signal.
+
 ## References
 - `references/arch-hyprexpo-case.md` — 2026-08-10 case: exact error transcript, issue links, hook script, command cheat-sheet
+- `references/hyprland-hot-corners.md` — 2026-08-14: daemon comparison (hotcorn vs hyprcorners), source-behavior notes, exact config + monitor layout used on this machine

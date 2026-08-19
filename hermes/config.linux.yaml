@@ -1,14 +1,14 @@
 model:
-  default: deepseek-v4-flash
+  default: mimo-v2.5
   provider: opencode-go
-  base_url: ''
+  base_url: https://opencode.ai/zen/go/v1
 toolsets:
   - hermes-cli
 agent:
   max_turns: 150
   service_tier: normal
   verbose: false
-  reasoning_effort: max
+  reasoning_effort: high
   personalities:
     helpful: You are a helpful, friendly AI assistant.
     concise: You are a concise assistant. Keep responses brief and to the point.
@@ -153,6 +153,7 @@ display:
   tui_auto_resume_recent: false
   bell_on_complete: false
   show_reasoning: true
+  background_process_notifications: concise
   streaming: false
   inline_diffs: true
   show_cost: false
@@ -165,7 +166,6 @@ display:
   cleanup_progress: false
   long_running_notifications: true
   busy_ack_detail: true
-  background_process_notifications: all
 dashboard:
   theme: default
 privacy:
@@ -210,7 +210,7 @@ voice:
   silence_threshold: 200
   silence_duration: 3
 human_delay:
-  mode: 'off'
+  mode: false
   min_ms: 800
   max_ms: 2500
 context:
@@ -220,12 +220,12 @@ memory:
   user_profile_enabled: true
   memory_char_limit: 2200
   user_char_limit: 1375
-  provider: supermemory
+  provider: agentmemory
   nudge_interval: 10
   flush_min_turns: 6
 delegation:
-  model: deepseek-v4-flash
-  provider: opencode-go
+  model: oc/deepseek-v4-flash-free
+  provider: 9router
   max_iterations: 75
   reasoning_effort: low
   max_concurrent_children: 5
@@ -301,7 +301,7 @@ updates:
   pre_update_backup: false
   backup_keep: 5
   non_interactive_local_changes: stash
-_config_version: 34
+_config_version: 37
 session_reset:
   mode: none
   idle_minutes: 1440
@@ -370,15 +370,6 @@ custom_providers:
       - kc/openai/o3
       - kc/deepseek/deepseek-chat
       - kc/deepseek/deepseek-reasoner
-      - openrouter/openrouter/free
-      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
-      - openrouter/openrouter/owl-alpha
-      - openrouter/poolside/laguna-xs.2:free
-      - openrouter/poolside/laguna-m.1:free
-      - openrouter/google/gemma-4-26b-a4b-it:free
-      - openrouter/google/gemma-4-31b-it:free
-      - openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
-      - openrouter/nvidia/nemotron-3-nano-30b-a3b:free
       - ollama/gpt-oss:120b
       - ollama/kimi-k2.5
       - ollama/glm-4.7-flash
@@ -386,10 +377,6 @@ custom_providers:
       - ollama/minimax-m3
       - ollama/gemma4:31b-cloud
       - ollama/qwen3-coder:480b-cloud
-      - minimax/MiniMax-M3
-      - minimax/MiniMax-M2.7
-      - minimax/MiniMax-M2.5
-      - minimax/MiniMax-M2.1
       - cx/gpt-5.6-sol
       - cx/gpt-5.6-sol-review
       - cx/gpt-5.6-terra
@@ -405,10 +392,11 @@ custom_providers:
       - cx/gpt-5.3-codex-spark
       - cx/gpt-5.3-codex-spark-review
       - cf/@cf/moonshotai/kimi-k2.6
-      - kimchi/kimi-k2.7
       - kimchi/deepseek-v4-flash
-      - kimchi/minimax-m3
+      - kimchi/kimi-k2.7
       - kimchi/nemotron-3-ultra-fp4
+      - kimchi/minimax-m3
+      - kimchi/deepseek-v4-flash-0731
       - gh/copilot-search-a
       - gh/copilot-search-b
       - gh/copilot-search-c
@@ -418,13 +406,13 @@ custom_providers:
       - gh/gemini-3.1-pro-preview
       - gh/gpt-5.3-codex
       - gh/gpt-5.4-mini
+      - gh/gpt-5.6-luna
       - gh/kimi-k2.7-code
       - gh/kimi-k3
       - gh/mai-code-1.1-flash
       - gh/mai-code-1-flash-4th
       - gh/mai-code-1-flash-picker
       - gh/mai-code-1-flash-secondary
-      - gh/mai-code-1-flash-tertiary
       - gh/mai-code-1-flash
       - gh/trajectory-compaction
       - gh/gpt-5-mini
@@ -446,6 +434,7 @@ custom_providers:
       - gh/gpt-3.5-turbo
       - gh/gpt-4o-mini
       - gh/gpt-4o
+      - gemini/gemini-3.7-flash
       - gemini/gemini-3.6-flash
       - gemini/gemini-3.5-flash-lite
       - gemini/gemini-3.1-pro-preview
@@ -496,6 +485,22 @@ custom_providers:
       - ocg/qwen3.6-plus
       - ocg/kimi-k3
       - ocg/gpt-5.6-luna
+      - gcli/grok-4.6
+      - gcli/grok-4.6-high
+      - openrouter/openrouter/free
+      - openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      - openrouter/openrouter/owl-alpha
+      - openrouter/poolside/laguna-xs.2:free
+      - openrouter/poolside/laguna-m.1:free
+      - openrouter/google/gemma-4-26b-a4b-it:free
+      - openrouter/google/gemma-4-31b-it:free
+      - openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+      - openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+      - cbai/glm-5.2
+      - cbai/glm-5v-turbo
+      - cbai/minimax-m3
+      - cbai/kimi-k2.6
+      - cbai/kimi-k2.5
 mcp_servers:
   gitlab:
     command: /home/luukhoahoc/.local/share/mise/installs/node/latest/bin/zereight-mcp-gitlab
@@ -571,8 +576,48 @@ mcp_servers:
       client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
       client_secret: ${GWS_MCP_CLIENT_SECRET}
       redirect_port: 8765
+  gmail-2:
+    url: https://gmailmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
+  gmail-3:
+    url: https://gmailmcp.googleapis.com/mcp/v1
+    auth: oauth
+    oauth:
+      client_id: 983903518002-0pfic8p41ndjg100bnojbqbjnljabsqv.apps.googleusercontent.com
+      client_secret: ${GWS_MCP_CLIENT_SECRET}
+      redirect_port: 8765
 plugins:
   enabled:
-    - rtk-rewrite
+    - agentmemory
     - codegraph
+    - disk-cleanup
+    - orca-status
+    - rtk-rewrite
+    - security-guidance
   disabled: []
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

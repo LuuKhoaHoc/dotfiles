@@ -156,6 +156,16 @@ Lệch → xóa tag cũ (local + remote), tạo lại annotated tag trên HEAD r
 
 MCP: `create_tag` then `create_release` (or update release description if 409 already exists). Release name: `Release vX.Y.Z — YYYY-MM-DD` (giữ ngày trong tên/nội dung để tra cứu theo thời gian vẫn được) — thực tế 2026-08: `Release 2026-08-04`.
 
+**GẮN MILESTONE vào release record (bắt buộc, user-corrected 2026-08-15):** khi tạo release PHẢI kèm `milestones: [<tên milestone>]` (vd `["v1.0.4"]`) — convention team từ v1.0.0 (vd release v1.0.0 → milestone v1.0.0). Release record không milestone = thiếu.
+
+**Pitfall: retag (xóa tag) → GitLab XÓA LUÔN release record** (case v1.0.4, 2026-08-15): `git push origin :refs/tags/v1.0.4` khi retag khiến release record gắn với tag đó biến mất. Sau retag PHẢI tạo LẠI release từ đầu (không chỉ update). Pattern đã chạy được (token hiện tại PUT /releases bị 403):
+```bash
+# body JSON (description + milestones) — dùng python json.dumps để escape description
+glab api projects/9/releases --method POST --header "Content-Type: application/json" --input /tmp/release-body.json
+# glab --field "milestones[]=..." KHÔNG nạp array; --input + header mới ăn milestones
+```
+Nếu POST trả 409 (release đã tồn tại) → `glab api projects/9/releases/v1.0.4 --method DELETE` rồi POST lại.
+
 Release Evidence JSON on the Releases page is normal GitLab auto-snapshot — not an error.
 
 ### 5. MR release → main
@@ -224,6 +234,14 @@ Most common conflicts when merging develop into release-from-main:
 - `helm/frontend/values-{shell,hr,employee,finance,sale,product,dashboard}.yaml` — image tags  (commit SHA)
   **Resolution:** take **develop** (`git checkout --theirs` during merge into release branch, since develop is incoming)
 
+**Pitfall: conflict markers sót trong helm values (case v1.0.4, 2026-08-15):** `git merge` output tail chỉ hiện vài conflict đầu; THỰC TẾ gần như MỌI values-*.yaml đều conflict (main tag khác develop tag). Nếu chỉ resolve những file nhìn thấy rồi `git add -A` → markers của các file còn lại bị commit nguyên vẹn, CI build PASS vì helm không thuộc build graph — chỉ fail khi deploy (helm template). Quy trình bắt buộc sau merge:
+1. `git diff --name-only --diff-filter=U | wc -l` — ĐẾM conflict thật, không tin output merge.
+2. `git checkout --theirs helm/frontend/values-*.yaml` cho TẤT CẢ file helm (luôn lấy develop).
+3. Trước khi commit: `git grep -lE "^(<<<<<<<|=======|>>>>>>>)" -- .` — phải RỖNG. File đã commit (không còn unmerged) thì `checkout --theirs` KHÔNG ăn ("Updated 0 paths") → dùng `git checkout origin/develop -- <paths>`.
+4. Sau fix, verify `git diff origin/develop -- helm/` rỗng.
+
+**Retag sau amend (case 2026-08-15):** amend merge commit → HEAD mới → tag cũ sai SHA. Trình tự: `git push --force-with-lease origin refs/heads/release/vX.Y.Z` (branch release chỉ mình dùng, an toàn) → xóa tag cũ local+remote → tạo lại annotated trên HEAD mới → `create_release`/`update_release` description. Lưu ý: token GitLab có thể bị 403 khi UPDATE release (PUT /releases) dù POST tạo được — MR description là nguồn chuẩn, cập nhật MR qua MCP `update_merge_request` (hoạt động), release record lệch SHA chấp nhận được.
+
 App code rarely conflicts if main was only behind develop.
 
 ### 7. Local repo hygiene
@@ -262,6 +280,7 @@ When the user confirms production deploy, finish release checklist instead of st
    ```
    Use the exact conflict direction: release branch merging `develop` takes `develop`; `develop` syncing from `main` takes `main`. Verify no unmerged paths and run the repository pre-push checks.
    **CRM re-enable sau sync (bắt buộc, case 2026-08-04):** merge `main` → `develop` kéo theo commit `chore(release): disable CRM modules for production` → develop mất sale/product/finance (`enabled: false`), phá vỡ convention §5a (develop giữ `enabled: true` để UAT/dev thấy CRM). Sau sync phải sửa `packages/shared/src/config/navigation.ts`: set `enabled: true` cho đúng 3 module `sale` (sau `icon: 'Restaurant'`), `product` (`icon: 'Invoicing'`), `finance` (`icon: 'Accounting'`) — KHÔNG đụng `project`/`inventory` (`showInCatalog: false`, vốn false sẵn). Commit riêng: `chore(release): sync main to develop after release YYYY-MM-DD` (pattern cũ: `6ecf4e39`, lần này `8fe54f51`). Verify bằng exit code tường minh: `pnpm --filter @hilo/shared typecheck > /tmp/t.log 2>&1; echo TYPECHECK_EXIT=$?` + `npx eslint packages/shared/src/config/navigation.ts > /tmp/e.log 2>&1; echo ESLINT_EXIT=$?` — commit riêng với chứng cứ exit code 0.
+   **Pitfall rerere khi sync (case 2026-08-15):** sau khi release branch đã resolve conflict, `git merge origin/main` trên develop có thể tự staged "previous resolution" (rerere) — resolution cũ là `enabled: false` từ release branch → develop bị CRM disable mà không hề có conflict báo. SAU merge PHẢI grep verify: `git show HEAD:packages/shared/src/config/navigation.ts | grep -B9 requiresCrmContext | grep -cE "enabled: true"` (phải = 3) trước khi push.
 4. **Update release description directly**
    - Fetch the current release description first.
    - Mark review, pipeline, merge, and sync checklist items complete with evidence: pipeline ID, merge SHA, sync commit SHA.
