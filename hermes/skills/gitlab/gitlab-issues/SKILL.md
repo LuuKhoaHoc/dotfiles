@@ -53,6 +53,18 @@ When writing issues about code changes, bugs, or UI discrepancies:
 7. **Close completed blocker issues** — after all issues are created and a blocker issue is resolved (e.g. a shared-infrastructure task), use `mcp__gitlab__update_issue` with `state_event: "close"` to mark it done.
 8. **Add tasks incrementally into the description body** (see Incremental Issue Building) — **not** via notes
 
+## Replicating an existing pattern across all MFEs (fan-out)
+
+When the user asks to apply a UI/behaviour pattern that already exists in one MFE to **all** MFEs (e.g. "thêm hiệu ứng xuất hiện giống MFE Employee cho mọi MFE"), fan out into one issue per MFE rather than one umbrella issue:
+
+1. **Enumerate target MFEs from the monorepo, not memory.** `Get-ChildItem apps -Directory` (Windows/pwsh) or `ls apps` lists real MFE folders — folder names drift (no `agent`/`econtract` folder existed despite being assumed). Exclude the MFE that already complies.
+2. **Grep the monorepo to ground the pattern before writing a single issue.** Find (a) the canonical component/util definition and its prop defaults, and (b) every existing adoption site, so the issue body specifies correct usage and you know which MFEs to skip. Worked example: `<SlideFade>` from `@hilo/ui` (`packages/ui/src/components/ui/SlideFade.tsx`, defaults `delay=0 duration=300 offset='16px' easing=cubic-bezier(0.16,1,0.3,1)`) — grepping `apps/**` for `SlideFade|animate-slidefade-in` revealed Employee + 6 Partner pages already use it, so Partner became an "mở rộng các page còn lại" issue instead of greenfield.
+3. **Reuse one shared body**, swapping only the MFE name + the per-MFE typecheck filter (`pnpm --filter hr-dashboard/sale/finance/product/partner/apps-dashboard/shell typecheck`). Keep the pattern reference, file examples, and acceptance criteria identical across issues.
+4. **Assign + milestone identically** (same assignee, same milestone, same `MFE::<module>` + `frontend` + `enhancement`/`ux` labels).
+5. **Create in parallel** once the shared draft + reference links are ready (MCP `create_issue` with long Vietnamese bodies succeeded here; keep `glab`/REST fallback for the JSON-choke case).
+
+This pattern also satisfies the user's "đọc code để tự nắm" expectation: grounding each fan-out issue in the real component + its adoption sites makes the body accurate instead of guessed.
+
 ## Issue Description Structure — erp-admin Templates
 
 The erp-admin repo has canonical templates in `.gitlab/issue_templates/`:
@@ -193,9 +205,13 @@ Keep `[ ]` un-ticked for items that still need action. Mark `[x]` with `✅ Done
 1. `mcp__gitlab__get_users` with `usernames: ["cuongt"]` (Trần Cường id=10 on vppos)
 2. `update_issue` with `assignee_ids: [<id>]`
 
+**Pitfall — `get_users` can return `null` for a real user.** Exact-username lookup is case-sensitive and brittle: `get_users(usernames:["quycn"])` returned `null` even though the account exists as `QuyCN` (id 31, Cao Quý). When `get_users` returns null for a username you believe exists, do NOT invent an id — fall back to `mcp__gitlab__list_project_members(project_id, query="<partial>")` which fuzzy-matches name/username and reliably returns `{id, username, name}`. Get the real id from there, then assign.
+
 ### Labels (erp-admin)
 
-`feature`, `bug`, `refactor`, `frontend`, `shell`, `shared`, `hr`, `employee`, `sale`, `finance`, `priority::*`, `status::todo`, `ready-for-agent`, `release`
+`feature`, `bug`, `refactor`, `enhancement`, `frontend`, `ux`, `shell`, `shared`, `hr`, `employee`, `sale`, `finance`, `priority::*`, `status::todo`, `ready-for-agent`, `release`
+
+**Per-MFE label (canonical "which MFE" tag):** `MFE::hr`, `MFE::employee`, `MFE::sale`, `MFE::finance`, `MFE::product`, `MFE::partner`, `MFE::shell`, `MFE::apps-dashboard`. Always pair the matching `MFE::<module>` with `frontend` (and `enhancement`/`ux` for polish/animation work) so board filters by MFE work. Unlike the `[MODULE]` title prefix (free-form: HR/Employee/Sale/...), the `MFE::*` label is a fixed controlled vocabulary — use the exact label strings above.
 
 ## Board triage: status::done semantics (user-corrected)
 
