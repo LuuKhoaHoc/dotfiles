@@ -8,7 +8,7 @@
         "sonarqube-mcp-server"
       ],
       "env": {
-        "SONARQUBE_TOKEN": "squ_1d6c88e44c41c4428699869a8e0edfdea8abe735",
+        "SONARQUBE_TOKEN": "squ_<redacted>",
         "SONARQUBE_URL": "https://sonar.vppos.vn",
         "SONARQUBE_ORGANIZATION_KEY": "SONARQUBE_ORGANIZATION_KEY"
       }
