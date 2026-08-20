@@ -18,3 +18,33 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: python .github/workflows/azure_vm_start.py
+
+      - name: Wait for VM SSH to be ready
+        run: sleep 90
+
+      - name: Start services on VM (cloudflared + 9router)
+        if: ${{ env.VM_SSH_KEY != '' && env.VM_HOST != '' }}
+        env:
+          VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_SSH_USER: ${{ secrets.VM_SSH_USER }}
+        run: |
+          set -euo pipefail
+          SSH_USER="${VM_SSH_USER:-khoahoc}"
+          echo "$VM_SSH_KEY" > /tmp/vm_key.pem
+          chmod 600 /tmp/vm_key.pem
+          # retry SSH up to 6 times (VM may still be booting)
+          for i in $(seq 1 6); do
+            if ssh -i /tmp/vm_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=15 \
+                   "$VM_SSH_USER@$VM_HOST" 'echo ssh-ok'; then
+              echo "SSH ready after $i attempt(s)"
+              break
+            fi
+            echo "SSH not ready ($i/6), sleeping 15s..."
+            sleep 15
+          done
+          scp -i /tmp/vm_key.pem -o StrictHostKeyChecking=no \
+              .github/workflows/azure_vm_post_start.sh \
+              "$SSH_USER@$VM_HOST:/tmp/azure_vm_post_start.sh" 2>/dev/null || true
+          ssh -i /tmp/vm_key.pem -o StrictHostKeyChecking=no "$SSH_USER@$VM_HOST" \
+              'bash /tmp/azure_vm_post_start.sh'
