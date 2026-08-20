@@ -1,0 +1,10 @@
+# OpenHuman local state — never commit secrets
+openhuman/dev-keychain.json
+openhuman/users/*/workspace/
+openhuman/users/*/cef/
+openhuman/users/*/logs/
+openhuman/cache/
+openhuman/logs/
+openhuman/skill-registry/
+*.bak
+*.corrupted

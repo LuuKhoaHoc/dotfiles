@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-20T03:45:44.399811+00:00",
+  "active_profiles": {
+    "app-session": "app-session:default",
+    "provider:9router": "provider:9router:default"
+  },
+  "profiles": {
+    "app-session:default": {
+      "provider": "app-session",
+      "profile_name": "default",
+      "kind": "token",
+      "account_id": null,
+      "workspace_id": null,
+      "access_token": null,
+      "refresh_token": null,
+      "id_token": null,
+      "token": null,
+      "expires_at": null,
+      "token_type": null,
+      "scope": null,
+      "created_at": "2026-08-19T18:24:55.388759200+00:00",
+      "updated_at": "2026-08-20T03:44:05.289172900+00:00",
+      "metadata": {
+        "session_expires_at": "2026-11-18T03:44:05+00:00",
+        "user_id": "6a85f4f7018099b972f6ae17",
+        "user_json": "{\"__v\":0,\"_id\":\"6a85f4f7018099b972f6ae17\",\"activeTeamId\":\"6a85f4f7018099b972f6ae1c\",\"budgets\":{\"providers\":[]},\"createdAt\":\"2026-08-19T18:24:55.328Z\",\"email\":\"lkhoc200443@gmail.com\",\"firstName\":\"Lưu\",\"githubId\":\"93021204\",\"hasMedullaAccess\":false,\"isAdmin\":false,\"isMasterAdmin\":false,\"lastCountry\":\"US\",\"lastIp\":\"172.68.211.154\",\"lastIpAt\":\"2026-08-20T03:38:29.467Z\",\"lastName\":\"Khoa Học\",\"lastRegion\":\"CA\",\"productsUsed\":[],\"referral\":{\"_id\":\"6a85f4f7018099b972f6ae18\",\"invitedBy\":null},\"updatedAt\":\"2026-08-20T03:41:18.691Z\",\"usage\":{\"bypassCycleLimit\":false,\"cycleBudgetUsd\":0,\"cycleLimit5hr\":0,\"cycleLimit5hrStartedAt\":\"2026-08-19T23:00:00.000Z\",\"cycleLimit7day\":0,\"cycleLimit7dayStartedAt\":\"2026-08-19T18:00:00.000Z\",\"dailySpendLimitUsd\":null,\"promotionBalanceUsd\":0.2494068880000001}}"
+      }
+    },
+    "provider:9router:default": {
+      "provider": "provider:9router",
+      "profile_name": "default",
+      "kind": "token",
+      "account_id": null,
+      "workspace_id": null,
+      "access_token": null,
+      "refresh_token": null,
+      "id_token": null,
+      "token": null,
+      "expires_at": null,
+      "token_type": null,
+      "scope": null,
+      "created_at": "2026-08-19T18:27:16.702885600+00:00",
+      "updated_at": "2026-08-20T03:45:44.399810+00:00",
+      "metadata": {}
+    }
+  }
+}
