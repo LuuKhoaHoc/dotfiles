@@ -32,11 +32,9 @@ jobs:
         if: ${{ env.VM_SSH_KEY != '' && env.VM_HOST != '' }}
         run: |
           set -euo pipefail
-          set -x
-          # Diagnostic: lengths only (values are masked secrets)
-          echo "len VM_HOST=${#VM_HOST} VM_SSH_USER=${#VM_SSH_USER} SSH_USER=${VM_SSH_USER:-khoahoc}"
           SSH_USER="${VM_SSH_USER:-khoahoc}"
-          echo "$VM_SSH_KEY" > /tmp/vm_key.pem
+          # VM_SSH_KEY is base64-encoded (newline/encoding-safe); decode to PEM
+          echo "$VM_SSH_KEY" | base64 -d > /tmp/vm_key.pem
           chmod 600 /tmp/vm_key.pem
           # retry SSH up to 6 times (VM may still be booting)
           for i in $(seq 1 6); do
