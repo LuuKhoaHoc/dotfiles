@@ -9,6 +9,12 @@ on:
 jobs:
   start-vm:
     runs-on: ubuntu-latest
+    # VM secrets at JOB level so the post-start step's `if` can see them.
+    # (Step-level env is NOT visible when GitHub evaluates the step's `if`.)
+    env:
+      VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+      VM_HOST: ${{ secrets.VM_HOST }}
+      VM_SSH_USER: ${{ secrets.VM_SSH_USER }}
     steps:
       - uses: actions/checkout@v5
 
@@ -24,10 +30,6 @@ jobs:
 
       - name: Start services on VM (cloudflared + 9router)
         if: ${{ env.VM_SSH_KEY != '' && env.VM_HOST != '' }}
-        env:
-          VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
-          VM_HOST: ${{ secrets.VM_HOST }}
-          VM_SSH_USER: ${{ secrets.VM_SSH_USER }}
         run: |
           set -euo pipefail
           SSH_USER="${VM_SSH_USER:-khoahoc}"
@@ -36,7 +38,7 @@ jobs:
           # retry SSH up to 6 times (VM may still be booting)
           for i in $(seq 1 6); do
             if ssh -i /tmp/vm_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=15 \
-                   "$VM_SSH_USER@$VM_HOST" 'echo ssh-ok'; then
+                   "$SSH_USER@$VM_HOST" 'echo ssh-ok'; then
               echo "SSH ready after $i attempt(s)"
               break
             fi
